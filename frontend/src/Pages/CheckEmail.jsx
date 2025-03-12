@@ -1,12 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,useLocation } from "react-router-dom";
 import "../styles/App.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 
 const CheckEmail = () => {
   const navigate = useNavigate(); // Hook for navigation
-
+  const location = useLocation();
+  const email = location.state?.email || "your email"; // Get email or fallback text
   const handleResendLink = () => {
     // Simulate resending the email (you can replace this with an actual API call)
     alert("A new recovery link has been sent to your email.");
@@ -27,7 +28,7 @@ const CheckEmail = () => {
         <div className="right-content">
           <h1>Check your email.</h1>
           <p>
-            We just sent a recovery link to <strong>your email</strong>.If you can’t find it in your inbox please check your spam filter
+            We just sent a recovery link to <strong>{email}</strong>.If you can’t find it in your inbox please check your spam filter
           </p>
 <div className="check-email-actions">
         {/* "Resent recovery link" Button */}

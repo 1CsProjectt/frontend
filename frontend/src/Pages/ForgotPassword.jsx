@@ -29,7 +29,7 @@ const ForgotPassword = () => {
     }
 
     setError(""); // Clear error if valid
-    navigate("/CheckEmail");
+    navigate("/CheckEmail", { state: { email } }); // Pass email to CheckEmail page
   };
 
   return (

@@ -12,7 +12,7 @@
 /* Left side (blue section) */
 .login-left {
   width: 50%;
-  background-color: #007bff;
+  background-color: #077ED4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -133,7 +133,7 @@ label {
 
 .remember-forgot a {
   text-decoration: none;
-  color: #007bff;
+  color: #077ED4;
   font-weight: bold;
   font-size: 14px;
 }
@@ -144,7 +144,7 @@ label {
 
 /* Button */
 .btn {
-  background-color: #007bff;
+  background-color: #077ED4;
   color: white;
   padding: 18px;
   border: none;
@@ -179,7 +179,7 @@ label {
 .link-btn {
   background: none;
   border: none;
-  color: #007bff;
+  color: #077ED4;
   font-size: 16px;
   cursor: pointer;
   font-weight: 700;
@@ -206,7 +206,7 @@ label {
 /* Left Side (shared styling with .login-left) */
 .reset-left {
   width: 50%;
-  background-color: #007bff;
+  background-color: #077ED4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -314,7 +314,7 @@ label {
 
 /* Submit Button */
 .reset-content .btn {
-  background-color: #007bff;
+  background-color: #077ED4;
   color: white;
   padding: 18px;
   border: none;
@@ -388,7 +388,7 @@ label {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #077ED4;
   color: white;
   padding: 18px;
   border: none;
@@ -406,7 +406,7 @@ label {
 
 .btn-secondary {
   background-color: white;
-  color: #077ed4;
+  color: #077ED4;
   padding: 18px;
   border: none;
   border-radius: 8px;
