@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "../styles/App.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
-import axios from "axios"; // Import Axios for API requests
+import axios from "axios";
+
+const API_URL = "https://60a9-154-121-66-149.ngrok-free.app/auth";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ const ForgotPassword = () => {
   const [error, setError] = useState(""); // Store validation error
   const [loading, setLoading] = useState(false); // Track loading state
 
-  // Updated email validation function
+  // Validate email format
   const validateEmail = (email) => {
     const emailPattern = /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
     return emailPattern.test(email);
@@ -30,19 +32,20 @@ const ForgotPassword = () => {
       return;
     }
 
-    setError(""); // Clear error if valid
+    setError(""); // Clear previous error messages
+    setLoading(true); // Start loading
 
     try {
-      setLoading(true); // Start loading
+      // Make a POST request to the forgot-password endpoint
+      const response = await axios.post(`${API_URL}/forgot-password`, { email });
 
-      // Send the email to the back-end API
-      const response = await axios.post("http://localhost:5000/api/forgot-password", { email });
       console.log("Recovery link sent:", response.data);
 
       // Navigate to the CheckEmail page, passing the email as state
       navigate("/CheckEmail", { state: { email } });
     } catch (err) {
       // Handle API errors
+      console.error("Failed to send recovery link:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Failed to send recovery link. Please try again.");
     } finally {
       setLoading(false); // Stop loading
@@ -64,7 +67,7 @@ const ForgotPassword = () => {
         <div className="right-content">
           <h1>Forget password?</h1>
           <p>
-            We will send a recovery link to this email, please make sure to follow the instructions to get access again.
+            We will send a recovery link to this email. Please make sure to follow the instructions to regain access.
           </p>
           <form>
             <label>Email address</label>
@@ -79,7 +82,7 @@ const ForgotPassword = () => {
             </div>
 
             {/* Show error message if email is invalid */}
-            {error && <p className="error-message" style={{color : "red"}}>{error}</p>}
+            {error && <p className="error-message" style={{ color: "red" }}>{error}</p>}
 
             <div className="check-email-actions check-forgetpassword-actions">
               {/* "Back to log in" Button */}

@@ -4,14 +4,16 @@ import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
 import ResetPassword from "./Pages/ResetPassword";
+
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} /> 
+        <Route path="/" element={<Login />} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
-        <Route path="/CheckEmail" element={<CheckEmail/>}/>
-        <Route path="/ResetPassword" element={<ResetPassword/>} ></Route>
+        <Route path="/CheckEmail" element={<CheckEmail />} />
+        {/* Route with dynamic token */}
+        <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </Router>
   );

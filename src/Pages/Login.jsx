@@ -4,7 +4,9 @@ import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import axios from "axios"; // Added axios for making API calls
+import axios from "axios";
+
+const API_URL = "https://60a9-154-121-66-149.ngrok-free.app/auth";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,41 +14,48 @@ const Login = () => {
   const [password, setPassword] = useState(""); // Stores the password input
   const [error, setError] = useState(""); // Stores any validation or API error messages
   const [loading, setLoading] = useState(false); // Added a loading state for API call status
+
+  // Validate email format
   const validateEmail = (email) => {
     const emailPattern = /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
     return emailPattern.test(email);
   };
+
+  // Handle form submission
   const handleSignIn = async (e) => {
     e.preventDefault(); // Prevents the default form submission behavior
 
     if (!email || !password) {
-      // Validates if both email and password fields are filled
       setError("Please fill in both your email and password.");
       return;
     }
+
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }
-    setError(""); // Clears previous error messages
-    setLoading(true); // Sets loading to true while making the API call
+
+    setError(""); // Clear previous error messages
+    setLoading(true); // Set loading state during the API call
 
     try {
-      // Makes a POST request to the backend login endpoint
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email, // Sends the email as part of the request body
-        password, // Sends the password as part of the request body
-      });
+      // Make a POST request to the backend login endpoint
+      const response = await axios.post(`${API_URL}/login`, { email, password });
 
-      // Logs the successful response (for debugging )
+      // Extract the token from the response
+      const { token } = response.data;
+
+      // Save the token to localStorage (or sessionStorage)
+      localStorage.setItem("authToken", token);
+
       console.log("Login successful:", response.data);
-      alert("Login successful!"); // Displays a success alert (you can replace this with navigation logic)
+      
+      alert("Login successful!"); // Display success alert or navigate to another page
     } catch (err) {
-      // Catches errors from the API call
-      console.error("Login failed:", err.response?.data || err.message); // Logs the error (for debugging)
-      setError(err.response?.data?.message || "Login failed. Please try again."); // Sets the error message from the API or a fallback message
+      console.error("Login failed:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
-      setLoading(false); // Resets the loading state regardless of success or failure
+      setLoading(false); // Reset the loading state
     }
   };
 
@@ -74,26 +83,27 @@ const Login = () => {
               <input
                 type="email"
                 className="input-field"
-                value={email} // Controlled input for email
-                onChange={(e) => setEmail(e.target.value)} // Updates email state
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
 
             <label>Password</label>
             <div className="password-field">
               <input
-                type={showPassword ? "text" : "password"} // Toggles between text and password type
+                type={showPassword ? "text" : "password"}
                 className="input-field"
-                value={password} // Controlled input for password
-                onChange={(e) => setPassword(e.target.value)} // Updates password state
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
-              <span onClick={() => setShowPassword(!showPassword)}> {/* Toggles password visibility */}
-                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />} {/* Switches the icon */}
+              <span onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
               </span>
             </div>
 
-            {/* Displays error messages */}
-            {error && <p className="error-message"  style={{color : "red"}} >{error}</p>}
+            {error && <p className="error-message" style={{ color: "red" }}>{error}</p>}
 
             <div className="remember-forgot">
               <label>
@@ -102,8 +112,8 @@ const Login = () => {
               <Link to="/ForgotPassword">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="btn" disabled={loading}> {/* Disables button when loading */}
-              {loading ? "Signing in..." : "Sign in"} {/* Shows loading state or "Sign in" */}
+            <button type="submit" className="btn" disabled={loading}>
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
         </div>
