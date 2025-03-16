@@ -6,7 +6,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "https://60a9-154-121-66-149.ngrok-free.app/auth";
+const API_URL = "https://e582-105-103-29-215.ngrok-free.app/auth";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);

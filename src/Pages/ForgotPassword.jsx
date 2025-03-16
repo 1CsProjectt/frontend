@@ -5,7 +5,7 @@ import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import axios from "axios";
 
-const API_URL = "https://60a9-154-121-66-149.ngrok-free.app/auth";
+const API_URL = "https://e582-105-103-29-215.ngrok-free.app/auth";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

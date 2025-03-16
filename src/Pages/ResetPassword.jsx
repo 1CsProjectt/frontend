@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import Axios for HTTP requests
+import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/App.css";
 import logo from "../assets/logo.svg";
@@ -8,19 +8,20 @@ import successIcon from "../assets/success-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
 
 const ResetPassword = () => {
-  const { token } = useParams(); // Get the token from the URL
+  const { token } = useParams();
   const [newPassword, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState(""); // "success" or "error"
+  const [modalType, setModalType] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [modalTitle, setModalTitle] = useState("Error!");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Token from URL:", token); // For debugging
+    console.log("Token from URL:", token);
   }, [token]);
 
   const checkPasswordStrength = (value) => {
@@ -53,18 +54,33 @@ const ResetPassword = () => {
 
     setIsLoading(true);
     try {
-        const response = await axios.post(
-            `https://60a9-154-121-66-149.ngrok-free.app/auth/reset-password/${token}`, // Include token in the URL
-            { newPassword }, // Send only password in the body
-            { withCredentials: true } // Send cookies if needed
-          );
-          
+      const response = await axios.post(
+        `https://e582-105-103-29-215.ngrok-free.app/auth/reset-password/${token}`,
+        { newPassword },
+        { withCredentials: true }
+      );
 
       setModalType("success");
+      setModalTitle("Success!");
       setMessage(response.data.message || "Password reset successful!");
     } catch (error) {
-      setModalType("error");
-      setErrorMessage(error.response?.data?.message || "Something went wrong.");
+      if (error.code === "ECONNABORTED" || error.message.includes("timeout")) {
+        setModalType("error");
+        setModalTitle("Server timeout/error!");
+        setErrorMessage("The request takes too long or the server crashes. Please try again. If the problem persists, please contact technical support.");
+      } else if (error.response?.status === 500) {
+        setModalType("error");
+        setModalTitle("Database connection issue!");
+        setErrorMessage("An error occurred while updating your password. Please try again later. If the problem persists, please contact technical support.");
+      } else if (error.response?.status === 410) {
+        setModalType("error");
+        setModalTitle("Reset Link Expired!");
+        setErrorMessage("The reset link has expired. Please try a new one. If there is any problem, please contact technical support.");
+      } else {
+        setModalType("error");
+        setModalTitle("Error!");
+        setErrorMessage("Something went wrong.");
+      }
     } finally {
       setShowModal(true);
       setIsLoading(false);
@@ -77,7 +93,6 @@ const ResetPassword = () => {
 
   return (
     <div className="reset-password-container">
-      {/* Left Side */}
       <div className="reset-left">
         <div className="logo">
           <img src={logo} alt="PFE Logo" />
@@ -85,84 +100,43 @@ const ResetPassword = () => {
         <img className="school-logo" src={schoolIcon} alt="ESI School Logo" />
       </div>
 
-      {/* Right Side */}
       <div className="reset-right">
         <div className="reset-content">
-          <h1>Reset password.</h1>
-          <p>
-            Simplify your PFE journey with an all-in-one platform to manage,
-            track, and organize your final project.
-          </p>
+          <h1>Reset password</h1>
+          <p>Manage your final project efficiently with our platform.</p>
           <form onSubmit={handleSubmit}>
             <label>New password</label>
-            <div className="password-field">
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => checkPasswordStrength(e.target.value)}
-                placeholder=""
-                className="input-field"
-                disabled={isLoading} // Disable input during loading
-              />
-            </div>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => checkPasswordStrength(e.target.value)}
+              className="input-field"
+              disabled={isLoading}
+            />
             {errorMessage && <p className="error-message">{errorMessage}</p>}
             <p className={`password-strength ${passwordStrength.toLowerCase()}`}>
               Password strength: {passwordStrength || "Enter a password"}
             </p>
-            <ul className="password-requirements">
-              <li>{newPassword.length >= 8 ? "✓" : "✗"} Minimum 8 characters</li>
-              <li>{newPassword.length > 12 ? "✓" : "✗"} More than 12 characters for a strong password</li>
-              <li>
-                {(/[A-Z]/.test(newPassword) && newPassword.match(/[A-Z]/g)?.length >= 2) ? "✓" : "✗"} At least two uppercase letters
-              </li>
-              <li>
-                {(/[a-z]/.test(newPassword) && newPassword.match(/[a-z]/g)?.length >= 2) ? "✓" : "✗"} At least two lowercase letters
-              </li>
-              <li>
-                {(/[0-9!@#$%^&*]/.test(newPassword) && newPassword.match(/[0-9!@#$%^&*]/g)?.length >= 2) ? "✓" : "✗"} At least two numbers or symbols
-              </li>
-              <li>{!/\s/.test(newPassword) ? "✓" : "✗"} Cannot contain spaces</li>
-            </ul>
-            <button
-              type="submit"
-              className="btn"
-              disabled={passwordStrength === "Weak" || isLoading}
-            >
+            <button type="submit" className="btn" disabled={passwordStrength === "Weak" || isLoading}>
               {isLoading ? "Resetting..." : "Reset password"}
             </button>
           </form>
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className={`modal ${modalType}`}>
-            {modalType === "success" ? (
-              <div className="modal-icon">
-                <img src={successIcon} alt="Success" />
-              </div>
-            ) : (
-              <div className="modal-icon">
-                <img src={errorIcon} alt="Error" />
-              </div>
-            )}
-            <div className="modal-header">
-              {modalType === "success" ? "Success!" : "Something went wrong!!"}
+            <div className="modal-icon">
+              <img src={modalType === "success" ? successIcon : errorIcon} alt={modalType} />
             </div>
+            <div className="modal-header">{modalTitle}</div>
             <div className="modal-body">
-              {modalType === "success" ? (
-                <p>{message || "Your password has been updated!"}</p>
-              ) : (
-                <p>{errorMessage || "Something went wrong. Please try again."}</p>
-              )}
+              <p>{modalType === "success" ? message : errorMessage}</p>
             </div>
             <div className="modal-footer">
-              <button
-                onClick={() => navigate("/")} // Navigate to home
-                className="btn-primary"
-              >
-                {modalType === "success" ? "Back to Login" : "Back to Login"}
+              <button onClick={() => navigate("/")} className="btn-primary">
+                Back to Login
               </button>
               <button onClick={closeModal} className="btn-secondary">
                 {modalType === "success" ? "Not now" : "Try Again"}
