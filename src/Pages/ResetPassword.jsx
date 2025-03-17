@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/App.css";
+import "../styles/authentication.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import successIcon from "../assets/success-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
-
+import { API_URL } from "../config";
 const ResetPassword = () => {
   const { token } = useParams();
   const [newPassword, setPassword] = useState("");
@@ -55,7 +55,7 @@ const ResetPassword = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `https://e582-105-103-29-215.ngrok-free.app/auth/reset-password/${token}`,
+        `${API_URL}/auth/reset-password/${token}`,
         { newPassword },
         { withCredentials: true }
       );

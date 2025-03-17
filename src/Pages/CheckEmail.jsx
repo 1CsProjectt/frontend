@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../styles/App.css";
+import "../styles/authentication.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import axios from "axios";
-
-const API_URL = process.env.REACT_APP_API_URL || "https://e582-105-103-29-215.ngrok-free.app/auth";
+import { API_URL } from "../config";
 
 const CheckEmail = () => {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ const CheckEmail = () => {
       setError("");
 
       // Simulate resending the email via API
-      await axios.post(`${API_URL}/forgot-password`, { email });
+      await axios.post(`${API_URL}/auth/forgot-password`, { email });
       alert("A new recovery link has been sent to your email.");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resend recovery link. Please try again.");

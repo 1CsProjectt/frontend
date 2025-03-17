@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/App.css";
+import "../styles/authentication.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import axios from "axios";
-
-const API_URL = "https://e582-105-103-29-215.ngrok-free.app/auth";
+import { API_URL } from "../config";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ const ForgotPassword = () => {
 
     try {
       // Make a POST request to the forgot-password endpoint
-      const response = await axios.post(`${API_URL}/forgot-password`, { email });
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
 
       console.log("Recovery link sent:", response.data);
 
