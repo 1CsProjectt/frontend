@@ -4,12 +4,13 @@ import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
 import ResetPassword from "./Pages/ResetPassword";
+import AdminDashboard from "./Pages/AdminDashboard";
 
 function App() {
   return (
-    <Router>
+    <Router>  
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<AdminDashboard/>} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/CheckEmail" element={<CheckEmail />} />
         {/* Route with dynamic token */}
