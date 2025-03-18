@@ -1,0 +1,11 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*to remove the default margins and paddings globally (within the admin session)*/
+
+body{
+    background:#F5F7FA
+}
