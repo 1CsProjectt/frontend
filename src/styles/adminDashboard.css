@@ -6,6 +6,20 @@
 
 /*to remove the default margins and paddings globally (within the admin session)*/
 
+.admin-dashboard {
+    display: flex; /* Ensures sidebar and content are side-by-side */
+}
+
+.main-content {
+    flex: 1; /* Takes remaining space */
+    padding: 20px;
+}
 body{
     background:#F5F7FA
 }
+.parent {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    height: 100vh; /* Full viewport height */
+  }
