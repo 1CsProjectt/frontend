@@ -1,0 +1,335 @@
+* {
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+p {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  color: #313638;
+}
+
+.container {
+  flex-direction: column;
+  display: flex;
+
+  background-color: #ffffff;
+  height: 125px;
+  width: 100% ;
+  flex: auto;
+   /* position: fixed; */
+}
+.session {
+  border-bottom-width: 1px;
+  height: 50px;
+  border-bottom-style: solid;
+  border-bottom-color: #dde2e4;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.sessionP {
+  padding-top: 14px;
+  font-size: 20px;
+}
+.form {
+  gap: 16px;
+  width: 100%;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+}
+.search-bar-container {
+  flex: 1;
+
+  background-color: #ffffff;
+
+  height: 40px;
+  border-radius: 6px;
+  border: 1px;
+  border-color: #dde2e4;
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.input {
+  width: 100%;
+  font-family: Manrope;
+  color: #313638;
+  font-size: 14px;
+  background-color: transparent;
+  border: none;
+  height: 100%;
+
+  margin: 14px;
+}
+.input::placeholder {
+  font-family: "Inter", sans-serif;
+  color: #313638;
+  font-size: 14px;
+}
+.input:focus {
+  outline: none;
+}
+.search-icon {
+  margin-top: 8px;
+  margin-right: 8px;
+  height: 24px;
+  width: 24px;
+}
+.rightside {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.notf-button {
+  margin-right: 16px;
+  border: 1px solid #dde2e4;
+  border-radius: 50%;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.notf-icon {
+  object-fit: cover;
+  height: 43;
+  width: 44;
+}
+.profile {
+  flex: auto;
+  width: 98px;
+  border: 1px solid #dde2e4;
+  border-radius: 6px;
+  position: relative;
+  margin-right: 16px;
+  overflow: visible;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.pic {
+  width: 42px;
+  height: 42px;
+  position: absolute;
+  margin-left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  object-fit: cover;
+}
+.profiletext {
+  padding-left: 32px;
+}
+.arrow-icon-profile {
+  margin-left: 4px;
+  width: 11px;
+  height: 11px;
+}
+.filter {
+  width: 128px;
+  margin-left: 16px;
+  margin-right: 16px;
+  height: 41px;
+  border-radius: 6px;
+  border: 1px;
+  border-color: #dde2e4;
+  border-style: solid;
+  flex-shrink: 0;
+}
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  padding: 8px 12px;
+  border: none;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.filter-button:hover {
+  background: #f1f1f1;
+}
+
+.custom-icon {
+  width: 14.88px;
+  height: 15x;
+  margin-right: 5px;
+  margin-top: 1px;
+}
+.filtertext {
+  flex: auto;
+}
+.arrow-icon {
+  margin-top: 2px;
+  width: 9px;
+  height: 9px;
+}
+.icon {
+  font-size: 14px;
+}
+
+/* Popup */
+.filter-popup {
+  position: absolute;
+  top: 117px;
+
+  background: #ffffff;
+  border: 1px solid #dde2e4;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  height: 221px;
+  width: 414px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.filter-content {
+  height: 154px;
+  display: flex;
+  border-bottom: 1px solid #dde2e4;
+  align-items: center;
+  overflow: hidden;
+}
+
+.filter-categories {
+  padding-top: 24px;
+  height: 100%;
+  width: 50%;
+  border-right: 1px solid #dde2e4;
+  padding-left: 24px;
+  cursor: default;
+}
+.filter-header {
+  color: #313638cc;
+  font-size: 12px;
+  padding-left: 8px;
+  margin-bottom: 16px;
+}
+
+.filter-categories .active {
+  padding-left: 8px;
+  padding-top: 4px;
+  height: 20px;
+  width: 151px;
+  border-radius: 4px;
+  background: #d9d9d980;
+  color: #313638;
+  font-size: 14px;
+}
+.filter-categories .notactive {
+  height: 20px;
+  padding-left: 8px;
+  padding-top: 4px;
+  color: #313638cc;
+  font-size: 14px;
+}
+
+.filter-options {
+  padding-top: 24px;
+  height: 100%;
+  padding-left: 24px;
+  width: 50%;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+}
+.optionstext {
+  font-size: 16px;
+  color: #313638;
+}
+/* Style the labels */
+.filter-options label {
+  padding-left: 8px;
+  padding-bottom: 2px;
+  display: flex;
+  align-items: center;
+
+  color: #313638;
+  cursor: pointer;
+  gap: 8px;
+}
+
+/* Default radio button hidden */
+.filter-options input[type="radio"] {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #6c757d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* Create custom radio button */
+.filter-options input[type="radio"]::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: transparent;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+/* When selected, add inner dot */
+.filter-options input[type="radio"]:checked {
+  border-color: #343a40;
+}
+
+.filter-options input[type="radio"]:checked::before {
+  background: #343a40;
+}
+
+/* Hover effect */
+.filter-options label:hover input[type="radio"] {
+  border-color: #000;
+}
+.filter-buttons {
+  display: flex;
+  padding-top: 16px;
+  padding-left: 24px;
+  padding-right: 24px;
+  justify-content: space-between;
+  align-items: center;
+}
+.cancel-btn {
+  height: 36px;
+  width: 118px;
+  background: #ffffff;
+  border: 1px solid #dde2e4;
+  padding: 6px 12px;
+  border-radius: 7px;
+  transition: all 0.3s ease-in-out;
+}
+.cancel-btn:hover {
+  background: #f8f9fa;
+  border-color: #c4cacf;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.apply-btn {
+  width: 118px;
+  height: 36px;
+  background: #077ed4;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 7px;
+  transition: all 0.3s ease-in-out;
+}
+.apply-btn:hover {
+  background: #056bb7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(7, 126, 212, 0.3);
+}

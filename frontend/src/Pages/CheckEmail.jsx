@@ -1,16 +1,31 @@
-import React from "react";
-import { useNavigate ,useLocation } from "react-router-dom";
-import "../styles/App.css";
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../styles/authentication.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
+import axios from "axios";
+import { API_URL } from "../config";
 
 const CheckEmail = () => {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || "your email"; // Get email or fallback text
-  const handleResendLink = () => {
-    // Simulate resending the email (you can replace this with an actual API call)
-    alert("A new recovery link has been sent to your email.");
+  const email = location.state?.email || "your email";
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleResendLink = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      // Simulate resending the email via API
+      await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      alert("A new recovery link has been sent to your email.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to resend recovery link. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,19 +43,26 @@ const CheckEmail = () => {
         <div className="right-content">
           <h1>Check your email.</h1>
           <p>
-            We just sent a recovery link to <strong>{email}</strong>.If you can’t find it in your inbox please check your spam filter
+            We just sent a recovery link to <strong>{email}</strong>. If you can’t find it in your inbox, please check your spam filter.
           </p>
-<div className="check-email-actions">
-        {/* "Resent recovery link" Button */}
-        <button className="link-btn" onClick={handleResendLink}>
-          Resent recovery link
-        </button>
 
-        {/* "Back to log in" Button */}
-        <button className="btn" id="checkEmail-btn" onClick={() => navigate("/")}>
-          Back to log in
-        </button>
-        </div>
+          {error && <p className="error-message" style={{ color: "red" }}>{error}</p>}
+
+          <div className="check-email-actions">
+            {/* "Resend recovery link" Button */}
+            <button
+              className="link-btn"
+              onClick={handleResendLink}
+              disabled={loading}
+            >
+              {loading ? "Resending..." : "Resend recovery link"}
+            </button>
+
+            {/* "Back to log in" Button */}
+            <button className="btn" id="checkEmail-btn" onClick={() => navigate("/")}>
+              Back to log in
+            </button>
+          </div>
         </div>
       </div>
     </div>
