@@ -1,8 +1,16 @@
 
 import React, { useState } from "react";
 import "../styles/UserManagementTabs.css";
+import UserFormModal from "./modals/UserFormModal.jsx";
+import DeleteUserModal from "./modals/DeleteUserModal.jsx";
+import NavBar from "./NavBar.jsx";
 
+// a model blocks interactions with the web page unlike popups (unless you specify otherwise)
+// a model is a window that pops up in the middle of the screen usally to show a message or ask for input
 const UserManagementTabs = () => {
+  //by default all modals are closed (false state)
+  const [isUserFormModalOpen, setUserFormModalOpen] = useState(false);
+  const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Students");
   const [currentPage, setCurrentPage] = useState(1);
   const [customPageInput, setCustomPageInput] = useState("");
@@ -12,7 +20,7 @@ const UserManagementTabs = () => {
   const tabs = ["Students", "Supervisors", "Enterprises", "Jury"];
   
   const allUsers = {
-    /* Students: [
+     /*Students: [
       { name: "Ahmed bin Khaled", email: "a.benkhaled@esi-sba.dz", date: "March 17, 2025", status: "active" },
       { name: "Sara Mahmoud Al-Ali", email: "s.alali@esi-sba.dz", date: "July 4, 2023", status: "active" },
       { name: "Youssef Abdelrahman Nasser", email: "y.nasser@esi-sba.dz", date: "Dec 25, 2020", status: "inactive" },
@@ -20,8 +28,8 @@ const UserManagementTabs = () => {
       { name: "Khaled Omar Al-Saeed", email: "k.alsaee@esi-sba.dz", date: "Sept 15, 2019", status: "inactive" },
       { name: "Nour Eddine Zakaria Mansour", email: "n.zmansour@esi-sba.dz", date: "Jan 10, 2024", status: "active" },
       { name: "Fatima Zahra Badr Eddine", email: "f.beddine@esi-sba.dz", date: "Aug 30, 2018", status: "inactive" },
-      { name: "Ali Karim Al-Hassan", email: "a.alhassan@esi-sba.dz", date: "June 21, 2016", status: "inactive" },]. */
-    Students: Array(100).fill({ name: "Extra Student", email: "extra@esi-sba.dz", date: "Feb 15, 2021", status: "active" }),
+      { name: "Ali Karim Al-Hassan", email: "a.alhassan@esi-sba.dz", date: "June 21, 2016", status: "inactive" },], */  
+       Students: Array(100).fill({ name: "Extra Student", email: "extra@esi-sba.dz", date: "Feb 15, 2021", status: "active" }), 
     Supervisors: [],
     Enterprises: [],
     Jury: [],
@@ -48,8 +56,13 @@ const UserManagementTabs = () => {
   };
 
   return (
+    
     <div className="users-management">
+      <NavBar />
+      <div className="header">
       <h2>Users Management</h2>
+      <button onClick={() => setUserFormModalOpen(true)} className="add-btn">Add a user account</button>
+      </div>
       <div className="tabs">
         {tabs.map((tab) => (
           <button
@@ -72,7 +85,7 @@ const UserManagementTabs = () => {
             <th>Email Address</th>
             <th>Date Added</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th className="last-column"></th>
           </tr>
         </thead>
         <tbody>
@@ -83,8 +96,10 @@ const UserManagementTabs = () => {
               <td>{user.date}</td>
               <td className={user.status === "active" ? "status-active" : "status-inactive"}>{user.status}</td>
               <td>
-                <button className="edit-btn">Edit</button>
-                <button className="delete-btn">Delete</button>
+                <button onClick={() => setUserFormModalOpen(true)} className="edit-btn">Edit</button>
+                <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
+                <button onClick={() => setDeleteUserModalOpen(true)} className="delete-btn">Delete</button>
+                <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} />
               </td>
             </tr>
           ))}
@@ -92,6 +107,7 @@ const UserManagementTabs = () => {
       </table>
 
       <div className="pagination">
+      <p>Page {currentPage} out of {totalPages}</p>
         <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
         {totalPages <= 10 ? (
           [...Array(totalPages)].map((_, i) => (
@@ -137,7 +153,7 @@ const UserManagementTabs = () => {
         )}
         <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
-      <p>Page {currentPage} out of {totalPages}</p>
+     
     </div>
   );
 };

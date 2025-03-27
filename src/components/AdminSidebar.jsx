@@ -40,10 +40,13 @@ const Sidebar = () => {
             to={item.path}
             //to only render the sidebar in the according page (adminDashboard)
             className={({ isActive }) =>
-              isActive || location.pathname.startsWith(item.path)
+              isActive ||
+              location.pathname.startsWith(item.path) ||
+              (location.pathname === "/admin" && item.path === "/admin/users") 
                 ? "sidebar-item active"
                 : "sidebar-item"
             }
+            
           >
             <span className="sidebar-icon">{item.icon}</span>
             <span className="sidebar-text">{item.name}</span>

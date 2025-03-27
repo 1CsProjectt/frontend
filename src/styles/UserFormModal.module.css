@@ -1,0 +1,159 @@
+/* Modal Overlay - dims background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.05); /* Dark semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal Container */
+.modal-container {
+  background:  rgb(248,250,252);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px; /* Prevents it from being too large on big screens */
+  text-align: center;
+}
+
+
+
+/* Form */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Two-input row (for First & Last Name) */
+.modal-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Ensuring both inputs take equal space */
+.modal-row .input-group {
+  flex: 1;
+  
+  min-width: 140px; /* Prevents input collapse on small screens */
+}
+
+/* Input Fields */
+.modal-input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Button Styling */
+
+
+
+
+/* Cancel Button */
+.cancel-btn {
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  flex: 1;
+  text-align: center;
+  background: #ccc;
+  color: black;
+}
+.cancel-btn:hover {
+  background: #c50202;
+}
+
+/* Submit (Okey) Button */
+.submit-btn {
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  flex: 1;
+  text-align: center;
+  background: rgb(7,126,212);
+  color: white;
+  margin-left: 1rem;
+}
+
+/* Adjust button width for small screens */
+@media (max-width: 400px) {
+  .modal-buttons {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Password Field Wrapper */
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Password Input */
+.password-input {
+  width: 100%;
+  padding-right: 2.5rem; /* Space for the icon */
+}
+
+/* Eye Icon for Password Visibility */
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Labels */
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.3rem;
+  text-align: left;
+  display: block;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .modal-container {
+    width: 95%;
+    padding: 1.5rem;
+  }
+  
+  .modal-row {
+    flex-direction: column;
+  }
+}

@@ -1,8 +1,4 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+
 
 /*to remove the default margins and paddings globally (within the admin session)*/
 
@@ -12,6 +8,7 @@
 
 .main-content {
     flex: 1; /* Takes remaining space */
+    max-height: 100vh   ;
     padding: 20px;
 }
 body{
