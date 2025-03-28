@@ -1,14 +1,13 @@
-
 import React, { useState } from "react";
-import "../styles/UserManagementTabs.css";
+import classes from "../styles/UserManagementTabs.module.css";
 import UserFormModal from "./modals/UserFormModal.jsx";
 import DeleteUserModal from "./modals/DeleteUserModal.jsx";
 import NavBar from "./NavBar.jsx";
 
-// a model blocks interactions with the web page unlike popups (unless you specify otherwise)
-// a model is a window that pops up in the middle of the screen usally to show a message or ask for input
+// A modal blocks interactions with the webpage unless specified otherwise.
+// It usually appears in the middle of the screen to show a message or request input.
 const UserManagementTabs = () => {
-  //by default all modals are closed (false state)
+  // By default, all modals are closed (false state)
   const [isUserFormModalOpen, setUserFormModalOpen] = useState(false);
   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Students");
@@ -17,19 +16,12 @@ const UserManagementTabs = () => {
   const [showPageInput, setShowPageInput] = useState(false);
   const usersPerPage = 8;
 
+  // Tabs for different user types
   const tabs = ["Students", "Supervisors", "Enterprises", "Jury"];
   
+  // Dummy data for users in different categories
   const allUsers = {
-     /*Students: [
-      { name: "Ahmed bin Khaled", email: "a.benkhaled@esi-sba.dz", date: "March 17, 2025", status: "active" },
-      { name: "Sara Mahmoud Al-Ali", email: "s.alali@esi-sba.dz", date: "July 4, 2023", status: "active" },
-      { name: "Youssef Abdelrahman Nasser", email: "y.nasser@esi-sba.dz", date: "Dec 25, 2020", status: "inactive" },
-      { name: "Laila Hassan Al-Kilani", email: "l.alkilani@esi-sba.dz", date: "May 1, 2022", status: "active" },
-      { name: "Khaled Omar Al-Saeed", email: "k.alsaee@esi-sba.dz", date: "Sept 15, 2019", status: "inactive" },
-      { name: "Nour Eddine Zakaria Mansour", email: "n.zmansour@esi-sba.dz", date: "Jan 10, 2024", status: "active" },
-      { name: "Fatima Zahra Badr Eddine", email: "f.beddine@esi-sba.dz", date: "Aug 30, 2018", status: "inactive" },
-      { name: "Ali Karim Al-Hassan", email: "a.alhassan@esi-sba.dz", date: "June 21, 2016", status: "inactive" },], */  
-       Students: Array(100).fill({ name: "Extra Student", email: "extra@esi-sba.dz", date: "Feb 15, 2021", status: "active" }), 
+    Students: Array(100).fill({ name: "Extra Student", email: "extra@esi-sba.dz", date: "Feb 15, 2021", status: "active" }), 
     Supervisors: [],
     Enterprises: [],
     Jury: [],
@@ -40,12 +32,14 @@ const UserManagementTabs = () => {
   const startIndex = (currentPage - 1) * usersPerPage;
   const displayedUsers = users.slice(startIndex, startIndex + usersPerPage);
 
+  // Handles page change with validation
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
+  // Handles manual page input navigation
   const handleCustomPageSubmit = () => {
     const page = parseInt(customPageInput, 10);
     if (!isNaN(page) && page >= 1 && page <= totalPages) {
@@ -56,18 +50,17 @@ const UserManagementTabs = () => {
   };
 
   return (
-    
-    <div className="users-management">
+    <div className={classes["users-management"]}>
       <NavBar />
-      <div className="header">
-      <h2>Users Management</h2>
-      <button onClick={() => setUserFormModalOpen(true)} className="add-btn">Add a user account</button>
+      <div className={classes["header"]}>
+        <h2>Users Management</h2>
+        <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a user account</button>
       </div>
-      <div className="tabs">
+      <div className={classes["tabs"]}>
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={activeTab === tab ? "active" : ""}
+            className={activeTab === tab ? classes["active"] : ""}
             onClick={() => {
               setActiveTab(tab);
               setCurrentPage(1);
@@ -85,7 +78,7 @@ const UserManagementTabs = () => {
             <th>Email Address</th>
             <th>Date Added</th>
             <th>Status</th>
-            <th className="last-column"></th>
+            <th className={classes["last-column"]}></th>
           </tr>
         </thead>
         <tbody>
@@ -94,26 +87,26 @@ const UserManagementTabs = () => {
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>{user.date}</td>
-              <td className={user.status === "active" ? "status-active" : "status-inactive"}>{user.status}</td>
+              <td className={user.status === "active" ? classes["status-active"] : classes["status-inactive"]}>{user.status}</td>
               <td>
-                <button onClick={() => setUserFormModalOpen(true)} className="edit-btn">Edit</button>
+                <button onClick={() => setUserFormModalOpen(true)} className={classes["edit-btn"]}>Edit</button>
                 <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
-                <button onClick={() => setDeleteUserModalOpen(true)} className="delete-btn">Delete</button>
+                <button onClick={() => setDeleteUserModalOpen(true)} className={classes["delete-btn"]}>Delete</button>
                 <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      <div className="pagination">
-      <p>Page {currentPage} out of {totalPages}</p>
+      <div className={classes["pagination-container"]}>
+      <div className={classes["pagination"]}>
+        <p>Page {currentPage} out of {totalPages}</p>
         <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
         {totalPages <= 10 ? (
           [...Array(totalPages)].map((_, i) => (
             <button 
               key={i + 1} 
-              className={currentPage === i + 1 ? "active" : ""} 
+              className={currentPage === i + 1 ? classes["active"] : ""} 
               onClick={() => handlePageChange(i + 1)}
             >
               {i + 1}
@@ -124,7 +117,7 @@ const UserManagementTabs = () => {
             {[...Array(3)].map((_, i) => (
               <button 
                 key={i + 1} 
-                className={currentPage === i + 1 ? "active" : ""} 
+                className={currentPage === i + 1 ? classes["active"] : ""} 
                 onClick={() => handlePageChange(i + 1)}
               >
                 {i + 1}
@@ -133,7 +126,7 @@ const UserManagementTabs = () => {
             <button onClick={() => setShowPageInput(true)}>...</button>
             <button 
               key={totalPages} 
-              className={currentPage === totalPages ? "active" : ""} 
+              className={currentPage === totalPages ? classes["active"] : ""} 
               onClick={() => handlePageChange(totalPages)}
             >
               {totalPages}
@@ -141,7 +134,7 @@ const UserManagementTabs = () => {
           </>
         )}
         {showPageInput && (
-          <div className="page-input">
+          <div className={classes["page-input"]}>
             <input 
               type="number" 
               value={customPageInput} 
@@ -153,7 +146,7 @@ const UserManagementTabs = () => {
         )}
         <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
-     
+      </div>
     </div>
   );
 };

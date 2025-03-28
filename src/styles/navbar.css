@@ -127,6 +127,7 @@ p {
   top: 50%;
   transform: translateY(-50%);
   object-fit: cover;
+  z-index: 1000;
 }
 .profiletext {
   padding-left: 32px;

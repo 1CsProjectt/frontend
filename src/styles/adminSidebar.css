@@ -4,7 +4,7 @@ body {
 }
 /* Sidebar Container */
 .sidebar {
-  height: 100vh;
+  height: 100%;
   width: 17%; 
   background-color: #077ED4;
   color: white;

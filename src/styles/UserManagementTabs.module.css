@@ -1,7 +1,7 @@
 /* User Management Styling */
 
 .users-management {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -177,5 +177,12 @@ tbody td {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  width: 100%;
+}
+
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
   width: 100%;
 }
