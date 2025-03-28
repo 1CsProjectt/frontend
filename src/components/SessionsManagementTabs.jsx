@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import classes from "../styles/SessionsManagementTabs.module.css";
 import NavBar from "./NavBar.jsx";
 import StartNewSessionModal from "./modals/StartNewSessionModal.jsx";
+import { useNavigate } from "react-router-dom";
 
+import TopicsValidationPage from "../Pages/TopicsValidationPage.jsx";
 
 const SessionsManagementTabs = () => {
   const [activeTab, setActiveTab] = useState("Topic Submission Session");
-
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -89,13 +91,15 @@ const SessionsManagementTabs = () => {
                     submitted PFE topic.
                   </p>
                 </div>
-                <button className={classes["validate-btn"]}>See topics</button>
+                <button className={classes["validate-btn"]}   onClick={() => navigate("/admin/sessions/topic-validation")} >See topics</button>
               </div>
             </div>
           )}
 
           {activeTab === "Team Formation Session" && (
+            
             <div>
+              
               <h2>Team Formation</h2>
               <p>Form teams and assign roles...</p>
             </div>

@@ -7,6 +7,7 @@ import ResetPassword from "./Pages/ResetPassword";
 import AdminDashboard from "./Pages/AdminDashboard";
 import UserManagementTabs from "./components/UserManagementTabs";
 import SessionsManagementTabs from "./components/SessionsManagementTabs";
+import TopicsValidationPage from "./Pages/TopicsValidationPage";
 import "./styles/App.css";
 import HelpPage from "./Pages/HelpPage";
 import PFEPage from "./Pages/PFEPage";
@@ -21,9 +22,12 @@ function App() {
   return (
     <Router>  
       <Routes>
-        <Route path="/" element={<Navigate to="/admin" replace />} />  
+        {//<Route path="/" element={<Navigate to="/admin" replace />} />
+        }
         
-        {<Route path="/" element={<PFEPage/>} />}
+        
+        <Route path="/" element={<PFEPage/>} />
+        <Route path="/admin" element={<AdminDashboard/>} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/CheckEmail" element={<CheckEmail />} />
         {/* Route with dynamic token */}
@@ -42,6 +46,8 @@ function App() {
         <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
         
+
+        <Route path="/admin/sessions/topic-validation" element={<TopicsValidationPage />}/>
         <Route index element={<UserManagementTabs />} />{/* Default child route (renders when at /admin) */}
           <Route path="users" element={<UserManagementTabs />} />
           <Route path="sessions" element={<SessionsManagementTabs />} />

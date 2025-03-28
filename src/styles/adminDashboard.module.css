@@ -9,7 +9,8 @@
 .main-content {
     flex: 1; /* Takes remaining space */
     max-height: 100vh   ;
-    padding: 20px;
+    padding: 0px;
+    margin:0px; 
 }
 body{
     background:#F5F7FA
