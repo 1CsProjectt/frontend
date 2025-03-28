@@ -21,9 +21,9 @@ function App() {
   return (
     <Router>  
       <Routes>
-        {//<Route path="/" element={<Navigate to="/admin" replace />} />  
-        }
-        <Route path="/" element={<PFEPage/>} />
+        <Route path="/" element={<Navigate to="/admin" replace />} />  
+        
+        {<Route path="/" element={<PFEPage/>} />}
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/CheckEmail" element={<CheckEmail />} />
         {/* Route with dynamic token */}

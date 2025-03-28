@@ -1,6 +1,6 @@
   import { useLocation } from "react-router-dom";
   import { Outlet } from "react-router-dom";
-  import "../styles/adminDashboard.css";
+  import classes from "../styles/adminDashboard.module.css";
   import AdminSidebar from "../components/AdminSidebar";
   import NavBar from "../components/NavBar";
 
@@ -9,10 +9,10 @@
     const location = useLocation();
 
     return (  
-      <div className="admin-dashboard">
+      <div className={classes["admin-dashboard"]}>
         
         <AdminSidebar />
-        <div className="main-content">
+        <div className={classes["main-content"]}>
         <Outlet /> {/* This will render subpages dynamically */}
           
           
