@@ -65,6 +65,15 @@ const FilterMenu = () => {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+    setSelectedFilters([]); // Uncheck all checkboxes
+  };
+  const [selectedFilters, setSelectedFilters] = useState([]);
+
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setSelectedFilters((prev) =>
+      checked ? [...prev, value] : prev.filter((item) => item !== value)
+    );
   };
 
   return (
@@ -112,18 +121,19 @@ const FilterMenu = () => {
             {/* Right Side - Filter Options */}
             <div className="filter-options">
               <p className="filter-header">Show Only</p>
-              <label>
-                <input type="radio" name="filter" value="ISI" />{" "}
-                <p className="optionstext">ISI</p>
-              </label>
-              <label>
-                <input type="radio" name="filter" value="IASD" />{" "}
-                <p className="optionstext">IASD</p>
-              </label>
-              <label>
-                <input type="radio" name="filter" value="SIW" />{" "}
-                <p className="optionstext"> SIW</p>
-              </label>
+              {["ISI", "IASD", "SIW"].map((category) => (
+                <label key={category} className="custom-checkbox">
+                  <input
+                    type="checkbox"
+                    name="filter"
+                    value={category}
+                    onChange={handleCheckboxChange}
+                    checked={selectedFilters.includes(category)}
+                  />
+                  <span className="checkmark"></span>
+                  <p className="optionstext">{category}</p>
+                </label>
+              ))}
             </div>
           </div>
 
