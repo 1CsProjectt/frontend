@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "../styles/authentication.css";
+import Module from "../styles/authentication.module.css";
+
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
@@ -60,18 +61,18 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className={Module["login-container"]}>
       {/* Left Side */}
-      <div className="login-left">
-        <div className="logo">
+      <div className={Module["login-left"]}>
+        <div className={Module["logo"]}>
           <img src={logo} alt="PFE Logo" />
         </div>
-        <img className="school-logo" src={schoolIcon} alt="ESI School Logo" />
+        <img className={Module["school-logo"]} src={schoolIcon} alt="ESI School Logo" />
       </div>
 
       {/* Right Side */}
-      <div className="login-right">
-        <div className="right-content">
+      <div className={Module["login-right"]}>
+        <div className={Module["right-content"]}>
           <h1>Welcome back!</h1>
           <p>
             Simplify your PFE journey with an all-in-one platform to manage, track, and
@@ -79,10 +80,10 @@ const Login = () => {
           </p>
           <form onSubmit={handleSignIn}>
             <label>Email address</label>
-            <div className="email-field">
+            <div className={Module["email-field"]}>
               <input
                 type="email"
-                className="input-field"
+                className={Module["input-field"]}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -90,10 +91,10 @@ const Login = () => {
             </div>
 
             <label>Password</label>
-            <div className="password-field">
+            <div className={Module["password-field"]}>
               <input
                 type={showPassword ? "text" : "password"}
-                className="input-field"
+                className={Module["input-field"]}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -103,16 +104,16 @@ const Login = () => {
               </span>
             </div>
 
-            {error && <p className="error-message" style={{ color: "red" }}>{error}</p>}
+            {error && <p className={Module["error-message"]} style={{ color: "red" }}>{error}</p>}
 
-            <div className="remember-forgot">
+            <div className={Module["remember-forgot"]}>
               <label>
                 <input type="checkbox" /> Remember me
               </label>
               <Link to="/ForgotPassword">Forgot password?</Link>
             </div>
 
-            <button type="submit" className="btn" disabled={loading}>
+            <button type="submit" className={Module["btn"]} disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
