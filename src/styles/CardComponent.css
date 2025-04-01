@@ -109,7 +109,7 @@
 /* Button at the bottom */
 .card-button {
   width: 100%;
-  background: #007bff;
+  background: rgb(7,126,212);
   color: white;
   border: none;
   padding: 15px;
@@ -126,7 +126,17 @@
 
 
 .card.selected {
-  border-color: blue;
-  border-style: solid;
-  border-width: 5px;
+  outline: 4px solid rgb(7,126,212); /* ✅ Border outside the card */
+  
+  box-shadow: 0px 6px 10px rgba(0, 0, 255, 0.3); /* ✅ Blue glow effect */
+  
 }
+
+
+
+.card img {
+  user-drag: none;  /* Prevents dragging */
+  -webkit-user-drag: none; /* For Safari */
+  pointer-events: none; /* Prevents interactions like drag */
+} 
+

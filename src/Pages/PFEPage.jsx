@@ -104,7 +104,7 @@ const PFEPage = () => {
       <div style={{ marginLeft: "16vw" }}>
         <Navbar />
 
-        <div style={{ paddingTop: "124px" }}>
+        <div style={{ paddingTop: "20px" }}>
           {" "}
           <div className="cards-container">
             {cardData.map((card, index) => (
