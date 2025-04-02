@@ -51,7 +51,10 @@ const UserManagementTabs = () => {
 
   return (
     <div className={classes["users-management"]}>
+      <div className={classes["navbar-container"]}>
       <NavBar />
+
+      </div>
       <div className={classes["header"]}>
         <h2>Users Management</h2>
         <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a user account</button>
@@ -92,7 +95,7 @@ const UserManagementTabs = () => {
                 <button onClick={() => setUserFormModalOpen(true)} className={classes["edit-btn"]}>Edit</button>
                 <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
                 <button onClick={() => setDeleteUserModalOpen(true)} className={classes["delete-btn"]}>Delete</button>
-                <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} />
+                <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" />
               </td>
             </tr>
           ))}

@@ -17,7 +17,6 @@ body p {
   .tabs-container {
     width: 100%;
     background: none;
-    padding-top: 125px;
   }
   
   .tabs {
@@ -62,6 +61,7 @@ body p {
     width: 100%;
     border-radius: 8px;
     margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
   }
   
   /* Text Container */

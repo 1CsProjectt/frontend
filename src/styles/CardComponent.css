@@ -109,7 +109,7 @@
 /* Button at the bottom */
 .card-button {
   width: 100%;
-  background: #007bff;
+  background: rgb(7,126,212);
   color: white;
   border: none;
   padding: 15px;
