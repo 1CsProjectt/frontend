@@ -123,7 +123,7 @@ function TeamFormationPage() {
   ];
 
   // Sample data for My Team
-  const myTeamNumber = "3";  //if there is no team, set it to an empty string => MY team page will change
+  const myTeamNumber = "";  //if there is no team, set it to an empty string => MY team page will change
   const myTeamMembers = [
     {
       fullName: "Ahmed Ibn Khaled",
@@ -164,11 +164,7 @@ function TeamFormationPage() {
       email: "khaled.sa@esi-sba.dz",
       group: "05",
     },
-    {
-      fullName: "no invites exists",
-      email: "no invites exists",
-      group: "xx",
-    },
+    
   ];
 
   // Handle team creation toast
@@ -193,7 +189,7 @@ function TeamFormationPage() {
 
   const renderTabContent = () => {
     if (activeTab === "Students List") {
-      return <StudentsListTab students={students} />;
+      return <StudentsListTab students={students}  myTeamNumber={myTeamNumber}/>;
     } else if (activeTab === "Existed Teams") {
       return <ExistedTeamsTab existedTeams={existedTeams} />;
     } else if (activeTab === "My Team") {

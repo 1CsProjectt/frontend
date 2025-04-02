@@ -7,14 +7,15 @@ import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
 
-/* the nav bar called like that 
-NavBar = ({ title, targetDate }) if you want to use the countdown timer
-NavBar = ({ title }) if you don't want to use the countdown timer
-
-the same for other just let them empty if you don't want to use them
-*/
-const NavBar = ({ title, targetDate, selectedFilters, onFilterApply, onSearchChange, suggestions }) => {
-  
+const NavBar = ({
+  title,
+  targetDate,
+  selectedFilters,
+  onFilterApply,
+  onSearchChange,
+  suggestions,
+}) => {
+  // Countdown timer function only active if targetDate is provided
   const calculateTimeLeft = () => {
     const now = new Date();
     const difference = new Date(targetDate) - now;
@@ -23,7 +24,7 @@ const NavBar = ({ title, targetDate, selectedFilters, onFilterApply, onSearchCha
       timeLeft = {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / (1000 * 60)) % 60)
+        minutes: Math.floor((difference / (1000 * 60)) % 60),
       };
     } else {
       timeLeft = { days: 0, hours: 0, minutes: 0 };
@@ -42,7 +43,7 @@ const NavBar = ({ title, targetDate, selectedFilters, onFilterApply, onSearchCha
       }, 1000);
       return () => clearTimeout(timer);
     }
-  });
+  }, [targetDate, timeLeft]);
 
   return (
     <div className={Module["container"]}>
@@ -62,8 +63,14 @@ const NavBar = ({ title, targetDate, selectedFilters, onFilterApply, onSearchCha
         </p>
       </div>
       <div className={Module["form"]}>
-        <FilterMenu onFilterApply={onFilterApply} currentFilters={selectedFilters} />
-        <Searchbar onSearchChange={onSearchChange} suggestions={suggestions} />
+        <FilterMenu
+          onFilterApply={onFilterApply}
+          currentFilters={selectedFilters}
+        />
+        <Searchbar
+          onSearchChange={onSearchChange}
+          suggestions={suggestions || []}
+        />
         <div className={Module["rightside"]}>
           <div className={Module["notf-button"]}>
             <img src={notfIcon} alt="notf-icon" className={Module["notf-icon"]} />
@@ -84,15 +91,17 @@ const NavBar = ({ title, targetDate, selectedFilters, onFilterApply, onSearchCha
 };
 
 const Searchbar = ({ onSearchChange, suggestions }) => {
-  const [query, setQuery] = useState(""); // State to store input value
+  const [query, setQuery] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   const handleInputChange = (event) => {
     const newQuery = event.target.value;
     setQuery(newQuery);
-    onSearchChange(newQuery); // Propagate search query to parent
+    // Only propagate search if the onSearchChange function is provided
+    if (onSearchChange) {
+      onSearchChange(newQuery);
+    }
 
-    // Filter suggestions based on the new query (case-insensitive)
     if (newQuery.trim() !== "") {
       const filtered = suggestions.filter((suggestion) =>
         suggestion.toLowerCase().includes(newQuery.toLowerCase())
@@ -105,7 +114,9 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
 
   const handleSuggestionClick = (suggestion) => {
     setQuery(suggestion);
-    onSearchChange(suggestion);
+    if (onSearchChange) {
+      onSearchChange(suggestion);
+    }
     setFilteredSuggestions([]);
   };
 
@@ -115,7 +126,7 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
         type="text"
         className={Module["input"]}
         placeholder="Search..."
-        value={query} // Controlled input
+        value={query}
         onChange={handleInputChange}
       />
       <div className={Module["search-icon"]}>
@@ -138,29 +149,19 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
   );
 };
 
-/*
-  Updated FilterMenu:
-  - When you click on Filter, a popup appears.
-  - The left side of the popup shows a tab menu with two options: "Specialitys" and "Other".
-  - By default, "Specialitys" is active.
-  - When "Specialitys" is active, the content shows checkboxes for options ("ISI", "SIW", "IASD") and multiple selections are allowed.
-  - When you click Apply, the selections from the active tab are sent to the parent.
-*/
 const FilterMenu = ({ onFilterApply, currentFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Specialitys"); // "Specialitys" or "Other"
+  const [activeTab, setActiveTab] = useState("Specialitys");
   const [localFilters, setLocalFilters] = useState({
     Specialitys: currentFilters || [],
-    Other: [] // You can add options for "Other" if needed
+    Other: [],
   });
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  // Options for the "Specialitys" tab (categories)
   const specialityOptions = ["ISI", "SIW", "IASD"];
-  // Dummy options for the "Other" tab (if needed)
   const otherOptions = ["Other Option 1", "Other Option 2"];
 
   const handleCheckboxChange = (event, tab) => {
@@ -177,17 +178,17 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
     setActiveTab(tab);
   };
 
-  // When Apply is clicked, send the selections of the active tab to the parent
   const handleApply = () => {
-    onFilterApply(localFilters[activeTab]);
+    if (onFilterApply) {
+      onFilterApply(localFilters[activeTab]);
+    }
     setIsOpen(false);
   };
 
-  // When Cancel is clicked, reset and close
   const handleCancel = () => {
     setLocalFilters((prev) => ({
       ...prev,
-      [activeTab]: currentFilters || []
+      [activeTab]: currentFilters || [],
     }));
     setIsOpen(false);
   };
@@ -203,11 +204,9 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
           className={Module["arrow-icon"]}
         />
       </button>
-
       {isOpen && (
         <div className={Module["filter-popup"]}>
           <div className={Module["filter-content"]}>
-            {/* Left Side Tab Menu */}
             <div className={Module["filter-tabs"]}>
               <p
                 className={
@@ -230,27 +229,25 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
                 Other
               </p>
             </div>
-            {/* Content for Active Tab */}
             <div className={Module["filter-categories"]}>
               <p className={Module["filter-header"]}>
                 {activeTab === "Specialitys"
                   ? "Select Categories"
                   : "Select Other Options"}
               </p>
-              {(activeTab === "Specialitys"
-                ? specialityOptions
-                : otherOptions
-              ).map((option) => (
-                <label key={option} className={Module["option-label"]}>
-                  <input
-                    type="checkbox"
-                    value={option}
-                    checked={localFilters[activeTab].includes(option)}
-                    onChange={(e) => handleCheckboxChange(e, activeTab)}
-                  />
-                  <span className={Module["optionstext"]}>{option}</span>
-                </label>
-              ))}
+              {(activeTab === "Specialitys" ? specialityOptions : otherOptions).map(
+                (option) => (
+                  <label key={option} className={Module["option-label"]}>
+                    <input
+                      type="checkbox"
+                      value={option}
+                      checked={localFilters[activeTab].includes(option)}
+                      onChange={(e) => handleCheckboxChange(e, activeTab)}
+                    />
+                    <span className={Module["optionstext"]}>{option}</span>
+                  </label>
+                )
+              )}
             </div>
           </div>
           <div className={Module["filter-buttons"]}>

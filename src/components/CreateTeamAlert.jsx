@@ -16,6 +16,8 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
       alignItems: "center",
       justifyContent: "center",
       zIndex: 999,
+      scale:1.2,
+      fontFamily: "'Manrope', sans-serif",
     },
     container: {
       backgroundColor: "#fff",

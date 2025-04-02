@@ -1,0 +1,191 @@
+/* User Management Styling */
+
+.users-management {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1px;
+  background-color: #f8f9fc;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  padding-top: 125px;
+}
+
+.add-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #0056b3;
+}
+
+h2 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ddd;
+}
+
+.tabs button {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #555;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.tabs .active {
+  color: #007bff;
+  font-weight: 600;
+  border-bottom: 3px solid #007bff;
+}
+
+table {
+  margin: 20px;
+  width: 80%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+thead {
+  background: #007bff;
+  color: white;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+thead th {
+  padding: 12px;
+  text-align: left;
+}
+
+tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+tbody td {
+  padding: 12px;
+  height:20px;
+  font-size: 14px;
+  color: #444;
+}
+
+.status-active {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-inactive {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+
+
+
+.edit-btn {
+  padding: 10px 20px;
+  border: 1px solid #cbd5e1; /* Light gray border */
+  background-color: rgb(241,241,241); /* Light background */
+  color: #1e293b; /* Dark text */
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  min-width: 100px;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.edit-btn:hover {
+  background-color: #e2e8f0; /* Slightly darker on hover */
+}
+
+.delete-btn {
+  padding: 10px 20px;
+  border: 1px solid #cbd5e1; /* Light gray border */
+  background-color: white; /* Light background */
+  color: #1e293b; /* Dark text */
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 100px;
+  margin-left: 10px;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #e2e8f0; /* Slightly darker on hover */
+}
+
+.pagination p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+  
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: none;
+  background:none;
+  color: rgb(88,92,95);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.pagination button:hover {
+  background: #0056b3;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
+
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

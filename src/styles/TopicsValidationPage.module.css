@@ -1,0 +1,82 @@
+.tabs-container {
+    width: 100%;
+    margin: 1px;
+    padding: 1px;
+    text-align: center;
+  }
+  
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 2px solid #ccc;
+  }
+  
+  .tab {
+    padding: 1px 1px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .tab.active {
+    border-bottom: 2px solid blue;
+    font-weight: bold;
+  }
+  
+  .tab-content {
+    padding:1px;
+    
+    
+  }
+
+ 
+
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: Manrope, sans-serif;
+  }
+  
+  /* Container to hold all cards */
+  .cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 26vw);
+    gap: 20px;
+    padding: 10px;
+    max-height: calc(100vh - 300px); /* Adjust height dynamically */
+    overflow-y: auto; /* Enables vertical scrolling */
+  }
+
+  .header{
+    padding: 20px;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .buttons-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 20px;
+  }
+
+  .back-btn{
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 30px;
+  }
+
+  .delete-btn{
+    background-color: rgb(247 ,102 ,89);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }

@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-
+import CreateTeamAlert from "../components/CreateTeamAlert";
 import Toast from "../components/Toast";
-const StudentsListTab = ({ students }) => {
+const StudentsListTab = ({ students ,myTeamNumber}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage, setStudentsPerPage] = useState(5);
   const [showToast, setShowToast] = useState(false);
   const containerRef = useRef(null);
-
+  const [showAlert, setShowAlert] = useState(false);
   useEffect(() => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
@@ -72,11 +72,26 @@ const StudentsListTab = ({ students }) => {
 
   // Handle invite click
   const handleInviteClick = () => {
-    // Perform your "invite" logic here (e.g., send API request)
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    // If myTeamNumber is not empty, show a toast message
+    if (myTeamNumber !== "") {
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    } else {
+      // If no team number, open the CreateTeamAlert modal to handle team creation/invitation
+      setShowAlert(true);
+    }
+  };
+
+  // Handle cancel action from the alert modal
+  const handleCancel = () => {
+    setShowAlert(false);
+  };
+  const handleConfirm = () => {
+    // You can include additional logic here for creating a team and sending an invite.
+    console.log("Team created and student invited!");
+    setShowAlert(false);
   };
 
   return (
@@ -174,7 +189,13 @@ const StudentsListTab = ({ students }) => {
           message="Invite sent successfully." 
           onClose={() => setShowToast(false)} 
         />
+        
       )}
+      <CreateTeamAlert
+        show={showAlert}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 };

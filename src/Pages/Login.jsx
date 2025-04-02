@@ -1,30 +1,32 @@
 import React, { useState } from "react";
 import Module from "../styles/authentication.module.css";
-
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import { API_URL } from "../config";
+/* mohamed, [3/30/25 2:47 PM]
+mohamed.boudja@gmgail.com"
 
+mohamed, [3/30/25 2:47 PM]
+12345678 pass */
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(""); // Stores the email input
-  const [password, setPassword] = useState(""); // Stores the password input
-  const [error, setError] = useState(""); // Stores any validation or API error messages
-  const [loading, setLoading] = useState(false); // Added a loading state for API call status
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Validate email format
+  const navigate = useNavigate();
+
   const validateEmail = (email) => {
     const emailPattern = /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
-    return emailPattern.test(email);
+  return emailPattern.test(email);
   };
 
-  // Handle form submission
   const handleSignIn = async (e) => {
-    e.preventDefault(); // Prevents the default form submission behavior
+    e.preventDefault();
 
     if (!email || !password) {
       setError("Please fill in both your email and password.");
@@ -36,27 +38,32 @@ const Login = () => {
       return;
     }
 
-    setError(""); // Clear previous error messages
-    setLoading(true); // Set loading state during the API call
+    setError("");
+    setLoading(true);
 
     try {
-      // Make a POST request to the backend login endpoint
-      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+      // Make the POST request to the login endpoint
+      const response =await axios.post(`https://916a-41-201-106-90.ngrok-free.app/api/v1/auth/login`, { email, password }, { withCredentials: true });
 
-      // Extract the token from the response
-      const { token } = response.data;
 
-      // Save the token to localStorage (or sessionStorage)
-      localStorage.setItem("authToken", token);
+      // Destructure the response to get the user object
+      const { user } = response.data;
+
+      // Store the user object in localStorage (convert to JSON string)
+      localStorage.setItem("user", JSON.stringify(user));
 
       console.log("Login successful:", response.data);
-      
-      alert("Login successful!"); // Display success alert or navigate to another page
+      alert("Login successful!");
+
+      // Redirect the user to the main page or dashboard
+      if (user.role === "admin") navigate("/admin");
+      else if (user.role === "student")
+        navigate("/pfe");
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
-      setLoading(false); // Reset the loading state
+      setLoading(false);
     }
   };
 

@@ -3,6 +3,15 @@ import Module from "../styles/TeamFormationPage.module.css";
 
 
 const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites }) => {
+  // Use default invite when collaborationInvites is empty
+  const invites = (collaborationInvites && collaborationInvites.length > 0)
+    ? collaborationInvites
+    : [{
+        fullName: "no invites exists",
+        email: "no invites exists",
+        group: "xx",
+      }];
+
   // If the user hasn't joined a team, show the message and the pending invites table
   if (!myTeamNumber) {
     return (
@@ -16,7 +25,6 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
         <div className={Module["pending-invites"]}>
           <div className={Module["my-team-header"]}>
             <div id="pending"><h2>Collaboration Invites</h2></div>
-
           </div>
           <div className={Module["table-wrapper"]}>
             <table>
@@ -29,17 +37,14 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
                 </tr>
               </thead>
               <tbody>
-                {collaborationInvites.map((invite, index) => (
+                {invites.map((invite, index) => (
                   <tr key={index}>
                     <td>{invite.fullName}</td>
                     <td>{invite.email}</td>
                     <td>{invite.group}</td>
                     <td>
                       <button className={Module["invite-button"]} style={{ margin: "0 10px" }}>Accept</button>
-
                       <button className={Module["invite-button"]} style={{ margin: "0 10px" }}>Decline</button>
-
-
                     </td>
                   </tr>
                 ))}

@@ -1,0 +1,156 @@
+/* Global Styling */
+body {
+    font-family: "Manrope", sans-serif;
+
+  }
+
+body p {
+  font-size: 20px;
+}
+  
+  .main-wrapper {
+    width: 100%;
+    padding: 1px;
+  }
+  
+  /* Tabs Navigation */
+  .tabs-container {
+    width: 100%;
+    background: none;
+    padding-top: 125px;
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .tabs button {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #007bff;
+    border-bottom: 3px solid transparent;
+    transition: 0.3s;
+  }
+  
+  .tabs button:hover {
+    color: #0056b3;
+  }
+  
+  .tabs button.active {
+    color: black;
+    font-weight: bold;
+    border-bottom: 3px solid #007bff;
+  }
+  
+  /* Tab Content */
+  .tab-content {
+    padding: 20px;
+  }
+  
+  /* Section Containers */
+  .section-container {
+    display: flex;
+    justify-content: space-between; /* Pushes items apart */
+    align-items: center; /* Aligns items vertically */
+    background: #f8f9fa;
+    padding: 20px;
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  /* Text Container */
+  .text-container {
+    margin-bottom: 120px;
+  }
+  
+  /* Table Styling */
+  .table-container {
+    overflow-x: auto;
+    margin-left: auto; /* Pushes the table to the right */
+    min-width: 50%; /* Ensures it takes a proper amount of space */
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  th {
+    background: #f1f1f1;
+  }
+
+  .inner-flexbox{
+    display: flex;
+    flex-direction: column;
+    -ms-flex-align: end; 
+   }
+  .inner-flexbox button{
+  
+  }
+  
+  /* Buttons */
+
+  
+
+  
+  .primary-btn {
+    background-color: #007bff;
+    height: 50px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+  }
+  
+  .validate-btn {
+    background-color: #0056b3;
+     
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .primary-btn:hover, .validate-btn:hover {
+    opacity: 0.9;
+  }
+  
+  .edit-btn, .cancel-btn {
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .edit-btn {
+    background-color: #e0e0e0;
+    color: black;
+  }
+  
+  .cancel-btn {
+    background-color: #ff4d4d;
+    color: white;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #d43f3f;
+  }
+  
