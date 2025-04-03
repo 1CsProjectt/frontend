@@ -43,7 +43,7 @@ const Login = () => {
 
     try {
       // Make the POST request to the login endpoint
-      const response =await axios.post(`https://916a-41-201-106-90.ngrok-free.app/api/v1/auth/login`, { email, password }, { withCredentials: true });
+      const response =await axios.post(`/auth/login`, { email, password }, { withCredentials: true });
 
 
       // Destructure the response to get the user object

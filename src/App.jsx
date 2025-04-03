@@ -30,7 +30,7 @@ function App() {
         }
         
         
-        <Route path="/" element={<PFEPage/>} />
+        <Route path="/" element={<Login/>} />
         <Route path="/admin" element={<AdminDashboard/>} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/CheckEmail" element={<CheckEmail />} />
