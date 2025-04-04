@@ -38,6 +38,7 @@ function App() {
         <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/pfe" element={<PFEPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/lovers" element={<LoversPage />} />
