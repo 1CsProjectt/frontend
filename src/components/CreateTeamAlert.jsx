@@ -16,6 +16,8 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
       alignItems: "center",
       justifyContent: "center",
       zIndex: 999,
+      scale:1.2,
+      fontFamily: "'Manrope', sans-serif",
     },
     container: {
       backgroundColor: "#fff",
@@ -25,8 +27,8 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
       boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center", // centers child elements horizontally
-      textAlign: "center",  // centers text inside child elements
+      alignItems: "center", 
+      textAlign: "center",  
       overflow: "hidden",
     },
     icon: {
@@ -50,7 +52,7 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
     },
     footer: {
       display: "flex",
-      justifyContent: "center", // centers buttons horizontally
+      justifyContent: "center", 
       padding: "16px",
       borderTop: "1px solid #eee",
       width: "100%",

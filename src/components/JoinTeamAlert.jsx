@@ -15,7 +15,7 @@ const JoinTeamAlert = ({ show, onCancel, onConfirm }) => {
       alignItems: "center",
       justifyContent: "center",
       zIndex: 999,
-      scale:1.4,
+      scale:1.2,
     },
     container: {
       backgroundColor: "#fff",

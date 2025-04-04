@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Sidebar.css";
+import Module from "../styles/Sidebar.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 
 // Import SVG icons
@@ -50,85 +50,87 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="sidebar">
+    <div className={Module["sidebar"]}>
       {/* Logo */}
-      <div className="sidebar-title">
-        <img src={LogoIcon} alt="EasyPFE Logo" className="logo" />
+      <div className={Module["sidebar-title"]}>
+        <img src={LogoIcon} alt="EasyPFE Logo" className={Module["logo"]} />
       </div>
 
       {/* Menu List */}
-      <ul className="menu">
-        <li className="menu-title">Menu</li>
-        <li className="menu-item">
+      <ul className={Module["menu"]}>
+        <li className={Module["menu-title"]}>Menu</li>
+        <li className={Module["menu-item"]}>
           <button
-            className={`menu-btn ${activeMenu === "pfe" ? "active" : ""}`}
+            className={`${Module["menu-btn"]} ${activeMenu === "pfe" ? Module["active"] : ""}`}
             onClick={() => toggleMenu("/pfe")}
           >
-            <img src={PFEIcon} alt="PFE Topics" className="icon" />
+            <img src={PFEIcon} alt="PFE Topics" className={Module["icon"]} />
             PFE Topics
-            <img src={ChevronRightIcon} alt="Arrow" className="row-icon" />
+            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
           </button>
         </li>
-        <li className="menu-item">
+        <li className={Module["menu-item"]}>
           <button
-            className={`menu-btn ${activeMenu === "TeamFormationPage" ? "active" : ""}`}
+            className={`${Module["menu-btn"]} ${activeMenu === "TeamFormationPage" ? Module["active"] : ""}`}
             onClick={() => toggleMenu("/TeamFormationPage")}
           >
-            <img src={TeamformationIcon} alt="Team formation" className="icon" />
+            <img src={TeamformationIcon} alt="Team formation" className={Module["icon"]} />
             Team formation
-            <img src={ChevronRightIcon} alt="Arrow" className="row-icon" />
+            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
           </button>
         </li>
-        <li className="menu-item">
+        <li className={Module["menu-item"]}>
           <button
-            className={`menu-btn ${activeMenu === "notifications" ? "active" : ""}`}
+            /* className={Module[`menu-btn ${activeMenu === "notifications" ? "active" : ""}`]} */
+            className={`${Module["menu-btn"]} ${activeMenu === "notifications" ? Module["active"] : ""}`}
+
             onClick={() => toggleMenu("/notifications")}
           >
-            <img src={NotificationsIcon} alt="Notifications" className="icon" />
+            <img src={NotificationsIcon} alt="Notifications" className={Module["icon"]} />
             Notifications
-            <img src={ChevronRightIcon} alt="Arrow" className="row-icon" />
+            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
           </button>
         </li>
-        <li className="menu-item">
+        <li className={Module["menu-item"]}>
           <button
-            className={`menu-btn ${activeMenu === "loremres" ? "active" : ""}`}
+            className={`${Module["menu-btn"]} ${activeMenu === "loremres" ? Module["active"] : ""}`}
             onClick={() => toggleMenu("/loremres")}
           >
-            <img src={CheckCircleIcon} alt="Loremres" className="icon" />
+            <img src={CheckCircleIcon} alt="Loremres" className={Module["icon"]} />
             Loremres
-            <img src={ChevronRightIcon} alt="Arrow" className="row-icon" />
+            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
           </button>
         </li>
-        <li className="menu-item">
+        <li className={Module["menu-item"]}>
           <button
-            className={`menu-btn ${activeMenu === "lovers" ? "active" : ""}`}
+            className={`${Module["menu-btn"]} ${activeMenu === "lovers" ? Module["active"] : ""}`}
             onClick={() => toggleMenu("/lovers")}
           >
-            <img src={LoversIcon} alt="Lovers" className="icon" />
+            <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
             Lovers
-            <img src={ChevronRightIcon} alt="Arrow" className="row-icon" />
+            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
           </button>
         </li>
-        <li className="menu-item">
+        <li className={Module["menu-item"]}>
           <button
-            className={`menu-btn ${activeMenu === "export" ? "active" : ""}`}
+            className={`${Module["menu-btn"]} ${activeMenu === "export" ? Module["active"] : ""}`}
             onClick={() => toggleMenu("/export")}
           >
-            <img src={ExportIcon} alt="Export" className="icon" />
+            <img src={ExportIcon} alt="Export" className={Module["icon"]} />
             Export
-            <img src={ChevronRightIcon} alt="Arrow" className="row-icon" />
+            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
           </button>
         </li>
       </ul>
 
       {/* Bottom Menu */}
-      <div className="bottom-menu">
-        <button className="bottom-menu-btn" onClick={() => navigate("/help")}>
-          <img src={HelpIcon} alt="Help" className="icon" />
+      <div className={Module["bottom-menu"]}>
+        <button className={Module["bottom-menu-btn"]} onClick={() => navigate("/help")}>
+          <img src={HelpIcon} alt="Help" className={Module["icon"]} />
           Help
         </button>
-        <button className="bottom-menu-btn" onClick={handleLogout}>
-          <img src={LogoutIcon} alt="Logout" className="icon" />
+        <button className={Module["bottom-menu-btn"]} onClick={handleLogout}>
+          <img src={LogoutIcon} alt="Logout" className={Module["icon"]} />
           Log Out
         </button>
       </div>

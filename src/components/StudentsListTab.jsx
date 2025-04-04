@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../styles/TeamFormationPage.css";
+import Module from "../styles/TeamFormationPage.module.css";
+import CreateTeamAlert from "../components/CreateTeamAlert";
 import Toast from "../components/Toast";
-const StudentsListTab = ({ students }) => {
+const StudentsListTab = ({ students ,myTeamNumber}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage, setStudentsPerPage] = useState(5);
   const [showToast, setShowToast] = useState(false);
   const containerRef = useRef(null);
-
+  const [showAlert, setShowAlert] = useState(false);
   useEffect(() => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
@@ -71,16 +72,31 @@ const StudentsListTab = ({ students }) => {
 
   // Handle invite click
   const handleInviteClick = () => {
-    // Perform your "invite" logic here (e.g., send API request)
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    // If myTeamNumber is not empty, show a toast message
+    if (myTeamNumber !== "") {
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    } else {
+      // If no team number, open the CreateTeamAlert modal to handle team creation/invitation
+      setShowAlert(true);
+    }
+  };
+
+  // Handle cancel action from the alert modal
+  const handleCancel = () => {
+    setShowAlert(false);
+  };
+  const handleConfirm = () => {
+    // You can include additional logic here for creating a team and sending an invite.
+    console.log("Team created and student invited!");
+    setShowAlert(false);
   };
 
   return (
-    <div className="page-container">
-      <div className="table-wrapper" ref={containerRef}>
+    <div className={Module["page-container"]}>
+      <div className={Module["table-wrapper"]} ref={containerRef}>
         <table>
           <thead>
             <tr>
@@ -99,18 +115,18 @@ const StudentsListTab = ({ students }) => {
                 <td>{student.group}</td>
                 <td>
                   {student.status === "Available" ? (
-                    <span className="status-available">Available</span>
+                    <span className={Module["status-available"]}>Available</span>
                   ) : (
-                    <span className="status-in-team">In a team</span>
+                    <span className={Module["status-in-team"]}>In a team</span>
                   )}
                 </td>
                 <td>
                   {student.status === "Available" ? (
-                    <button className="invite-button" onClick={handleInviteClick}>
+                    <button className={Module["invite-button"]} onClick={handleInviteClick}>
                       Invite
                     </button>
                   ) : (
-                    <button className="disable-button" disabled>
+                    <button className={Module["disable-button"]} disabled>
                       Invite
                     </button>
                   )}
@@ -122,21 +138,22 @@ const StudentsListTab = ({ students }) => {
       </div>
 
       {/* Fixed Pagination */}
-      <div className="pagination">
+      <div className={Module["pagination"]}>
         <button
           id="previous-button"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={currentPage === 1 ? "disabled" : ""}
+          className={currentPage === 1 ? Module["disabled"] : ""}
+
         >
           Previous
         </button>
 
-        <div className="page-numbers">
+        <div className={Module["page-numbers"]}>
           {pageNumbers.map((page, idx) => {
             if (page === "...") {
               return (
-                <span key={idx} className="ellipsis">
+                <span key={idx} className={Module["ellipsis"]}>
                   ...
                 </span>
               );
@@ -145,7 +162,8 @@ const StudentsListTab = ({ students }) => {
                 <button
                   key={idx}
                   onClick={() => handlePageChange(page)}
-                  className={page === currentPage ? "active" : ""}
+                  className={page === currentPage ? Module["active"] : ""}
+
                 >
                   {page}
                 </button>
@@ -158,7 +176,8 @@ const StudentsListTab = ({ students }) => {
           id="next-button"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={currentPage === totalPages ? "disabled" : ""}
+          className={currentPage === totalPages ? Module["disabled"] : ""}
+
         >
           Next
         </button>
@@ -170,7 +189,13 @@ const StudentsListTab = ({ students }) => {
           message="Invite sent successfully." 
           onClose={() => setShowToast(false)} 
         />
+        
       )}
+      <CreateTeamAlert
+        show={showAlert}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 };

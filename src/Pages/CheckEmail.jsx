@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../styles/authentication.css";
+import Module from "../styles/authentication.module.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import axios from "axios";
@@ -29,29 +29,29 @@ const CheckEmail = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className={Module["login-container"]}>
       {/* Left Side */}
-      <div className="login-left">
-        <div className="logo">
+      <div className={Module["login-left"]}>
+        <div className={Module["logo"]}>
           <img src={logo} alt="PFE Logo" />
         </div>
-        <img className="school-logo" src={schoolIcon} alt="ESI School Logo" />
+        <img className={Module["school-logo"]} src={schoolIcon} alt="ESI School Logo" />
       </div>
 
       {/* Right Side (Check Email Content) */}
-      <div className="login-right">
-        <div className="right-content">
+      <div className={Module["login-right"]}>
+        <div className={Module["right-content"]}>
           <h1>Check your email.</h1>
           <p>
             We just sent a recovery link to <strong>{email}</strong>. If you can’t find it in your inbox, please check your spam filter.
           </p>
 
-          {error && <p className="error-message" style={{ color: "red" }}>{error}</p>}
+          {error && <p className={Module["error-message"]} style={{ color: "red" }}>{error}</p>}
 
-          <div className="check-email-actions">
+          <div className={Module["check-email-actions"]}>
             {/* "Resend recovery link" Button */}
             <button
-              className="link-btn"
+              className={Module["link-btn"]}
               onClick={handleResendLink}
               disabled={loading}
             >
@@ -59,9 +59,10 @@ const CheckEmail = () => {
             </button>
 
             {/* "Back to log in" Button */}
-            <button className="btn" id="checkEmail-btn" onClick={() => navigate("/")}>
+            <button className={Module["btn"]} id={Module["checkEmail-btn"]} onClick={() => navigate("/")}>
               Back to log in
             </button>
+
           </div>
         </div>
       </div>
