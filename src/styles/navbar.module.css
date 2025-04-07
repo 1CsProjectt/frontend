@@ -22,9 +22,9 @@ p {
   z-index: 2;
   background-color: #ffffff;
   height: 125px;
-  width: calc(100% - 17vw);
+  width: 100%;
   flex: auto;
-  position: fixed;  
+  position: relative;  
 }
 
 .session {
