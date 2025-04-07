@@ -1,33 +1,87 @@
-import "../styles/navbar.css";
-import searchicon from "../assets/search-icon.svg";
-import React, { useState } from "react";
-import filterIcon from "../assets/filter-icon.svg";
-import filterIconup from "../assets/up.svg";
-import filterIcondown from "../assets/down.svg";
-import notfIcon from "../assets/notf-icon.svg";
-import profilepic from "../assets/profile-pic.svg";
-const NavBar = () => {
+import Module from "../styles/navbar.module.css";
+import searchicon from "../assets/Search.svg";
+import React, { useState, useEffect } from "react";
+import filterIcon from "../assets/Filter.svg";
+import filterIconup from "../assets/arrow-up.svg";
+import filterIcondown from "../assets/arrow-down.svg";
+import notfIcon from "../assets/Notifications.svg";
+import profilepic from "../assets/profile.svg";
+
+const NavBar = ({
+  title,
+  targetDate,
+  selectedFilters,
+  onFilterApply,
+  onSearchChange,
+  suggestions,
+}) => {
+  // Countdown timer function only active if targetDate is provided
+  const calculateTimeLeft = () => {
+    const now = new Date();
+    const difference = new Date(targetDate) - now;
+    let timeLeft = {};
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / (1000 * 60)) % 60),
+      };
+    } else {
+      timeLeft = { days: 0, hours: 0, minutes: 0 };
+    }
+    return timeLeft;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(
+    targetDate && targetDate !== "" ? calculateTimeLeft() : null
+  );
+
+  useEffect(() => {
+    if (targetDate && targetDate !== "") {
+      const timer = setTimeout(() => {
+        setTimeLeft(calculateTimeLeft());
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [targetDate, timeLeft]);
+
   return (
-    <div className="container">
-      <div className="session">
-        <p className="sessionP">Normal session</p>
+    <div className={Module["container"]}>
+      <div className={Module["session"]}>
+        <p className={Module["sessionP"]}>
+          {(!targetDate || targetDate === "")
+            ? title
+            : (
+              <>
+                {title}{" "}
+                <span className={Module["countdownStyle"]}>
+                  {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min to end
+                </span>
+              </>
+            )
+          }
+        </p>
       </div>
-      <div className="form">
-        <FilterMenu />
-        <Searchbar />
-        <div className="rightside">
-          {" "}
-          <div className="notf-button">
-            {" "}
-            <img src={notfIcon} alt="" className="notf-icon" />
-          </div>{" "}
-          <div className="profile">
-            <img src={profilepic} alt="pic" className="pic" />
-            <p className="profiletext">Profile</p>
+      <div className={Module["form"]}>
+        <FilterMenu
+          onFilterApply={onFilterApply}
+          currentFilters={selectedFilters}
+        />
+        <Searchbar
+          onSearchChange={onSearchChange}
+          suggestions={suggestions || []}
+        />
+        <div className={Module["rightside"]}>
+          <div className={Module["notf-button"]}>
+            <img src={notfIcon} alt="notf-icon" className={Module["notf-icon"]} />
+          </div>
+          <div className={Module["profile"]}>
+            <img src={profilepic} alt="pic" className={Module["pic"]} />
+            <p className={Module["profiletext"]}>Profile</p>
             <img
               src={filterIcondown}
               alt="Toggle2"
-              className="arrow-icon-prfoile"
+              className={Module["arrow-icon-prfoile"]}
             />
           </div>
         </div>
@@ -36,113 +90,173 @@ const NavBar = () => {
   );
 };
 
-const Searchbar = () => {
-  const [query, setQuery] = useState(""); // State to store input value
+const Searchbar = ({ onSearchChange, suggestions }) => {
+  const [query, setQuery] = useState("");
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   const handleInputChange = (event) => {
-    setQuery(event.target.value); // Update state when user types
+    const newQuery = event.target.value;
+    setQuery(newQuery);
+    // Only propagate search if the onSearchChange function is provided
+    if (onSearchChange) {
+      onSearchChange(newQuery);
+    }
+
+    if (newQuery.trim() !== "") {
+      const filtered = suggestions.filter((suggestion) =>
+        suggestion.toLowerCase().includes(newQuery.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+    } else {
+      setFilteredSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setQuery(suggestion);
+    if (onSearchChange) {
+      onSearchChange(suggestion);
+    }
+    setFilteredSuggestions([]);
   };
 
   return (
-    <div className="search-bar-container">
+    <div className={Module["search-bar-container"]}>
       <input
         type="text"
-        className="input"
+        className={Module["input"]}
         placeholder="Search..."
-        value={query} // Controlled input
+        value={query}
         onChange={handleInputChange}
       />
-      <div className="search-icon">
+      <div className={Module["search-icon"]}>
         <img src={searchicon} alt="search-icon" />
       </div>
+      {filteredSuggestions.length > 0 && (
+        <ul className={Module["suggestions-list"]}>
+          {filteredSuggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              onClick={() => handleSuggestionClick(suggestion)}
+              className={Module["suggestion-item"]}
+            >
+              {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
 
-const FilterMenu = () => {
+const FilterMenu = ({ onFilterApply, currentFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("");
+  const [activeTab, setActiveTab] = useState("Specialitys");
+  const [localFilters, setLocalFilters] = useState({
+    Specialitys: currentFilters || [],
+    Other: [],
+  });
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-    setSelectedFilters([]); // Uncheck all checkboxes
   };
-  const [selectedFilters, setSelectedFilters] = useState([]);
 
-  const handleCheckboxChange = (event) => {
+  const specialityOptions = ["ISI", "SIW", "IASD"];
+  const otherOptions = ["Other Option 1", "Other Option 2"];
+
+  const handleCheckboxChange = (event, tab) => {
     const { value, checked } = event.target;
-    setSelectedFilters((prev) =>
-      checked ? [...prev, value] : prev.filter((item) => item !== value)
-    );
+    setLocalFilters((prev) => {
+      const newSelections = checked
+        ? [...prev[tab], value]
+        : prev[tab].filter((item) => item !== value);
+      return { ...prev, [tab]: newSelections };
+    });
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleApply = () => {
+    if (onFilterApply) {
+      onFilterApply(localFilters[activeTab]);
+    }
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    setLocalFilters((prev) => ({
+      ...prev,
+      [activeTab]: currentFilters || [],
+    }));
+    setIsOpen(false);
   };
 
   return (
-    <div className="filter">
-      <button className="filter-button" onClick={toggleMenu}>
-        <img src={filterIcon} alt="Filter" className="custom-icon" />
-
+    <div className={Module["filter"]}>
+      <button className={Module["filter-button"]} onClick={toggleMenu}>
+        <img src={filterIcon} alt="Filter" className={Module["custom-icon"]} />
         <p>Filter</p>
-        <p className="filtertext"></p>
         <img
           src={isOpen ? filterIconup : filterIcondown}
           alt="Toggle"
-          className="arrow-icon"
+          className={Module["arrow-icon"]}
         />
       </button>
-
       {isOpen && (
-        <div className="filter-popup">
-          <div className="filter-content">
-            {/* Left Side - Filter Categories */}
-            <div className="filter-categories">
-              <p className="filter-header"> Filter types</p>
+        <div className={Module["filter-popup"]}>
+          <div className={Module["filter-content"]}>
+            <div className={Module["filter-tabs"]}>
               <p
                 className={
-                  selectedFilter === "Speciality" ? "active" : "notactive"
+                  activeTab === "Specialitys"
+                    ? Module["tab-active"]
+                    : Module["tab-inactive"]
                 }
-                onClick={() => setSelectedFilter("Speciality")}
+                onClick={() => handleTabChange("Specialitys")}
               >
-                Speciality
+                Specialitys
               </p>
               <p
-                className={selectedFilter === "Grade" ? "active" : "notactive"}
-                onClick={() => setSelectedFilter("Grade")}
-              >
-                Grade
-              </p>
-              <p
-                className={selectedFilter === "Other" ? "active" : "notactive"}
-                onClick={() => setSelectedFilter("Other")}
+                className={
+                  activeTab === "Other"
+                    ? Module["tab-active"]
+                    : Module["tab-inactive"]
+                }
+                onClick={() => handleTabChange("Other")}
               >
                 Other
               </p>
             </div>
-
-            {/* Right Side - Filter Options */}
-            <div className="filter-options">
-              <p className="filter-header">Show Only</p>
-              {["ISI", "IASD", "SIW"].map((category) => (
-                <label key={category} className="custom-checkbox">
-                  <input
-                    type="checkbox"
-                    name="filter"
-                    value={category}
-                    onChange={handleCheckboxChange}
-                    checked={selectedFilters.includes(category)}
-                  />
-                  <span className="checkmark"></span>
-                  <p className="optionstext">{category}</p>
-                </label>
-              ))}
+            <div className={Module["filter-categories"]}>
+              <p className={Module["filter-header"]}>
+                {activeTab === "Specialitys"
+                  ? "Select Categories"
+                  : "Select Other Options"}
+              </p>
+              {(activeTab === "Specialitys" ? specialityOptions : otherOptions).map(
+                (option) => (
+                  <label key={option} className={Module["option-label"]}>
+                    <input
+                      type="checkbox"
+                      value={option}
+                      checked={localFilters[activeTab].includes(option)}
+                      onChange={(e) => handleCheckboxChange(e, activeTab)}
+                    />
+                    <span className={Module["optionstext"]}>{option}</span>
+                  </label>
+                )
+              )}
             </div>
           </div>
-
-          {/* Buttons */}
-          <div className="filter-buttons">
-            <button className="cancel-btn" onClick={toggleMenu}>
+          <div className={Module["filter-buttons"]}>
+            <button className={Module["cancel-btn"]} onClick={handleCancel}>
               Cancel
             </button>
-            <button className="apply-btn">Apply</button>
+            <button className={Module["apply-btn"]} onClick={handleApply}>
+              Apply
+            </button>
           </div>
         </div>
       )}

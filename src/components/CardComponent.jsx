@@ -1,44 +1,37 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import Style from "../styles/CardComponent.module.css";
 
-import "../styles/CardComponent.css";
-
-const PFECard = ({ id, title, categories, description, author, image, selectedCards, toggleSelect }) => {
-
-      
-  
+const PFECard = ({ card }) => {
   const navigate = useNavigate();
 
-  
   const handleExplore = () => {
-    // If you need to pass data to ExplorePage, you could do:
-    // navigate("/explore", { state: { title, categories, description, author, image } });
-    // For now, we’ll just navigate to the explore page:
-    navigate("/pfe/explore");
+    // Navigate to the explore page and pass the card data as state
+    navigate("/pfe/explore", { state: { card } });
   };
 
   return (
-    <div
-      key={id}
-      className={`card ${selectedCards.includes(id) ? "selected" : ""}`}
-      onClick={() => toggleSelect(id)}
-    >
-      <img src={image} alt={title} className="card-image" />
-      <div className="card-content">
-        <h3 className="card-title">{title}</h3>
-        <div className="card-categories">
-          {categories.map((cat, index) => (
-            <span key={index} className="category">{cat}</span>
-          ))}
+    <div className={Style.card}>
+      <img
+        src={card.photo || "https://via.placeholder.com/300x200"}
+        alt={card.title}
+        className={Style["card-image"]}
+      />
+      <div className={Style["card-content"]}>
+        <h3 className={Style["card-title"]}>{card.title}</h3>
+        <div className={Style["card-categories"]}>
+          <span className={Style.category}>
+            {card.specialization || "No specialization"}
+          </span>
         </div>
-        <p className="card-description">{description}</p>
-        <p className="card-author">By {author}</p>
-
-        <button className="card-button">Explore</button>
+        <p className={Style["card-description"]}>{card.description}</p>
+        <p className={Style["card-author"]}>By {card.creator?.username}</p>
+        <button className={Style["card-button"]} onClick={handleExplore}>
+          Explore
+        </button>
       </div>
     </div>
   );
 };
 
 export default PFECard;
-

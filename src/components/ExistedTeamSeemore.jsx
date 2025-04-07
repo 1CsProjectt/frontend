@@ -4,7 +4,8 @@ uncomment
 
 */
 import React, { useEffect, useState } from "react";
-import "../styles/TeamFormationPage.css";
+import Module from "../styles/TeamFormationPage.module.css";
+
 import axios from "axios";
 import JoinTeamAlert from "./JoinTeamAlert"
 import Toast from "../components/Toast";
@@ -56,8 +57,8 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers }) => {
    if (!teamData) return <div>No team data available.</div>; */
   return (
     <div>
-      <div className="my-team-header">
-        <div className="header-left">
+      <div className={Module["my-team-header"]}>
+        <div className={Module["header-left"]}>
           <h2>Team number</h2>
           <p>You are currently in team number <span>{myTeamNumber}</span></p>
         </div>
@@ -65,7 +66,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers }) => {
       </div>
 
       <h2>Team members</h2>
-      <div className="table-wrapper">
+      <div className={Module["table-wrapper"]}>
         <table>
           <thead>
             <tr>
@@ -97,11 +98,11 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers }) => {
           </tbody>
         </table>
       </div>
-      <div className="buttons-container-see-more">
-        <button className="BackSeeMoreBtn" onClick={() => window.history.back()}>
+      <div className={Module["buttons-container-see-more"]}>
+        <button className={Module["BackSeeMoreBtn"]} onClick={() => window.history.back()}>
           Back
         </button>
-        <button className="JoinSeeMoreBtn" onClick={handleJoinClick}>
+        <button className={Module["JoinSeeMoreBtn"]} onClick={handleJoinClick}>
           Join
         </button>
       </div>

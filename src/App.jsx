@@ -1,5 +1,9 @@
 import React from "react";
+
+import "./styles/App.css";
+
 import { BrowserRouter as Router, Routes, Route ,  Navigate  } from "react-router-dom";
+
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
@@ -26,7 +30,7 @@ function App() {
         }
         
         
-        <Route path="/" element={<PFEPage/>} />
+        <Route path="/" element={<Login/>} />
         <Route path="/admin" element={<AdminDashboard/>} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/CheckEmail" element={<CheckEmail />} />
