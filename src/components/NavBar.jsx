@@ -45,6 +45,23 @@ const NavBar = ({
     }
   }, [targetDate, timeLeft]);
 
+  /* for notification pop up */
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      sender: "Guessoum mohamed nizar",
+      time: "4 min ago",
+      type: "team_invite",
+    },
+    {
+      id: 2,
+      sender: "Yettou abdallah",
+      time: "5 min ago",
+      type: "team_invite",
+    },
+  ]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
   return (
     <div className={Module["container"]}>
       <div className={Module["session"]}>
@@ -73,7 +90,28 @@ const NavBar = ({
         />
         <div className={Module["rightside"]}>
           <div className={Module["notf-button"]}>
-            <img src={notfIcon} alt="notf-icon" className={Module["notf-icon"]} />
+            <div className={Module["notf-button"]} onClick={() => setShowNotifications(!showNotifications)}>
+              <img src={notfIcon} alt="notf-icon" className={Module["notf-icon"]} />
+              {notifications.length > 0 && (
+                <span className={Module["notf-badge"]}>{notifications.length}</span>
+              )}
+              {showNotifications && (
+                <div className={Module["notf-popup"]}>
+                  {notifications.map((notif) => (
+                    <div key={notif.id} className={Module["notf-item"]}>
+                      <p><strong>{notif.sender}</strong> invites you to join their team.</p>
+                      <p className={Module["notf-time"]}>{notif.time}</p>
+                      <div className={Module["notf-buttons"]}>
+                        <button className={Module["decline-btn"]}>Decline</button>
+                        <button className={Module["accept-btn"]}>Accept</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+
           </div>
           <div className={Module["profile"]}>
             <img src={profilepic} alt="pic" className={Module["pic"]} />
@@ -97,7 +135,7 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
   const handleInputChange = (event) => {
     const newQuery = event.target.value;
     setQuery(newQuery);
-    // Only propagate search if the onSearchChange function is provided
+
     if (onSearchChange) {
       onSearchChange(newQuery);
     }

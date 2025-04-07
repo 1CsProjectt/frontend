@@ -22,9 +22,9 @@ p {
   z-index: 2;
   background-color: #ffffff;
   height: 125px;
-  width: calc(100% - 17vw);
+  width: 100% ;
   flex: auto;
-  position: fixed;  
+  position: relative;  
 }
 
 .session {
@@ -389,3 +389,59 @@ p {
   background-color: #f1f1f1;
 }
 
+.notf-badge {
+  background-color: red;
+  color: white;
+  font-size: 10px;
+  border-radius: 50%;
+  padding: 2px 6px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.notf-popup {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  z-index: 999;
+  padding: 10px;
+}
+
+.notf-item {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.notf-time {
+  font-size: 12px;
+  color: gray;
+  margin-bottom: 8px;
+}
+
+.notf-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.accept-btn, .decline-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.accept-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.decline-btn {
+  background-color: #e0e0e0;
+}

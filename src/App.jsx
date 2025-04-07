@@ -21,7 +21,8 @@ import LoversPage from "./Pages/LoversPage";
 import ExplorePage from "./Pages/ExplorePage";
 /* import NavBar from "./components/Navbar"; */
 import TeamFormationPage from "./Pages/TeamformationPage";
-import ExistedTeamSeemore from "./components/ExistedTeamSeemore";
+import TopicsValidationPageSeemore from "./components/TopicsValidationPageSeemore";
+
 function App() {
   return (
     <Router>  
@@ -52,6 +53,7 @@ function App() {
         
 
         <Route path="/admin/sessions/topic-validation" element={<TopicsValidationPage />}/>
+        <Route path="/admin/sessions/topic-validation/explore" element={<TopicsValidationPageSeemore />} />
         <Route index element={<UserManagementTabs />} />{/* Default child route (renders when at /admin) */}
           <Route path="users" element={<UserManagementTabs />} />
           <Route path="sessions" element={<SessionsManagementTabs />} />

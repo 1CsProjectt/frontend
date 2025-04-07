@@ -139,7 +139,8 @@
   margin: 16px 0;
   gap: 8px;
   position: relative;
-  margin-top: 4vh;
+  margin-top: auto;
+  margin-bottom: 4vh;
   /* z-index: 1000; */
 }
 

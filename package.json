@@ -19,7 +19,7 @@
     "web-vitals": "^2.1.4"
     
   },
-  "proxy": "https://98cc-154-246-81-2.ngrok-free.app/api/v1",
+  "proxy": "https://180b-154-247-119-87.ngrok-free.app/api/v1",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

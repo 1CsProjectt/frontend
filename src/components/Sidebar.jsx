@@ -45,9 +45,13 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    // Remove token from cookies by setting an expired date
+    document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    // Navigate to login or home page
     navigate("/");
   };
+  
 
   return (
     <div className={Module["sidebar"]}>

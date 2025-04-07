@@ -10,7 +10,13 @@ import { API_URL } from "../config";
 mohamed.boudja@gmgail.com"
 
 mohamed, [3/30/25 2:47 PM]
-12345678 pass */
+12345678 pass 
+
+
+"email": "nizar.guessoum@gmgail.com",
+    "password":"12345678" 
+
+*/
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -58,7 +64,7 @@ const Login = () => {
       // Redirect the user to the main page or dashboard
       if (user.role === "admin") navigate("/admin");
       else if (user.role === "student")
-        navigate("/pfe");
+        navigate("/TeamFormationPage");
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Login failed. Please try again.");

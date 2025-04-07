@@ -1,21 +1,18 @@
-/* LINKING 
-remove myTeamMembers att /  this for static
-uncomment 
-
-*/
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-
 import axios from "axios";
-import JoinTeamAlert from "./JoinTeamAlert"
-import Toast from "../components/Toast";
-const Seemorepage = ({ myTeamNumber, myTeamMembers }) => {
+import JoinTeamAlert from "./modals/JoinTeamAlert";
+import Toast from "./modals/Toast";
+
+const Seemorepage = ({ myTeamNumber, myTeamMembers = [] }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
+
   const handleJoinClick = () => {
     setShowJoinAlert(true);
   };
+
   const handleCancel = () => {
     setShowJoinAlert(false);
   };
@@ -30,71 +27,50 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers }) => {
       setShowToast(false);
     }, 3000);
   };
-  /*  const [teamData, setTeamData] = useState(null);
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState(null);
+
  
-   useEffect(() => {
-     const fetchTeamData = async () => {
-       try {
-         setLoading(true);
-         const { data } = await axios.get(`/teams/${myTeamNumber}`);//Do not forget use the right url
-         setTeamData(data);
-       } catch (err) {
-         setError(err.response ? err.response.data.message : err.message);
-       } finally {
-         setLoading(false);
-       }
-     };
- 
-     if (myTeamNumber) {
-       fetchTeamData();
-     }
-   }, [myTeamNumber]);
- 
-   if (loading) return <div>Loading team data...</div>;
-   if (error) return <div>Error: {error}</div>;
-   if (!teamData) return <div>No team data available.</div>; */
+
+  // If team members are not provided via props, fall back to static data.
+  const staticTeamMembers = [
+    { fullName: "Alice Johnson", email: "alice@example.com", group: "Group A", role: "Leader" },
+    { fullName: "Bob Smith", email: "bob@example.com", group: "Group A", role: "Member" },
+    { fullName: "Carol Lee", email: "carol@example.com", group: "Group A", role: "Member" }
+  ];
+
+  // Use passed team members if available; otherwise, static data.
+  const membersToDisplay = myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
+
   return (
     <div>
       <div className={Module["my-team-header"]}>
         <div className={Module["header-left"]}>
-          <h2>Team number</h2>
-          <p>You are currently in team number <span>{myTeamNumber}</span></p>
+          <h2>Team Number</h2>
+          <p>
+            You are currently in team number <span>{myTeamNumber}</span>
+          </p>
         </div>
-
       </div>
 
-      <h2>Team members</h2>
+      <h2>Team Members</h2>
       <div className={Module["table-wrapper"]}>
         <table>
           <thead>
             <tr>
               <th>Full Name</th>
-              <th>Email-address</th>
-              <th>Group</th>
+              <th>Email Address</th>
+             
               <th>Role</th>
             </tr>
           </thead>
           <tbody>
-            {/* this for static */}
-            {myTeamMembers.map((member, index) => (
+            {membersToDisplay.map((member, index) => (
               <tr key={index}>
                 <td>{member.fullName}</td>
                 <td>{member.email}</td>
-                <td>{member.group}</td>
+              
                 <td>{member.role}</td>
               </tr>
             ))}
-            {/* this for dynamique  */}
-            {/* {teamData.members.map((member, index) => (
-              <tr key={index}>
-                <td>{member.fullName}</td>
-                <td>{member.email}</td>
-                <td>{member.group}</td>
-                <td>{member.role}</td>
-              </tr>
-            ))} */}
           </tbody>
         </table>
       </div>
@@ -106,17 +82,8 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers }) => {
           Join
         </button>
       </div>
-      <JoinTeamAlert
-        show={showJoinAlert}
-        onCancel={handleCancel}
-        onConfirm={handleConfirm}
-      />
-      {showToast && (
-        <Toast
-          message={toastMessage || "Test Toast"}
-          onClose={() => setShowToast(false)}
-        />
-      )}
+      <JoinTeamAlert show={showJoinAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
+      {showToast && <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />}
     </div>
   );
 };

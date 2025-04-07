@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Style from '../styles/TeamFormationPage.module.css';
+import Style from '../../styles/TeamFormationPage.module.css';
 const CreateTeamModal = ({ show, onClose, onTeamCreated, onInviteSent }) => {
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState([]);

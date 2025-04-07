@@ -7,10 +7,10 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
   const invites = (collaborationInvites && collaborationInvites.length > 0)
     ? collaborationInvites
     : [{
-        fullName: "no invites exists",
-        email: "no invites exists",
-        group: "xx",
-      }];
+      sender: { firstname: "No", lastname: "Invite" },
+      email: "no invites exists",
+      team_id: "xx",
+    }];
 
   // If the user hasn't joined a team, show the message and the pending invites table
   if (!myTeamNumber) {
@@ -32,16 +32,16 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
                 <tr>
                   <th>Full Name</th>
                   <th>Email-address</th>
-                  <th>Group</th>
+                  <th>Team number</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {invites.map((invite, index) => (
                   <tr key={index}>
-                    <td>{invite.fullName}</td>
-                    <td>{invite.email}</td>
-                    <td>{invite.group}</td>
+                    <td>{invite.sender.firstname} {invite.sender.lastname}</td>
+                    <td>{invite.sender.user?.email || invite.email || "N/A"}</td>
+                    <td>{invite.sender.team_id}</td>
                     <td>
                       <button className={Module["invite-button"]} style={{ margin: "0 10px" }}>Accept</button>
                       <button className={Module["invite-button"]} style={{ margin: "0 10px" }}>Decline</button>
@@ -49,6 +49,7 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
         </div>
@@ -78,17 +79,15 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
             <tr>
               <th>Full Name</th>
               <th>Email-address</th>
-              <th>Group</th>
               <th>Role</th>
             </tr>
           </thead>
           <tbody>
             {myTeamMembers.map((member, index) => (
               <tr key={index}>
-                <td>{member.fullName}</td>
-                <td>{member.email}</td>
-                <td>{member.group}</td>
-                <td>{member.role}</td>
+                <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"} </td> {/* Full name */}
+                <td>{member.user?.email || "N/A"}</td> {/* Email  */}
+                <td>{member.role || "Member"}</td> {/* Role (not in API, fallback to "N/A") */}
               </tr>
             ))}
           </tbody>
@@ -110,21 +109,21 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
               <tr>
                 <th>Full Name</th>
                 <th>Email-address</th>
-                <th>Group</th>
+
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {myTeamPendingInvites.map((invite, index) => (
                 <tr key={index}>
-                  <td>{invite.fullName}</td>
-                  <td>{invite.email}</td>
-                  <td>{invite.group}</td>
+                  <td>{`${invite.sender.firstname} ${invite.sender.lastname}`}</td>
+                  <td>{invite.receiver_email}</td>
                   <td>
                     <button className={Module["invite-button"]}>Cancel invite</button>
                   </td>
                 </tr>
               ))}
+
             </tbody>
           </table>
         </div>

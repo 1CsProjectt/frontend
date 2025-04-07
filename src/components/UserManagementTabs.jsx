@@ -52,7 +52,7 @@ const UserManagementTabs = () => {
   return (
     <div className={classes["users-management"]}>
       <div className={classes["navbar-container"]}>
-      <NavBar />
+      <NavBar  />
 
       </div>
       <div className={classes["header"]}>
