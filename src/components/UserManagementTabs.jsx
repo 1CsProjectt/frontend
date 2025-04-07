@@ -110,6 +110,7 @@ const UserManagementTabs = () => {
       <div className={classes["header"]}>
         <h2>Users Management</h2>
         <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a user account</button>
+        <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
       </div>
       <div className={classes["tabs"]}>
         {tabs.map((tab) => (
