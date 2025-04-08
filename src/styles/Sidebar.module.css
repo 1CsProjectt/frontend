@@ -1,0 +1,117 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Sidebar (Barre latérale) */
+.sidebar {
+  position: fixed; 
+  width: 16vw;
+  height: 100vh;
+  background-color: rgb(7,126,212);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  width: 10vw;
+  height: 10vh;
+  margin: auto;
+ 
+  margin-bottom: 4vh;
+}
+
+/* Menu */
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-item {
+  margin-top: 15px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  margin: 2px;
+}
+
+/* Default icon color */
+.icon, .row-icon {
+  filter: brightness(0) invert(1); /* Makes the SVG appear white */
+  transition: filter 0.3s;
+  width: 24px;
+  height: 24px;
+  margin-right: 1vw;
+}
+
+/* Right Arrow */
+.row-icon {
+  margin-left: auto;
+  margin-right: -0.5vw;
+}
+
+/* Bottom Menu */
+.menu-title {
+  font-size: 1.2rem;
+  margin: 5px;
+}
+.bottom-menu {
+  padding: 0 5px;
+  margin: 0 5px;
+  margin-top: auto;
+  margin-bottom: 5vh;
+}
+
+.bottom-menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.bottom-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+/* Active state */
+.menu-btn.active {
+  padding: 12px;
+  background-color: white;
+  color: #077ED4;
+  border-radius: 5px;
+}
+
+/* Change icon color when active */
+.menu-btn.active .icon,
+.menu-btn.active .row-icon {
+  filter: brightness(0) saturate(100%) invert(30%) sepia(72%) saturate(500%) hue-rotate(180deg);
+}

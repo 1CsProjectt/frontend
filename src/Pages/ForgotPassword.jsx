@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/authentication.css";
+import Module from "../styles/authentication.module.css";
+
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import axios from "axios";
@@ -52,49 +53,50 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className={Module["login-container"]}>
       {/* Left Side */}
-      <div className="login-left">
-        <div className="logo">
+      <div className={Module["login-left"]}>
+        <div className={Module["logo"]}>
           <img src={logo} alt="PFE Logo" />
         </div>
-        <img className="school-logo" src={schoolIcon} alt="ESI School Logo" />
+        <img className={Module["school-logo"]} src={schoolIcon} alt="ESI School Logo" />
       </div>
 
       {/* Right Side */}
-      <div className="login-right">
-        <div className="right-content">
+      <div className={Module["login-right"]}>
+        <div className={Module["right-content"]}>
           <h1>Forget password?</h1>
           <p>
             We will send a recovery link to this email. Please make sure to follow the instructions to regain access.
           </p>
           <form>
             <label>Email address</label>
-            <div className="email-field">
+            <div className={Module["email-field"]}>
               <input
                 type="email"
                 placeholder="Enter your email (e.g., name.surname@example.com)"
-                className="input-field"
+                className={Module["input-field"]}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             {/* Show error message if email is invalid */}
-            {error && <p className="error-message" style={{ color: "red" }}>{error}</p>}
+            {error && <p className={Module["error-message"]} style={{ color: "red" }}>{error}</p>}
 
-            <div className="check-email-actions check-forgetpassword-actions">
+            <div className={`${Module["check-email-actions"]} ${Module["check-forgetpassword-actions"]}`}>
+
               {/* "Back to log in" Button */}
-              <button className="link-btn" onClick={() => navigate("/")}>
+              <button className={Module["link-btn"]} onClick={() => navigate("/")}>
                 Back to log in
               </button>
 
               {/* "Send recovery link" Button */}
               <button
-                className="btn"
-                id="ForgetpageBacktoLogin"
+                className={Module["btn"]}
+                id={Module["ForgetpageBacktoLogin"]}
                 onClick={handleConfirmClick}
-                disabled={loading} // Disable button while loading
+                disabled={loading}
               >
                 {loading ? "Sending..." : "Send recovery link"}
               </button>

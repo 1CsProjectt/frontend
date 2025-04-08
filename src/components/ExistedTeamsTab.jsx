@@ -6,20 +6,41 @@
         />
 */
 import React, { useState, useEffect, useRef } from "react";
-import "../styles/TeamFormationPage.css";
-import Seemorepage from "./ExistedTeamSeemore";
+import Module from "../styles/TeamFormationPage.module.css";
 
+import Seemorepage from "./ExistedTeamSeemore";
+import JoinTeamAlert from "./JoinTeamAlert"
+import Toast from "../components/Toast";
 const ExistedTeamsTab = ({ existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
   const [selectedTeam, setSelectedTeam] = useState(null); // New state for "see more"
   const containerRef = useRef(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [showJoinAlert, setShowJoinAlert] = useState(false);
+  const handleJoinClick = () => {
+    setShowJoinAlert(true);
+  };
+  const handleCancel = () => {
+    setShowJoinAlert(false);
+  };
 
+  const handleConfirm = () => {
+    setShowJoinAlert(false);
+    // Handle join logic here (for example, an API call)
+    console.log("Join confirmed!");
+    setToastMessage("Team joining was successful.");
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
   useEffect(() => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 100; // Approximate height of a single table row
+        const estimatedRowHeight = 95; // Approximate height of a single table row
         const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
         setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 10);
       }
@@ -78,7 +99,7 @@ const ExistedTeamsTab = ({ existedTeams }) => {
 
         <Seemorepage
           myTeamNumber={selectedTeam.teamNumber}
-          myTeamMembers={selectedTeam.teamMembers || []} 
+          myTeamMembers={selectedTeam.teamMembers || []}
         />
       </div>
     );
@@ -87,8 +108,8 @@ const ExistedTeamsTab = ({ existedTeams }) => {
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="page-container">
-      <div className="table-wrapper" ref={containerRef}>
+    <div className={Module["page-container"]}>
+      <div className={Module["table-wrapper"]} ref={containerRef}>
         <table>
           <thead>
             <tr>
@@ -106,22 +127,22 @@ const ExistedTeamsTab = ({ existedTeams }) => {
                 <td>{team.teamCreator}</td>
                 <td>
                   {team.status.includes("Open") ? (
-                    <span className="status-available">{team.status}</span>
+                    <span className={Module["status-available"]}>{team.status}</span>
                   ) : (
-                    <span className="status-in-team">{team.status}</span>
+                    <span className={Module["status-in-team"]}>{team.status}</span>
                   )}
                 </td>
                 <td>
                   {team.status.includes("Open") ? (
-                    <button className="invite-button">Join</button>
+                    <button className={Module["invite-button"]} onClick={handleJoinClick}>Join</button>
                   ) : (
-                    <span className="disable-button">Full</span>
+                    <span className={Module["disable-button"]}>Full</span>
                   )}
                 </td>
                 <td>
                   {/* Instead of navigating, update state to show the details */}
                   <button
-                    className="invite-button"
+                    className={Module["invite-button"]}
                     onClick={() => setSelectedTeam(team)}
                   >
                     See more
@@ -133,21 +154,22 @@ const ExistedTeamsTab = ({ existedTeams }) => {
         </table>
       </div>
 
-      <div className="pagination">
+      <div className={Module["pagination"]}>
         <button
           id="previous-button"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={currentPage === 1 ? "disabled" : ""}
+          className={currentPage === 1 ? Module["disabled"] : ""}
+
         >
           Previous
         </button>
 
-        <div className="page-numbers">
+        <div className={Module["page-numbers"]}>
           {pageNumbers.map((page, idx) => {
             if (page === "...") {
               return (
-                <span key={idx} className="ellipsis">
+                <span key={idx} className={Module["ellipsis"]}>
                   ...
                 </span>
               );
@@ -156,7 +178,8 @@ const ExistedTeamsTab = ({ existedTeams }) => {
                 <button
                   key={idx}
                   onClick={() => handlePageChange(page)}
-                  className={page === currentPage ? "active" : ""}
+                  className={page === currentPage ? Module["active"] : ""}
+
                 >
                   {page}
                 </button>
@@ -169,11 +192,23 @@ const ExistedTeamsTab = ({ existedTeams }) => {
           id="next-button"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={currentPage === totalPages ? "disabled" : ""}
+          className={currentPage === totalPages ? Module["disabled"] : ""}
+
         >
           Next
         </button>
       </div>
+      <JoinTeamAlert
+        show={showJoinAlert}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
+      {showToast && (
+        <Toast
+          message={toastMessage || "Test Toast"}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };

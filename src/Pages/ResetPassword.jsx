@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/authentication.css";
+import Module from "../styles/authentication.module.css";
+
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
 import successIcon from "../assets/success-icon.svg";
@@ -92,16 +93,16 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="reset-password-container">
-      <div className="reset-left">
-        <div className="logo">
+    <div className={Module["reset-password-container"]}>
+      <div className={Module["reset-left"]}>
+        <div className={Module["logo"]}>
           <img src={logo} alt="PFE Logo" />
         </div>
-        <img className="school-logo" src={schoolIcon} alt="ESI School Logo" />
+        <img className={Module["school-logo"]} src={schoolIcon} alt="ESI School Logo" />
       </div>
 
-      <div className="reset-right">
-        <div className="reset-content">
+      <div className={Module["reset-right"]}>
+        <div className={Module["reset-content"]}>
           <h1>Reset password</h1>
           <p>Manage your final project efficiently with our platform.</p>
           <form onSubmit={handleSubmit}>
@@ -110,14 +111,15 @@ const ResetPassword = () => {
               type="password"
               value={newPassword}
               onChange={(e) => checkPasswordStrength(e.target.value)}
-              className="input-field"
+              className={Module["input-field"]}
               disabled={isLoading}
             />
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-            <p className={`password-strength ${passwordStrength.toLowerCase()}`}>
+            {errorMessage && <p className={Module["error-message"]}>{errorMessage}</p>}
+            <p className={`${Module["password-strength"]} ${Module[passwordStrength.toLowerCase()]}`}>
+
               Password strength: {passwordStrength || "Enter a password"}
             </p>
-            <button type="submit" className="btn" disabled={passwordStrength === "Weak" || isLoading}>
+            <button type="submit" className={Module["btn"]} disabled={passwordStrength === "Weak" || isLoading}>
               {isLoading ? "Resetting..." : "Reset password"}
             </button>
           </form>
@@ -125,20 +127,21 @@ const ResetPassword = () => {
       </div>
 
       {showModal && (
-        <div className="modal-overlay">
-          <div className={`modal ${modalType}`}>
-            <div className="modal-icon">
+        <div className={Module["modal-overlay"]}>
+          <div className={`${Module["modal"]} ${Module[modalType]}`}>
+
+            <div className={Module["modal-icon"]}>
               <img src={modalType === "success" ? successIcon : errorIcon} alt={modalType} />
             </div>
-            <div className="modal-header">{modalTitle}</div>
-            <div className="modal-body">
+            <div className={Module["modal-header"]}>{modalTitle}</div>
+            <div className={Module["modal-body"]}>
               <p>{modalType === "success" ? message : errorMessage}</p>
             </div>
-            <div className="modal-footer">
-              <button onClick={() => navigate("/")} className="btn-primary">
+            <div className={Module["modal-footer"]}>
+              <button onClick={() => navigate("/")} className={Module["btn-primary"]}>
                 Back to Login
               </button>
-              <button onClick={closeModal} className="btn-secondary">
+              <button onClick={closeModal} className={Module["btn-secondary"]}>
                 {modalType === "success" ? "Not now" : "Try Again"}
               </button>
             </div>
