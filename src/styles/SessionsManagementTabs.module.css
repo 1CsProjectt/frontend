@@ -11,10 +11,19 @@ body p {
   .main-wrapper {
     width: 100%;
     padding: 1px;
+ 
+  }
+
+
+
+  .h1{
+    margin-bottom: 10px;
   }
   
   /* Tabs Navigation */
   .tabs-container {
+    margin-top: 20px;
+    padding: 20px;
     width: 100%;
     background: none;
   }
@@ -31,7 +40,7 @@ body p {
     padding: 10px 15px;
     cursor: pointer;
     font-size: 16px;
-    color: #007bff;
+    color: #555;
     border-bottom: 3px solid transparent;
     transition: 0.3s;
   }
@@ -41,7 +50,7 @@ body p {
   }
   
   .tabs button.active {
-    color: black;
+    color: rgb(7,126,212);
     font-weight: bold;
     border-bottom: 3px solid #007bff;
   }
@@ -52,9 +61,9 @@ body p {
   }
   
   /* Section Containers */
-  .section-container {
+  .upper-section-container {
     display: flex;
-    justify-content: space-between; /* Pushes items apart */
+    padding-left: 50px;
     align-items: center; /* Aligns items vertically */
     background: #f8f9fa;
     padding: 20px;
@@ -63,17 +72,29 @@ body p {
     margin-bottom: 20px;
     border-bottom: 2px solid #ddd;
   }
+  .lower-section-container{
+    display: flex;
+    padding-left: 50px;
+    background: #f8f9fa;
+    padding: 20px;
+    width: 100%;
+    border-radius: 8px;
+ 
+  }
   
   /* Text Container */
   .text-container {
     margin-bottom: 120px;
+    margin-right: 300px;
   }
   
   /* Table Styling */
   .table-container {
-    overflow-x: auto;
-    margin-left: auto; /* Pushes the table to the right */
-    min-width: 50%; /* Ensures it takes a proper amount of space */
+    overflow-x: hidden;
+    min-width: 100%; /* Ensures it takes a proper amount of space */
+    width: 150%;
+    margin-left: 0px;
+    padding-left: 0px;
   }
   
   table {
@@ -81,12 +102,17 @@ body p {
     border-collapse: collapse;
     background: white;
   }
+
+  table td button{
+    margin-left: 5px;
+  }
   
   th, td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: center;
   }
+  
   
   th {
     background: #f1f1f1;
@@ -96,10 +122,11 @@ body p {
     display: flex;
     flex-direction: column;
     -ms-flex-align: end; 
+    margin-left:0px;
+    padding-left:0px;
    }
-  .inner-flexbox button{
-  
-  }
+ 
+
   
   /* Buttons */
 
@@ -107,26 +134,29 @@ body p {
 
   
   .primary-btn {
-    background-color: #007bff;
+    background-color: rgb(7,126,212);
     height: 50px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     color: white;
     cursor: pointer;
+    margin-left:20px;
     margin-top: 10px;
-    width: 100%;
+    width: 146%;
   }
   
   .validate-btn {
-    background-color: #0056b3;
-     
+    background-color: rgb(7,126,212);
+    height: 50px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     color: white;
     cursor: pointer;
+    margin-right:17px;
     margin-top: 10px;
+    width:70%;
   }
   
   .primary-btn:hover, .validate-btn:hover {
@@ -135,6 +165,7 @@ body p {
   
   .edit-btn, .cancel-btn {
     padding: 8px 12px;
+    width: 40%;
     border: none;
     cursor: pointer;
     border-radius: 4px;

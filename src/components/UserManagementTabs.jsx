@@ -67,7 +67,7 @@ const UserManagementTabs = () => {
   */
 
   //ideally this should be implemented in the backend but this is just a temporary solution
-  const allUsers = useMemo(() => {
+  var allUsers = useMemo(() => {
     return {
       Students: fetchedUsers.filter(user => user.role === "student"),
       Supervisors: fetchedUsers.filter(user => user.role === "teacher"),
@@ -76,7 +76,10 @@ const UserManagementTabs = () => {
     };
   }, [fetchedUsers]);
 
+  
+
   console.log(allUsers);
+
   
 
   const users = allUsers[activeTab] || [];
@@ -102,13 +105,14 @@ const UserManagementTabs = () => {
   };
 
   return (
-    <div className={classes["users-management"]}>
+    <div className={classes["users-management"]} >
       <div className={classes["navbar-container"]}>
+      
       <NavBar />
 
       </div>
       <div className={classes["header"]}>
-        <h2>Users Management</h2>
+        <h1>Users Management</h1>
         <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a user account</button>
         <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
       </div>
@@ -128,7 +132,7 @@ const UserManagementTabs = () => {
       </div>
 
       <table>
-  <thead>
+  <thead>x
     <tr>
       <th>Full Name</th>
       <th>Email Address</th>

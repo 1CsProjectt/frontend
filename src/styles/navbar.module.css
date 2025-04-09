@@ -19,7 +19,7 @@ p {
 .container {
   flex-direction: column;
   display: flex;
-  z-index: 2;
+ 
   background-color: #ffffff;
   height: 125px;
   width: 100%;

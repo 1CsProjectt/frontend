@@ -97,6 +97,7 @@ const PFEPage = () => {
             {filteredCards.length > 0 ? (
               filteredCards.map((card, index) => (
                 <PFECard key={card.id || index} card={card} isSelected={null} toggleSelect={() => {}}  />
+                //isSelected and toggleSelect are not used in this context, to disable the selection feature
               ))
             ) : (
               <p className={Style["no-results-text"]}>No projects found.</p>
