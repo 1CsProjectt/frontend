@@ -2,16 +2,19 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Style from "../styles/CardComponent.module.css";
 
-const PFECard = ({ card }) => {
+const PFECard = ({ card, isSelected, toggleSelect }) => {
   const navigate = useNavigate();
 
-  const handleExplore = () => {
-    // Navigate to the explore page and pass the card data as state
+  const handleExplore = (e) => {
+    e.stopPropagation(); // Prevent select toggle when clicking "Explore"
     navigate("/pfe/explore", { state: { card } });
   };
 
   return (
-    <div className={Style.card}>
+    <div
+      className={`${Style.card} ${isSelected ? Style.selected : ""}`}
+      onClick={() => toggleSelect(card.id)}
+    >
       <img
         src={card.photo}
         alt={card.title}
@@ -20,9 +23,11 @@ const PFECard = ({ card }) => {
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
-          <span className={Style.category}>
-            {card.specialization || "None"}
-          </span>
+          {card.specialization?.map((spec, i) => (
+            <span key={i} className={Style.category}>
+              {spec}
+            </span>
+          ))}
         </div>
         <p className={Style["card-description"]}>{card.description}</p>
         <p className={Style["card-author"]}>By {card.createdBy?.username}</p>
@@ -33,5 +38,6 @@ const PFECard = ({ card }) => {
     </div>
   );
 };
+
 
 export default PFECard;
