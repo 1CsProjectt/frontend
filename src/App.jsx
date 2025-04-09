@@ -19,6 +19,7 @@ import SettingsPage from "./Pages/SettingsPage";
 import NotificationsPage from "./Pages/NotificationsPage";
 import LoversPage from "./Pages/LoversPage";
 import ExplorePage from "./Pages/ExplorePage";
+import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
 /* import NavBar from "./components/Navbar"; */
 import TeamFormationPage from "./Pages/TeamformationPage";
 import ExistedTeamSeemore from "./components/ExistedTeamSeemore";
@@ -49,6 +50,8 @@ function App() {
         <Route path="/lovers" element={<LoversPage />} />
         <Route path="/TeamFormationPage" element={<TeamFormationPage/>} />
         <Route path="/pfe/explore" element={<ExplorePage />} />
+        <Route path="/admin/sessions/topic-validation/published-topic-explore" element={<PublishedTopicsExplorePage />} />
+
         <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
         

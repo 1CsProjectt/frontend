@@ -171,10 +171,10 @@
             </button>
          
             <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" />
-            isDeleteUserModalOpen
+            
           </div>
         </div>
-        <div className={classes["tabs"]}>
+      {/*   <div className={classes["tabs"]}>
           <button
             className={
               activeTab === "tab1" ? classes["tab active"] : classes["tab"]
@@ -191,7 +191,21 @@
           >
             Submitted Topics
           </button>
-        </div>
+        </div> */}
+         <div className={classes.tabs}>
+        <button
+          className={activeTab === "tab1" ? classes.active : ""}
+          onClick={() => setActiveTab("tab1")}
+        >
+          Published Topics
+        </button>
+        <button
+          className={activeTab === "tab2" ? classes.active : ""}
+          onClick={() => setActiveTab("tab2")}
+        >
+          Submitted Topics
+        </button>
+      </div>
 
         {/* Tab Content */}
         <div className={classes["tab-content"]}>
@@ -203,12 +217,31 @@
             card={card}
             isSelected={selectedCards.includes(card.id)}
             toggleSelect={toggleSelect}
+             const onExplore={(e, card) => {
+              e.stopPropagation(); // Prevent select toggle when clicking "Explore"
+              navigate("/admin/sessions/topic-validation/published-topic-explore", {
+                state: { card },
+              });
+            }} 
           />
         ))}
 
             </div>
           )}
-          {activeTab === "tab2" && <div>Content for Tab 2</div>}
+          {activeTab === "tab2" && (
+            <div className={classes["cards-container"]}>
+              {cardsArray.map((card) => (
+          <PFECard
+            key={card.id}
+            card={card}
+            isSelected={selectedCards.includes(card.id)}
+            toggleSelect={toggleSelect}
+            
+          />
+        ))}
+
+            </div>
+          )}
         </div>
       </div>
     );

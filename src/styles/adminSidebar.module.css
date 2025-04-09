@@ -5,6 +5,7 @@ body {
 /* Sidebar Container */
 .sidebar {
   height: 100vh;
+  position: fixed;
   width: 17%; 
   background-color: #077ED4;
   color: white;
@@ -13,20 +14,25 @@ body {
   padding-top: 2%;
   padding-right: 1.5%;
   padding-left: 1.5%;
-  
+  justify-content: space-between; /* Push bottom buttons to the bottom */
 }
 
 /* Sidebar Header */
 .sidebar-header {
   display: flex;
   gap:12px;
+  
   /*gap is better than margin for spacing while using a flexbox since it doens't affect surrouding elements like margin does*/
   align-items: center;
+  justify-content: center;
   padding: 15px;
   font-size: 20px;
   font-weight: bold;
   color: white;
   margin-bottom: 20px;
+}
+.sidebar-header h1{
+  margin-top: 0px;
 }
 
 /* Sidebar Menu */
@@ -93,12 +99,6 @@ body {
   filter: brightness(0) invert(27%) sepia(100%) saturate(900%) hue-rotate(180deg);
 }
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  justify-content: space-between; /* Push bottom buttons to the bottom */
-}
 
 /* Bottom section */
 .sidebar-bottom {

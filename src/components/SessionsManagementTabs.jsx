@@ -23,7 +23,9 @@ const SessionsManagementTabs = () => {
   return (
     <div className={classes["main-wrapper"]}>
       <NavBar />
+      
       <div className={classes["tabs-container"]}>
+        <h1>Sessions Management</h1>
         {/* Tabs Navigation */}
         <div className={classes["tabs"]}>
           {tabs.map((tab) => (
@@ -42,7 +44,7 @@ const SessionsManagementTabs = () => {
           {activeTab === "Topic Submission Session" && (
             <div className={classes["main-container"]}>
               {/* Start New Session Section */}
-              <div className={classes["section-container"]}>
+              <div className={classes["upper-section-container"]}>
                 <div className={classes["text-container"]}>
                   <h2>Start new session</h2>
                   <p>
@@ -83,7 +85,7 @@ const SessionsManagementTabs = () => {
               </div>
 
               {/* Validate and Control Topics Section */}
-              <div className={classes["section-container"]}>
+              <div className={classes["lower-section-container"]}>
                 <div className={classes["text-container"]}>
                   <h2>Validate and Control topics</h2>
                   <p>
