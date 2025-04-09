@@ -20,12 +20,12 @@
     width: 90%;
     overflow-y: hidden;
   }
-  .padding{
+ /*  .padding{
     padding-top: 130px;
-  }
+  } */
   /* Banner image */
   .project-banner {
-    width: 97%;
+    width: 94%;
     height: 24vh;
     object-fit: cover;
     margin: 25px;

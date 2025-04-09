@@ -1,47 +1,86 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Style from '../styles/TeamFormationPage.module.css';
+import { Group } from 'lucide-react';
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+
 const CreateTeamModal = ({ show, onClose, onTeamCreated, onInviteSent }) => {
+  const [teamName, setTeamName] = useState('');  // State for the team name
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState([]);
 
-  // When the Invite button is clicked, add a member and trigger the invite toast
-  const addMember = () => {
+  // Function to add a member and send an invite
+  const addMember = async () => {
     if (memberInput.trim() !== '') {
-      const newMember = { email: memberInput, name: memberInput };
+      const newMember = { email: memberInput };
       setMembers([...members, newMember]);
       setMemberInput('');
-      if (onInviteSent) {
-        onInviteSent();
+      
+      try {
+        // Send invite to the back-end to add member
+        await axios.post('/invitation/sendinvitation', { receiver_email: memberInput }, { withCredentials: true });
+        if (onInviteSent) {
+          onInviteSent(); // Trigger invite sent callback
+        }
+      } catch (error) {
+        console.error("Error sending invite:", error);
       }
     }
   };
 
-  // When "Create" is clicked, perform creation logic and trigger the team created callback
-  const handleCreate = () => {
-    // Your team creation logic goes here.
-    if (onTeamCreated) {
-      onTeamCreated();
+  // Function to handle the team creation and send the request to back-end
+  const handleCreate = async () => {
+    if (teamName.trim() === '') {
+      alert("Please enter a team name.");
+      return;
     }
-    onClose();
+
+    try {
+      // Create the team on the back-end
+      const response = await axios.post('/teams/creategroup', { groupName: teamName });
+      
+      if (response.data.success) {
+        // Trigger team created callback
+        if (onTeamCreated) {
+          onTeamCreated({ teamName });
+        }
+        onClose(); // Close the modal after creation
+      } else {
+        alert("Error creating the team. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating team:", error);
+      alert("Error creating the team. Please try again.");
+    }
   };
 
   if (!show) return null;
 
   return (
     <div className={Style["modal-overlay"]}>
-      <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}
-      >
+      <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}>
         <h2>Create a team</h2>
         <p className={Style["create-team-subtitle"]}>
           Create your own team and kickstart your journey! You can start solo and invite
           members later, or send invitations right away to build your dream team.
         </p>
 
-        {/* Input row for adding members */}
+        {/* Input for team name */}
         <div className={Style["add-member-row"]}>
           <input
             type="text"
-            placeholder="add members by name or email"
+            placeholder="Enter team name"
+            className={Style["add-member-input"]}
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+          />
+        </div>
+
+        {/* Input for adding members */}
+        <div className={Style["add-member-row"]}>
+          <input
+            type="text"
+            placeholder="Add members by name or email"
             className={Style["add-member-input"]}
             value={memberInput}
             onChange={(e) => setMemberInput(e.target.value)}

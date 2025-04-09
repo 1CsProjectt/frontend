@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-import CreateTeamAlert from "../components/CreateTeamAlert";
-import Toast from "../components/Toast";
-const StudentsListTab = ({ students ,myTeamNumber}) => {
+import CreateTeamAlert from "./CreateTeamAlert";
+import Toast from "./Toast";
+import axios from "axios";
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+
+const StudentsListTab = ({ user,students, myTeamNumber }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage, setStudentsPerPage] = useState(5);
   const [showToast, setShowToast] = useState(false);
@@ -71,16 +74,40 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
   const pageNumbers = getPageNumbers();
 
   // Handle invite click
-  const handleInviteClick = () => {
-    // If myTeamNumber is not empty, show a toast message
-    if (myTeamNumber !== "") {
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    } else {
-      // If no team number, open the CreateTeamAlert modal to handle team creation/invitation
+  /*  const handleInviteClick = () => {
+     // If myTeamNumber is not empty, show a toast message
+     if (myTeamNumber) {
+       setShowToast(true);
+       setTimeout(() => {
+         setShowToast(false);
+       }, 3000);
+     } else {
+       // If no team number, open the CreateTeamAlert modal to handle team creation/invitation
+       setShowAlert(true);
+     }
+   }; */
+
+
+  const handleInviteClick = async (receiver_email) => {
+    if (user.team_id === null) {
       setShowAlert(true);
+    
+      return;
+    }
+
+    try {
+      const response = await axios.post("/invitation/sendinvitation", {
+        receiver_email: receiver_email 
+
+
+      });
+
+      if (response.data.success) {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      }
+    } catch (error) {
+      console.error("Error sending invite:", error);
     }
   };
 
@@ -93,7 +120,40 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
     console.log("Team created and student invited!");
     setShowAlert(false);
   };
-
+  /* const handleConfirm = async () => {
+    try {
+      // Step 1: Create a team
+      const createTeamResponse = await axios.post("/api/create-team", {
+        creatorId: "currentUserId", // Replace with actual user ID
+      });
+  
+      if (!createTeamResponse.data.success) {
+        console.error("Error creating team:", createTeamResponse.data.message);
+        return;
+      }
+  
+      const newTeamNumber = createTeamResponse.data.teamNumber;
+  
+      // Step 2: Send invite after team creation
+      const inviteResponse = await axios.post("/api/invite", {
+        inviterId: "currentUserId", // Replace with actual user ID
+        inviteeId: "selectedStudentId", // Replace with actual student ID
+        teamNumber: newTeamNumber,
+      });
+  
+      if (inviteResponse.data.success) {
+        console.log("Team created and student invited!");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      } else {
+        console.error("Error sending invite:", inviteResponse.data.message);
+      }
+    } catch (error) {
+      console.error("Error in team creation/invitation process:", error);
+    } finally {
+      setShowAlert(false);
+    }
+  }; */
   return (
     <div className={Module["page-container"]}>
       <div className={Module["table-wrapper"]} ref={containerRef}>
@@ -102,7 +162,7 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
             <tr>
               <th>Full-name</th>
               <th>Email-address</th>
-              <th>Group</th>
+
               <th>Status</th>
               <th></th>
             </tr>
@@ -112,19 +172,21 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
               <tr key={index}>
                 <td>{student.fullName}</td>
                 <td>{student.email}</td>
-                <td>{student.group}</td>
+
                 <td>
-                  {student.status === "Available" ? (
+                  {student.status === "available" ? (
                     <span className={Module["status-available"]}>Available</span>
                   ) : (
                     <span className={Module["status-in-team"]}>In a team</span>
                   )}
                 </td>
                 <td>
-                  {student.status === "Available" ? (
-                    <button className={Module["invite-button"]} onClick={handleInviteClick}>
+                  {student.status === "available" ? (
+
+                    <button className={Module["invite-button"]} onClick={() => handleInviteClick(student.email)}>
                       Invite
                     </button>
+
                   ) : (
                     <button className={Module["disable-button"]} disabled>
                       Invite
@@ -185,11 +247,11 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
 
       {/* Toast Notification */}
       {showToast && (
-        <Toast 
-          message="Invite sent successfully." 
-          onClose={() => setShowToast(false)} 
+        <Toast
+          message="Invite sent successfully."
+          onClose={() => setShowToast(false)}
         />
-        
+
       )}
       <CreateTeamAlert
         show={showAlert}

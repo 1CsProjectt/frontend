@@ -1,11 +1,27 @@
+import React, { useState, useEffect } from "react";
 import Module from "../styles/navbar.module.css";
 import searchicon from "../assets/Search.svg";
-import React, { useState, useEffect } from "react";
 import filterIcon from "../assets/Filter.svg";
 import filterIconup from "../assets/arrow-up.svg";
 import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
+
+// Dummy notification data
+const notificationsData = [
+  {
+    id: 1,
+    title: "New Message",
+    message: "You have received a new message.",
+    time: "2 mins ago",
+  },
+  {
+    id: 2,
+    title: "Server Alert",
+    message: "Your server is running low on space.",
+    time: "10 mins ago",
+  },
+];
 
 const NavBar = ({
   title,
@@ -35,6 +51,7 @@ const NavBar = ({
   const [timeLeft, setTimeLeft] = useState(
     targetDate && targetDate !== "" ? calculateTimeLeft() : null
   );
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     if (targetDate && targetDate !== "") {
@@ -45,21 +62,24 @@ const NavBar = ({
     }
   }, [targetDate, timeLeft]);
 
+  const toggleNotifications = () => {
+    setShowNotifications((prev) => !prev);
+  };
+
   return (
     <div className={Module["container"]}>
       <div className={Module["session"]}>
         <p className={Module["sessionP"]}>
-          {(!targetDate || targetDate === "")
-            ? title
-            : (
-              <>
-                {title}{" "}
-                <span className={Module["countdownStyle"]}>
-                  {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min to end
-                </span>
-              </>
-            )
-          }
+          {(!targetDate || targetDate === "") ? (
+            title
+          ) : (
+            <>
+              {title}{" "}
+              <span className={Module["countdownStyle"]}>
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min to end
+              </span>
+            </>
+          )}
         </p>
       </div>
       <div className={Module["form"]}>
@@ -67,25 +87,34 @@ const NavBar = ({
           onFilterApply={onFilterApply}
           currentFilters={selectedFilters}
         />
-        <Searchbar
-          onSearchChange={onSearchChange}
-          suggestions={suggestions || []}
-        />
+        <Searchbar onSearchChange={onSearchChange} suggestions={suggestions || []} />
         <div className={Module["rightside"]}>
-          <div className={Module["notf-button"]}>
-            <img src={notfIcon} alt="notf-icon" className={Module["notf-icon"]} />
+          {/* Notification Icon */}
+          <div className={Module["notf-button"]} onClick={toggleNotifications}>
+            <img
+              src={notfIcon}
+              alt="Notification Icon"
+              className={Module["notf-icon"]}
+            />
           </div>
+          {/* Profile section */}
           <div className={Module["profile"]}>
-            <img src={profilepic} alt="pic" className={Module["pic"]} />
+            <img src={profilepic} alt="Profile" className={Module["pic"]} />
             <p className={Module["profiletext"]}>Profile</p>
             <img
               src={filterIcondown}
-              alt="Toggle2"
+              alt="Toggle Profile"
               className={Module["arrow-icon-prfoile"]}
             />
           </div>
         </div>
       </div>
+      {/* Notification Panel */}
+      {showNotifications && (
+        <div className={Module["notification-container"]}>
+          <NotificationPanel notifications={notificationsData} />
+        </div>
+      )}
     </div>
   );
 };
@@ -97,14 +126,14 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
   const handleInputChange = (event) => {
     const newQuery = event.target.value;
     setQuery(newQuery);
-    // Only propagate search if the onSearchChange function is provided
     if (onSearchChange) {
       onSearchChange(newQuery);
     }
 
     if (newQuery.trim() !== "") {
+      // Filter suggestions and safely check for null or undefined values
       const filtered = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(newQuery.toLowerCase())
+        suggestion && suggestion.toLowerCase().includes(newQuery.toLowerCase())
       );
       setFilteredSuggestions(filtered);
     } else {
@@ -130,7 +159,7 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
         onChange={handleInputChange}
       />
       <div className={Module["search-icon"]}>
-        <img src={searchicon} alt="search-icon" />
+        <img src={searchicon} alt="Search Icon" />
       </div>
       {filteredSuggestions.length > 0 && (
         <ul className={Module["suggestions-list"]}>
@@ -260,6 +289,30 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+const NotificationPanel = ({ notifications }) => {
+  return (
+    <div className={Module["notification-panel"]}>
+      <div className={Module["notification-header"]}>
+        <h3>Notifications</h3>
+        <button className={Module["mark-read-btn"]}>Mark all as read</button>
+      </div>
+      {notifications.map((notification) => (
+        <div key={notification.id} className={Module["notification-item"]}>
+          <div className={Module["notification-content"]}>
+            <p className={Module["notification-title"]}>
+              {notification.title}
+            </p>
+            <p className={Module["notification-message"]}>
+              {notification.message}
+            </p>
+          </div>
+          <p className={Module["notification-time"]}>{notification.time}</p>
+        </div>
+      ))}
     </div>
   );
 };

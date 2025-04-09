@@ -30,7 +30,7 @@ export default function ExplorePage() {
         <h1 className={Module.title}>Exploring</h1>
         <div className={Module["banner-wrapper"]}>
           <img
-            src={card.photo || "https://via.placeholder.com/300x200"}
+            src={card.photo }
             alt="Project Banner"
             className={Module["project-banner"]}
           />
@@ -44,7 +44,7 @@ export default function ExplorePage() {
             {card.supervisors && card.supervisors.length > 0 ? (
               card.supervisors.map((supervisor, index) => (
                 <li key={index}>
-                  {supervisor.name || "No name provided"}
+                 {( supervisor.firstname +" "+ supervisor.lastname ) || "No name provided"}
                 </li>
               ))
             ) : (

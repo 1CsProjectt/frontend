@@ -1,16 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-
-
+import axios from "axios";
 const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites }) => {
   // Use default invite when collaborationInvites is empty
   const invites = (collaborationInvites && collaborationInvites.length > 0)
     ? collaborationInvites
     : [{
-        fullName: "no invites exists",
-        email: "no invites exists",
-        group: "xx",
-      }];
+      
+      sender: { firstname: "No", lastname: "Invite" },
+      email: "no invites exists",
+      team_id: "xx",
+    }];
+  
+  // Handlers for button clicks
+/*   const handleAcceptInvite = (inviteId) => {
+          const response = await axios.patch('/invitation/acceptInvitation');
+
+    console.log(`Accepted invite with ID: ${inviteId}`);
+   
+  }; */
+  const handleAcceptInvite = async (inviteId) => {
+    try {
+      // Send a request to leave the team
+      const response = await axios.patch('/invitation/acceptInvitation');
+      console.log(response.data); 
+    
+    } catch (error) {
+      console.error("Error:", error);
+      
+    }
+  };
+
+  const handleDeclineInvite = (inviteId) => {
+    console.log(`Declined invite with ID: ${inviteId}`);
+    // Add the logic to handle declining an invite here
+  };
+
+  const handleCancelInvite = (inviteId) => {
+    console.log(`Cancelled invite with ID: ${inviteId}`);
+    // Add the logic to handle canceling an invite here
+  };
 
   // If the user hasn't joined a team, show the message and the pending invites table
   if (!myTeamNumber) {
@@ -32,19 +61,31 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
                 <tr>
                   <th>Full Name</th>
                   <th>Email-address</th>
-                  <th>Group</th>
+                  <th>Team number</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {invites.map((invite, index) => (
                   <tr key={index}>
-                    <td>{invite.fullName}</td>
-                    <td>{invite.email}</td>
-                    <td>{invite.group}</td>
+                    <td>{invite.sender.firstname} {invite.sender.lastname}</td>
+                    <td>{invite.sender.user?.email || invite.email || "N/A"}</td>
+                    <td>{invite.sender.team_id}</td>
                     <td>
-                      <button className={Module["invite-button"]} style={{ margin: "0 10px" }}>Accept</button>
-                      <button className={Module["invite-button"]} style={{ margin: "0 10px" }}>Decline</button>
+                      <button 
+                        className={Module["invite-button"]} 
+                        style={{ margin: "0 10px" }}
+                        onClick={() => handleAcceptInvite(collaborationInvites.id)}
+                      >
+                        Accept
+                      </button>
+                      <button 
+                        className={Module["invite-button"]} 
+                        style={{ margin: "0 10px" }}
+                        onClick={() => handleDeclineInvite(invite.team_id)}
+                      >
+                        Decline
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -78,17 +119,15 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
             <tr>
               <th>Full Name</th>
               <th>Email-address</th>
-              <th>Group</th>
               <th>Role</th>
             </tr>
           </thead>
           <tbody>
             {myTeamMembers.map((member, index) => (
               <tr key={index}>
-                <td>{member.fullName}</td>
-                <td>{member.email}</td>
-                <td>{member.group}</td>
-                <td>{member.role}</td>
+                <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"} </td>
+                <td>{member.user?.email || "N/A"}</td>
+                <td>{member.role || "Member"}</td>
               </tr>
             ))}
           </tbody>
@@ -110,18 +149,21 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
               <tr>
                 <th>Full Name</th>
                 <th>Email-address</th>
-                <th>Group</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {myTeamPendingInvites.map((invite, index) => (
                 <tr key={index}>
-                  <td>{invite.fullName}</td>
-                  <td>{invite.email}</td>
-                  <td>{invite.group}</td>
+                  <td>{`${invite.sender.firstname} ${invite.sender.lastname}`}</td>
+                  <td>{invite.receiver_email}</td>
                   <td>
-                    <button className={Module["invite-button"]}>Cancel invite</button>
+                    <button 
+                      className={Module["invite-button"]}
+                      onClick={() => handleCancelInvite(invite.sender.team_id)}
+                    >
+                      Cancel invite
+                    </button>
                   </td>
                 </tr>
               ))}

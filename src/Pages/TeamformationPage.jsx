@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/NavBar";
 import StudentsListTab from "../components/StudentsListTab";
@@ -8,255 +9,167 @@ import MyTeamTab from "../components/MyTeamTab";
 import CreateTeamModal from "../components/CreateTeamModal";
 import Toast from "../components/Toast";
 import JoinTeamModal from "../components/JoinTeamAlert";
-
 import Style from "../styles/TeamFormationPage.module.css";
+import LeaveTeamPopup from "../components/LeaveTeamPopup";
+const existedTeamsss =[]; 
+// Skip ngrok warning if you're using ngrok
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 function TeamFormationPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Students List");
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
-  // State to handle search query input
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Sample data for Students List
-  const students = [
-    { fullName: "Ahmed Ibn Khaled", email: "ahmed.khaled@site-dz.stat.dz", group: "G1", status: "Available" },
-    { fullName: "Sara Mahmoud Al-Ali", email: "sara.al-ali@site-dz.stat.dz", group: "G2", status: "In a team" },
-    { fullName: "Ali Mansour", email: "ali.mansour@site-dz.stat.dz", group: "G1", status: "Available" },
-    { fullName: "Lina Bensalem", email: "lina.bensalem@site-dz.stat.dz", group: "G2", status: "In a team" },
-    // ... add more students if needed
-  ];
-
-  // Dynamically generate suggestions from the students list (both fullName and email)
-  const suggestions = Array.from(
-    new Set(students.flatMap(student => [student.fullName, student.email]))
-  );
-
-  // Function to handle changes in the search input
-  const handleSearchChange = (query) => {
-    setSearchQuery(query);
-    console.log("Search query:", query);
-    // Add logic here to filter data or trigger API calls if needed
-  };
-
-  const targetDate = new Date("2025-04-29T23:59:59");
-
-  /* for dynamic */
-  /* // States for dynamic data fetched when the corresponding tab is clicked
+  const [showLeaveTeamPopup, setShowLeaveTeamPopup] = useState(false); 
   const [students, setStudents] = useState([]);
   const [existedTeams, setExistedTeams] = useState([]);
-  const [myTeam, setMyTeam] = useState(null); // null if no team exists
+  const [myTeam, setMyTeam] = useState(null);
   const [myTeamPendingInvites, setMyTeamPendingInvites] = useState([]);
   const [collaborationInvites, setCollaborationInvites] = useState([]);
-  
-  // Loading and error states for API calls
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const targetDate = new Date("2025-04-29T23:59:59");
 
-  // useEffect that fetches data whenever activeTab changes.
+  const handleJoinClick = () => {
+   setShowLeaveTeamPopup(true)
+   console.log("leave clicked")
+  };
+  const handleCancel = () => {
+    setShowLeaveTeamPopup(false);
+  };
+
+  const handleConfirm = () => {
+    setShowLeaveTeamPopup(false);
+    // Here you would perform the join action (APIEx call, etc.)
+    console.log("leave confirmed!");
+    setToastMessage("Team leaving was successful.");
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
   useEffect(() => {
-    // Define an asynchronous function to fetch data for the active tab.
     const fetchData = async () => {
       setLoading(true);
       setError("");
+
       try {
         if (activeTab === "Students List") {
-          // Fetch students list data
-          const { data } = await axios.get("/api/students");
-          setStudents(data);
+          const { data } = await axios.get("/student/liststudents", { withCredentials: true });
+          console.log("API Response (Students List):", data);
+          if (data && Array.isArray(data.students)) {
+            setStudents(data.students);
+          } else {
+            console.error("Unexpected API Response Format for students:", data);
+          }
         } else if (activeTab === "Existed Teams") {
-          // Fetch existed teams data
-          const { data } = await axios.get("/api/teams");
-          setExistedTeams(data);
+          const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
+          console.log("API Response (isted Teams):", data);
+          // Map teams to include a computed status.
+          // Use groupName as the team name.
+          const teamsWithStatus = data.teams.map(team => ({
+            ...team,
+            status:
+              team.members && team.maxNumber && team.members.length === team.maxNumber
+                ? "full"
+                : "open"
+          }));
+          setExistedTeams(teamsWithStatus);
         } else if (activeTab === "My Team") {
-          // Fetch my team details, pending invites, and collaboration invites
-          const { data: teamData } = await axios.get("/api/myTeam");
-          setMyTeam(teamData);
-          const { data: pendingInvites } = await axios.get("/api/myTeam/pendingInvites");
-          setMyTeamPendingInvites(pendingInvites);
-          const { data: collabInvites } = await axios.get("/api/myTeam/collaborationInvites");
-          setCollaborationInvites(collabInvites);
+          const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
+          console.log("API Response (My Team):", teamData);
+          setMyTeam(teamData.team);
+          console.log("team member ",teamData.team.members)
+          if (teamData?.team?.id) {
+            const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
+            setMyTeamPendingInvites(pendingInvites);
+            console.log("The pendingInvites",pendingInvites)
+          } else {
+            const { data: collabInvites } = await axios.get("invitation/getallmyrecievedinvitations", { withCredentials: true });
+            setCollaborationInvites(collabInvites);
+            console.log("The collaborationInvites",collabInvites)
+            
+          }
         }
-        setLoading(false);
       } catch (err) {
-        setError(err.response ? err.response.data.message : err.message);
+        console.error("Fetch Error:", err);
+        setError(err.response?.data?.message || err.message);
+      } finally {
         setLoading(false);
       }
     };
 
-    // Call the fetch function only when a tab is activated
     fetchData();
-  }, [activeTab]); */
+  }, [activeTab]);
+
+  // Format the students for display
+  const formattedStudents = students.map(student => ({
+    fullName: `${student.firstname || ""} ${student.lastname || ""}`.trim(),
+    email: student.user?.email || "No Email",
   
-  // Sample data for Existed Teams
-  const existedTeams = [
-    {
-      teamNumber: "01", teamCreator: "Ahmed Ibn Khaled", status: "Full", teamMembers: [
-        {
-          fullName: "Ahmed Ibn Khaled",
-          email: "a.benkhaled@esi-sba.dz",
-          role: "Front-end developer", group: "06",
-        },
-        {
-          fullName: "Sara Mahmoud Al-Ali",
-          email: "s.alali@esi-sba.dz",
-          role: "Back-end developer", group: "06",
-        },
-      ],
-    },
-    {
-      teamNumber: "02", teamCreator: "Sara Mahmoud Al-Ali", status: "Open (3/5)", teamMembers: [
-        {
-          fullName: "Ahmed Ibn Khaled",
-          email: "a.benkhaled@esi-sba.dz",
-          role: "Front-end developer", group: "06",
-        },
-        {
-          fullName: "Sara Mahmoud Al-Ali",
-          email: "s.alali@esi-sba.dz",
-          role: "Back-end developer", group: "06",
-        },
-      ],
-    },
-    // ... add more teams if needed
-  ];
+    status: student.status || "No Status",
+  }));
 
-  // Sample data for My Team
-  const myTeamNumber = "";  //if there is no team, set it to an empty string => MY team page will change
-  const myTeamMembers = [
-    {
-      fullName: "Ahmed Ibn Khaled",
-      email: "a.benkhaled@esi-sba.dz",
-      group: "06",
-      role: "Front-end developer",
-    },
-    {
-      fullName: "Sara Mahmoud Al-Ali",
-      email: "s.alali@esi-sba.dz",
-      group: "05",
-      role: "Back-end developer",
-    },
-  ];
+  console.log("Formatted Students Data:", formattedStudents);
 
-  // Pending invites for My Team
-  const myTeamPendingInvites = [
-    {
-      fullName: "Khaled Omar Al-Saeed",
-      email: "khaled.sa@esi-sba.dz",
-      group: "05",
-    },
-    {
-      fullName: "Youssef Abdelrahman Nasser",
-      email: "youssef.nasser@esi-sba.dz",
-      group: "03",
-    },
-    {
-      fullName: "no invites exists",
-      email: "no invites exists",
-      group: "xx",
-    },
-  ];
-  // Pending invites for My Team
-  const collaborationInvites = [
-    {
-      fullName: "Khaled Omar Al-Saeed",
-      email: "khaled.sa@esi-sba.dz",
-      group: "05",
-    },
-    
-  ];
-
-  // Handle team creation toast
-  const handleTeamCreated = () => {
-    console.log("Invite sent callback triggered");
-    setToastMessage("Team creation was successful.");
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
   };
 
-  // Handle invite toast when a new member is invited
-  const handleInviteSent = () => {
-    console.log("Team created callback triggered");
-    setToastMessage("Invite sent successfully");
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
+  // Filter students based on the search query
+  const filteredStudents = formattedStudents.filter(student =>
+    student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
+  // Render the appropriate tab content based on the active tab
   const renderTabContent = () => {
     if (activeTab === "Students List") {
-      return <StudentsListTab students={students}  myTeamNumber={myTeamNumber}/>;
+      return <StudentsListTab user={user} students={filteredStudents} myTeamNumber={myTeam?.groupName || ""} />;
     } else if (activeTab === "Existed Teams") {
-      return <ExistedTeamsTab existedTeams={existedTeams} />;
+      return <ExistedTeamsTab user={user} existedTeams={existedTeams} navigate={navigate} />;
     } else if (activeTab === "My Team") {
       return (
         <MyTeamTab
-          myTeamNumber={myTeamNumber}
-          myTeamMembers={myTeamMembers}
+          myTeamNumber={myTeam?.id}
+          myTeamMembers={myTeam?.members || []}
           myTeamPendingInvites={myTeamPendingInvites}
           collaborationInvites={collaborationInvites}
         />
-        /* for dynamic */
-        /*    {<MyTeamTab
-             myTeamNumber={myTeam ? myTeam.teamNumber : ""}
-             myTeamMembers={myTeam ? myTeam.teamMembers : []}
-             myTeamPendingInvites={myTeamPendingInvites}
-             collaborationInvites={collaborationInvites}
-           />} */
       );
     }
   };
-  /* for dynamic */
-  /*  if (loading) return <div>Loading...</div>;
-      if (error) return <div>Error: {error}</div>; */
+
   return (
     <div>
       <Sidebar />
       <div style={{ marginLeft: "16vw" }}>
-        {/* Pass the search-related props to the NavBar */}
         <Navbar
           title={"Group formation session:"}
           targetDate={targetDate}
           onSearchChange={handleSearchChange}
-          suggestions={suggestions}
+          suggestions={formattedStudents.map(s => s.fullName)}
         />
         <div className={Style["team-formation-container"]}>
-          {/* Header row with conditional Create a team button */}
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
             {activeTab === "Existed Teams" && (
-              <button
-                className={Style["create-team-button"]}
-                onClick={() => setShowCreateTeamModal(true)}
-              >
+              <button className={Style["create-team-button"]} onClick={() => setShowCreateTeamModal(true)}>
                 Create a team
               </button>
             )}
-            {/* for dynamic */}
-            {/* {activeTab === "My Team" && myTeam && myTeam.teamNumber && (
-              <button
-                className={Style["Leave-button"]}
-                onClick={() => setShowCreateTeamModal(true)}
-              >
-                Leave the team
-              </button>
-            )} */}
-            {activeTab === "My Team" && myTeamNumber !== "" && (
-              <button
-                className={Style["Leave-button"]}
-                onClick={() => setShowCreateTeamModal(true)}
-              >
+            {activeTab === "My Team" && myTeam?.groupName && (
+               <button className={Style["Leave-button"]} onClick={handleJoinClick}>
                 Leave the team
               </button>
             )}
           </div>
-          
+
           <div className={Style["tabs"]}>
-            {["Students List", "Existed Teams", "My Team"].map((tab) => (
+            {["Students List", "Existed Teams", "My Team"].map(tab => (
               <div
                 key={tab}
                 className={`${Style["tab-item"]} ${activeTab === tab ? Style.active : ""}`}
@@ -267,22 +180,21 @@ function TeamFormationPage() {
             ))}
           </div>
 
-          {renderTabContent()}
+          {loading ? <div>Loading...</div> : error ? <div>Error: {error}</div> : renderTabContent()}
         </div>
 
-        {/* Render CreateTeamModal and Toast */}
         <CreateTeamModal
           show={showCreateTeamModal}
           onClose={() => setShowCreateTeamModal(false)}
-          onTeamCreated={handleTeamCreated}
-          onInviteSent={handleInviteSent}
+          onTeamCreated={() => setToastMessage("Team created successfully.")}
+          onInviteSent={() => setToastMessage("Invite sent successfully.")}
         />
-        {showToast && (
-          <Toast
-            message={toastMessage || "Test Toast"}
-            onClose={() => setShowToast(false)}
-          />
-        )}
+        <LeaveTeamPopup
+        show={showLeaveTeamPopup}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
+        {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
       </div>
     </div>
   );

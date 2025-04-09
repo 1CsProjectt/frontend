@@ -22,6 +22,7 @@ import ExplorePage from "./Pages/ExplorePage";
 /* import NavBar from "./components/Navbar"; */
 import TeamFormationPage from "./Pages/TeamformationPage";
 import ExistedTeamSeemore from "./components/ExistedTeamSeemore";
+import NotificationPopup from "./components/modals/NotificationPopup";
 function App() {
   return (
     <Router>  

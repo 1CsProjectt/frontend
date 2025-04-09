@@ -13,7 +13,7 @@ const PFECard = ({ card }) => {
   return (
     <div className={Style.card}>
       <img
-        src={card.photo || "https://via.placeholder.com/300x200"}
+        src={card.photo}
         alt={card.title}
         className={Style["card-image"]}
       />
@@ -21,11 +21,11 @@ const PFECard = ({ card }) => {
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
           <span className={Style.category}>
-            {card.specialization || "No specialization"}
+            {card.specialization || "None"}
           </span>
         </div>
         <p className={Style["card-description"]}>{card.description}</p>
-        <p className={Style["card-author"]}>By {card.creator?.username}</p>
+        <p className={Style["card-author"]}>By {card.createdBy?.username}</p>
         <button className={Style["card-button"]} onClick={handleExplore}>
           Explore
         </button>
