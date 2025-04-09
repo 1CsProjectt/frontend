@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.maincontent {
+  margin-left: 310px; /* To accommodate sidebar width */
+  width: calc(100% - 290px);
+}
+
+.leftside {
+  background-color: #077ed4;
+  width: 290px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+}
+/* Resizable Handle */
