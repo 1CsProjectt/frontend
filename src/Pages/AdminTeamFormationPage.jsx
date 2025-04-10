@@ -11,11 +11,12 @@ import Toast from "../components/Toast";
 
 import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/LeaveTeamPopup";
+import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
 
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-function TeamFormationPage() {
+function TeamFormationPage() {                
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Students List");
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
@@ -32,6 +33,7 @@ function TeamFormationPage() {
   const [error, setError] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
   const targetDate = new Date("2025-04-29T23:59:59");
+  const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState();
 
   const handleJoinClick = () => {
    setShowLeaveTeamPopup(true)
@@ -78,22 +80,7 @@ function TeamFormationPage() {
                 : "open"
           }));
           setExistedTeams(teamsWithStatus);
-        } else if (activeTab === "My Team") {
-          const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
-          console.log("API Response (My Team):", teamData);
-          setMyTeam(teamData.team);
-          console.log("team member ",teamData.team.members)
-          if (teamData?.team?.id) {
-            const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
-            setMyTeamPendingInvites(pendingInvites);
-            console.log("The pendingInvites",pendingInvites)
-          } else {
-            const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
-            setCollaborationInvites(collabInvites);
-            console.log("The collaborationInvites",collabInvites)
-            
-          }
-        }
+        } 
       } catch (err) {
         console.error("Fetch Error:", err);
         setError(err.response?.data?.message || err.message);
@@ -130,23 +117,14 @@ function TeamFormationPage() {
     if (activeTab === "Students List") {
       return <StudentsListTab user={user} students={filteredStudents} myTeamNumber={myTeam?.groupName || ""} />;
     } else if (activeTab === "Existed Teams") {
-      return <ExistedTeamsTab user={user} existedTeams={existedTeams} navigate={navigate} />;
-    } else if (activeTab === "My Team") {
-      return (
-        <MyTeamTab
-          myTeamNumber={myTeam?.id}
-          myTeamMembers={myTeam?.members || []}
-          myTeamPendingInvites={myTeamPendingInvites}
-          collaborationInvites={collaborationInvites}
-        />
-      );
+      return <ExistedTeamsTab user={user} existedTeams={existedTeams} navigate={navigate} />
     }
   };
 
   return (
     <div>
-      <Sidebar />
-      <div style={{ marginLeft: "16vw" }}>
+   
+      <div>
         <Navbar
           title={"Group formation session:"}
           targetDate={targetDate}
@@ -156,20 +134,23 @@ function TeamFormationPage() {
         <div className={Style["team-formation-container"]}>
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
-            {activeTab === "Existed Teams" && (
+           
+              <div className="buttons-container">
+                  <button className={Style["go-back-button"]} onClick={() => {setSessionsPageActiveTab("Team Formation Session");navigate(-1)}}>
+                go Back
+              </button>
+               {activeTab === "Existed Teams" && (
               <button className={Style["create-team-button"]} onClick={() => setShowCreateTeamModal(true)}>
                 Create a team
               </button>
-            )}
-            {activeTab === "My Team" && myTeam?.groupName && (
-               <button className={Style["Leave-button"]} onClick={handleJoinClick}>
-                Leave the team
-              </button>
-            )}
+                 )}
+              </div>
+         
+            
           </div>
 
           <div className={Style["tabs"]}>
-            {["Students List", "Existed Teams", "My Team"].map(tab => (
+            {["Students List", "Existed Teams"].map(tab => (
               <div
                 key={tab}
                 className={`${Style["tab-item"]} ${activeTab === tab ? Style.active : ""}`}

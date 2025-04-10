@@ -3,7 +3,7 @@ import React from "react";
 import "./styles/App.css";
 
 import { BrowserRouter as Router, Routes, Route ,  Navigate  } from "react-router-dom";
-
+import { SharedStateProvider } from './contexts/SharedStateContext'; // Importing the shared state context provider
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
@@ -21,12 +21,16 @@ import NotificationsPage from "./Pages/NotificationsPage";
 import LoversPage from "./Pages/LoversPage";
 import ExplorePage from "./Pages/ExplorePage";
 import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
+import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 /* import NavBar from "./components/Navbar"; */
 import TeamFormationPage from "./Pages/TeamformationPage";
 import Testing from "./Pages/testing";
 function App() {
   return (
+    
     <Router>  
+      <SharedStateProvider> {/* Wrap your components */}
+      
       <Routes>
         {//<Route path="/" element={<Navigate to="/admin" replace />} />
         }
@@ -56,7 +60,7 @@ function App() {
         <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
         
-
+        <Route path="/admin/sessions/admin-team-formation" element={<AdminTeamFormationPage />} />
         <Route path="/admin/sessions/topic-validation" element={<TopicsValidationPage />}/>
         <Route index element={<UserManagementTabs />} />{/* Default child route (renders when at /admin) */}
           <Route path="users" element={<UserManagementTabs />} />
@@ -67,6 +71,7 @@ function App() {
           <Route path="settings" element={<div>Settings Page</div>} />
         </Route>
       </Routes>
+      </SharedStateProvider>
     </Router>
   );
 }

@@ -105,15 +105,14 @@ const UserManagementTabs = () => {
   };
 
   return (
-    <div className={classes["users-management"]} >
-      <div className={classes["navbar-container"]}>
-      
+    <div className={classes["main-container"]}>
+  
       <NavBar />
-
-      </div>
+    
+   
       <div className={classes["header"]}>
         <h1>Users Management</h1>
-        <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a user account</button>
+        <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a User</button>
         <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
       </div>
       <div className={classes["tabs"]}>
@@ -130,9 +129,9 @@ const UserManagementTabs = () => {
           </button>
         ))}
       </div>
-
-      <table>
-  <thead>x
+        <div className={classes["table-container"]}>     
+           <table className={classes["main-table"]}>
+  <thead>
     <tr>
       <th>Full Name</th>
       <th>Email Address</th>
@@ -160,6 +159,8 @@ const UserManagementTabs = () => {
     ))}
   </tbody>
 </table>
+</div>
+
       <div className={classes["pagination-container"]}>
       <div className={classes["pagination"]}>
         <p>Page {currentPage} out of {totalPages}</p>
@@ -210,6 +211,8 @@ const UserManagementTabs = () => {
       </div>
       </div>
     </div>
+    
+    
   );
 };
 

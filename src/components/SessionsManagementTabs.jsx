@@ -3,13 +3,14 @@ import classes from "../styles/SessionsManagementTabs.module.css";
 import NavBar from "./NavBar.jsx";
 import StartNewSessionModal from "./modals/StartNewSessionModal.jsx";
 import { useNavigate } from "react-router-dom";
+import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
 
 import TopicsValidationPage from "../Pages/TopicsValidationPage.jsx";
 
 const SessionsManagementTabs = () => {
-  const [activeTab, setActiveTab] = useState("Topic Submission Session");
+  const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState("Topic Submission Session");
   const navigate = useNavigate();
-
+   
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -31,8 +32,8 @@ const SessionsManagementTabs = () => {
           {tabs.map((tab) => (
             <button
               key={tab}
-              className={activeTab === tab ? classes["active"] : ""}
-              onClick={() => setActiveTab(tab)}
+              className={sessionsPageActiveTab === tab ? classes["active"] : ""}
+              onClick={() => setSessionsPageActiveTab(tab)}
             >
               {tab}
             </button>
@@ -41,7 +42,7 @@ const SessionsManagementTabs = () => {
 
         {/* Tabs Content */}
         <div className={classes["tab-content"]}>
-          {activeTab === "Topic Submission Session" && (
+          {sessionsPageActiveTab === "Topic Submission Session" && (
             <div className={classes["main-container"]}>
               {/* Start New Session Section */}
               <div className={classes["upper-section-container"]}>
@@ -98,9 +99,9 @@ const SessionsManagementTabs = () => {
             </div>
           )}
 
-          {activeTab === "Team Formation Session" && (
+          {sessionsPageActiveTab === "Team Formation Session" && (
             
-            <div className={classes["main-container"]}>
+            <div className={classes["m`ain-container"]}>
             {/* Start New Session Section */}
             <div className={classes["upper-section-container"]}>
               <div className={classes["text-container"]}>
@@ -150,19 +151,19 @@ const SessionsManagementTabs = () => {
                 Manage teams with ease. Add members, or remove them to keep  teams organized and running smoothly.
                 </p>
               </div>
-              <button className={classes["edit-teams-btn"]}   onClick={() => navigate("/admin/sessions/topic-validation")} >Edit teams</button>
+              <button className={classes["edit-teams-btn"]}   onClick={() => navigate("/admin/sessions/admin-team-formation")} >Edit teams</button>
             </div>
           </div>
           )}
 
-          {activeTab === "Select Topics Session" && (
+          {sessionsPageActiveTab === "Select Topics Session" && (
             <div>
               <h2>Select Topics</h2>
               <p>Choose your preferred topics...</p>
             </div>
           )}
 
-          {activeTab === "Project Realization Session" && (
+          {sessionsPageActiveTab === "Project Realization Session" && (
             <div>
               <h2>Project Realization</h2>
               <p>Manage project execution...</p>
