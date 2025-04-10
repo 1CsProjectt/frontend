@@ -3,8 +3,9 @@ import Module from "../styles/TeamFormationPage.module.css";
 import Seemorepage from "./ExistedTeamSeemore";
 import JoinTeamAlert from "./JoinTeamAlert";
 import Toast from "./Toast";
+import { getPaginatedData, getPageNumbers } from "./paginationFuntion"; 
 
-const ExistedTeamsTab = ({ user,existedTeams }) => {
+const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -13,7 +14,7 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
 
-  // Log the incoming teams to verify structure
+  
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
   }, [existedTeams]);
@@ -28,7 +29,6 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
 
   const handleConfirm = () => {
     setShowJoinAlert(false);
-    // Here you would perform the join action (API call, etc.)
     console.log("Join confirmed!");
     setToastMessage("Team joining was successful.");
     setShowToast(true);
@@ -41,9 +41,9 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 95; // Adjust this value based on your row height
+        const estimatedRowHeight = 70; 
         const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
-        setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 10);
+        setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 8);
       }
     };
 
@@ -52,54 +52,21 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
     return () => window.removeEventListener("resize", updateTeamsPerPage);
   }, []);
 
-  const totalPages = Math.ceil(existedTeams.length / teamsPerPage);
-  const indexOfLastTeam = currentPage * teamsPerPage;
-  const indexOfFirstTeam = indexOfLastTeam - teamsPerPage;
-  const currentTeams = existedTeams.slice(indexOfFirstTeam, indexOfLastTeam);
+  // Use the utility function to get paginated data
+  const { currentItems: currentTeams, totalPages } = getPaginatedData(
+    existedTeams,
+    currentPage,
+    teamsPerPage
+  );
 
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      pageNumbers.push(1);
-      if (currentPage < 5) {
-        for (let i = 2; i <= 5; i++) {
-          pageNumbers.push(i);
-        }
-        pageNumbers.push("...");
-      } else if (currentPage > totalPages - 4) {
-        pageNumbers.push("...");
-        for (let i = totalPages - 4; i < totalPages; i++) {
-          pageNumbers.push(i);
-        }
-      } else {
-        pageNumbers.push("...");
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pageNumbers.push(i);
-        }
-        pageNumbers.push("...");
-      }
-      pageNumbers.push(totalPages);
-    }
-    return pageNumbers;
-  };
+  // Generate page numbers using the pagination utility
+  const pageNumbers = getPageNumbers(totalPages, currentPage);
 
   // If a team is selected, show its detailed view
-  // Inside ExistedTeamsTab.jsx, when a team is selected:
   if (selectedTeam) {
     const mappedMembers = selectedTeam.members.map(member => ({
       fullName: `${member.firstname} ${member.lastname}`,
       email: member.user?.email || "N/A",
-    
       role: member.role || "Member" // Default to "Member" if role isn't provided
     }));
 
@@ -113,8 +80,11 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
     );
   }
 
-
-  const pageNumbers = getPageNumbers();
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
     <div className={Module["page-container"]}>
@@ -124,15 +94,12 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
             <tr>
               <th>Team Number</th>
               <th>Team Creator</th>
-              <th>Status</th>
-              <th></th>
+              <th>Status</th>  
               <th></th>
             </tr>
           </thead>
           <tbody>
             {currentTeams.map((team, idx) => {
-              // Use groupName as team name
-              // For team creator, use the first member (if available)
               const teamCreator =
                 team.members && team.members.length > 0
                   ? `${team.members[0].firstname} ${team.members[0].lastname}`
@@ -143,23 +110,35 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
                   <td>{teamCreator}</td>
                   <td>
                     {team.status === "open" ? (
-                      <span className={Module["status-available"]}>{team.status}</span>
+                      <span className={Module["status-available"]}>
+                        {team.status} ({team.members.length}/{team.maxNumber})
+                      </span>
                     ) : (
-                      <span className={Module["status-in-team"]}>{team.status}</span>
+                      <span className={Module["status-in-team"]}>
+                        {team.status} ({team.members.length}/{team.maxNumber})
+                      </span>
                     )}
                   </td>
-                  <td>
+                  <td className={Module["button-container"]}>
                     {team.status === "open" ? (
-                      <button className={Module["invite-button"]} onClick={handleJoinClick}>
+                      <button
+                        className={Module["invite-button"]}
+                        style={{ width: "90px", marginRight: "15px" }}
+                        onClick={handleJoinClick}
+                      >
                         Join
                       </button>
                     ) : (
-                      <span className={Module["disable-button"]}>Full</span>
+                      <span
+                        className={Module["disable-button"]}
+                        style={{ display: "inline-block", width: "90px", marginRight: "15px" }}
+                      >
+                       join
+                      </span>
                     )}
-                  </td>
-                  <td>
                     <button
                       className={Module["invite-button"]}
+                      style={{ width: "90px", backgroundColor: "white" }}
                       onClick={() => setSelectedTeam(team)}
                     >
                       See more
@@ -183,25 +162,21 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
         </button>
 
         <div className={Module["page-numbers"]}>
-          {pageNumbers.map((page, idx) => {
-            if (page === "...") {
-              return (
-                <span key={idx} className={Module["ellipsis"]}>
-                  ...
-                </span>
-              );
-            } else {
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handlePageChange(page)}
-                  className={page === currentPage ? Module["active"] : ""}
-                >
-                  {page}
-                </button>
-              );
-            }
-          })}
+          {pageNumbers.map((page, idx) =>
+            page === "..." ? (
+              <span key={idx} className={Module["ellipsis"]}>
+                ...
+              </span>
+            ) : (
+              <button
+                key={idx}
+                onClick={() => handlePageChange(page)}
+                className={page === currentPage ? Module["active"] : ""}
+              >
+                {page}
+              </button>
+            )
+          )}
         </div>
 
         <button
@@ -213,6 +188,7 @@ const ExistedTeamsTab = ({ user,existedTeams }) => {
           Next
         </button>
       </div>
+
       <JoinTeamAlert
         show={showJoinAlert}
         onCancel={handleCancel}

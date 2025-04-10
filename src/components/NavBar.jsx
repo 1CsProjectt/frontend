@@ -180,9 +180,9 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
 
 const FilterMenu = ({ onFilterApply, currentFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Specialitys");
+  const [activeTab, setActiveTab] = useState("Speciality");
   const [localFilters, setLocalFilters] = useState({
-    Specialitys: currentFilters || [],
+    Speciality: currentFilters || [],
     Other: [],
   });
 
@@ -235,17 +235,21 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
       </button>
       {isOpen && (
         <div className={Module["filter-popup"]}>
+       
           <div className={Module["filter-content"]}>
+          
             <div className={Module["filter-tabs"]}>
+              <div className={Module["filter-header"]}>Filters Type</div>
+             
               <p
                 className={
-                  activeTab === "Specialitys"
+                  activeTab === "Speciality"
                     ? Module["tab-active"]
                     : Module["tab-inactive"]
                 }
-                onClick={() => handleTabChange("Specialitys")}
+                onClick={() => handleTabChange("Speciality")}
               >
-                Specialitys
+                Speciality
               </p>
               <p
                 className={
@@ -260,11 +264,11 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
             </div>
             <div className={Module["filter-categories"]}>
               <p className={Module["filter-header"]}>
-                {activeTab === "Specialitys"
-                  ? "Select Categories"
+                {activeTab === "Speciality"
+                  ? "show only"
                   : "Select Other Options"}
               </p>
-              {(activeTab === "Specialitys" ? specialityOptions : otherOptions).map(
+              {(activeTab === "Speciality" ? specialityOptions : otherOptions).map(
                 (option) => (
                   <label key={option} className={Module["option-label"]}>
                     <input

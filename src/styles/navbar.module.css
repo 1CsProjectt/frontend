@@ -1,8 +1,4 @@
-/* the nav bar called like that 
-NavBar = ({ title,targetDate }) i you want to use the countdown timer
-NavBar = ({ title }) if you don't want to use the countdown timer
-*/
-
+/* Global styles */
 * {
   margin: 0;
   padding: 0;
@@ -16,15 +12,16 @@ p {
   color: #313638;
 }
 
+/* NavBar Container and Session */
 .container {
   flex-direction: column;
   display: flex;
- 
-  background-color: #ffffff;
+  background-color: #F5F7FA;
   height: 125px;
   width: 100%;
   flex: auto;
-  position: relative;  
+  position: relative;
+  
 }
 
 .session {
@@ -35,6 +32,7 @@ p {
   display: flex;
   align-items: center;
   flex-direction: column;
+  background-color: #ffffff;
 }
 
 .sessionP {
@@ -43,7 +41,9 @@ p {
   padding-bottom: 3px;
 }
 
+/* Navbar Form */
 .form {
+  background-color: #F5F7FA;
   gap: 16px;
   width: 100%;
   padding-top: 14px;
@@ -51,6 +51,7 @@ p {
   align-items: center;
 }
 
+/* Search Bar */
 .search-bar-container {
   flex: 1;
   background-color: #ffffff;
@@ -60,7 +61,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative; /* Needed for absolute positioning of suggestions */
+  position: relative;
 }
 
 .input {
@@ -91,6 +92,7 @@ p {
   width: 24px;
 }
 
+/* Right Section (Notifications and Profile) */
 .rightside {
   display: flex;
   align-items: center;
@@ -106,10 +108,10 @@ p {
   height: 44px;
   display: flex;
   align-items: center;
+  background-color: #ffffff;
 }
 
 .notf-icon {
-  /* object-fit: cover; */
   height: 23px;
   width: 24px;
 }
@@ -126,6 +128,8 @@ p {
   display: flex;
   align-items: center;
   gap: 9px;
+  background-color: #ffffff;
+
 }
 
 .pic {
@@ -136,19 +140,21 @@ p {
   top: 50%;
   transform: translateY(-50%);
   object-fit: cover;
+ 
 }
-
+.pic img {
+  margin-left: -10px;
+}
 .profiletext {
   padding-left: 32px;
 }
 
-.arrow-icon-profile {
-  margin-left: 4px;
-  width: 11px;
-  height: 11px;
-}
+/* (Note: the JSX references a class "arrow-icon-prfoile" for the profile toggle.
+   If this is needed, consider renaming it to match an existing style or adding it here.) */
 
+/* Filter Menu */
 .filter {
+  background-color: #ffffff;
   width: 128px;
   margin-left: 16px;
   margin-right: 16px;
@@ -173,6 +179,7 @@ p {
 
 .filter-button:hover {
   background: #f1f1f1;
+  
 }
 
 .custom-icon {
@@ -182,146 +189,79 @@ p {
   margin-top: 1px;
 }
 
-.filtertext {
-  flex: auto;
-}
-
 .arrow-icon {
   margin-top: 2px;
   width: 9px;
   height: 9px;
 }
 
-.icon {
-  font-size: 14px;
-}
-
-/* Popup */
+/* Popup for Filter Menu */
 .filter-popup {
   position: absolute;
-  top: 117px;
+  top: 95%;
+
+
   background: #ffffff;
   border: 1px solid #dde2e4;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  height: 221px;
-  width: 414px;
+  height: auto;
+  width: 25vw;
   border-radius: 8px;
   overflow: hidden;
+  padding: 16px;
+
 }
 
 .filter-content {
-  height: 154px;
   display: flex;
-  border-bottom: 1px solid #dde2e4;
-  align-items: center;
-  overflow: hidden;
+  justify-content: space-between;
+  
+  border-bottom: 2px solid #dde2e4; ;
 }
 
-.filter-categories {
-  padding-top: 24px;
-  height: 100%;
-  width: 50%;
+.filter-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
   border-right: 1px solid #dde2e4;
-  padding-left: 24px;
-  cursor: default;
+  margin-top: 5px;
+}
+.filter-tabs  div {
+ margin: -4px 0 12px 28px;
+
+}
+.filter-categories {
+  width: 60%;
+  padding-left: 16px;
+  
 }
 
 .filter-header {
   color: #313638cc;
-  font-size: 12px;
-  padding-left: 8px;
-  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
-.filter-categories .active {
-  padding-left: 8px;
-  padding-top: 4px;
-  height: 20px;
-  width: 151px;
-  border-radius: 4px;
-  background: #d9d9d980;
-  color: #313638;
-  font-size: 14px;
-}
-
-.filter-categories .notactive {
-  height: 20px;
-  padding-left: 8px;
-  padding-top: 4px;
-  color: #313638cc;
-  font-size: 14px;
-}
-
-.filter-options {
-  padding-top: 24px;
-  height: 100%;
-  padding-left: 24px;
-  width: 50%;
-  cursor: default;
+.option-label {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .optionstext {
   font-size: 16px;
   color: #313638;
-}
-
-/* Style the labels */
-.filter-options label {
-  padding-left: 8px;
-  padding-bottom: 2px;
-  display: flex;
-  align-items: center;
-  color: #313638;
-  cursor: pointer;
-  gap: 8px;
-}
-
-/* Default radio button hidden */
-.filter-options input[type="radio"] {
-  appearance: none;
-  width: 13px;
-  height: 13px;
-  border: 2px solid #6c757d;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-/* Create custom radio button */
-.filter-options input[type="radio"]::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: transparent;
-  border-radius: 50%;
-  transition: background 0.2s ease;
-}
-
-/* When selected, add inner dot */
-.filter-options input[type="radio"]:checked {
-  border-color: #343a40;
-}
-
-.filter-options input[type="radio"]:checked::before {
-  background: #343a40;
-}
-
-/* Hover effect */
-.filter-options label:hover input[type="radio"] {
-  border-color: #000;
+  margin-left: 8px;
 }
 
 .filter-buttons {
   display: flex;
-  padding-top: 16px;
-  padding-left: 24px;
-  padding-right: 24px;
+  justify-content: center;
+  gap: 8px;
   justify-content: space-between;
-  align-items: center;
+  margin: 10px 20px 0;
+  
 }
 
 .cancel-btn {
@@ -358,34 +298,31 @@ p {
   box-shadow: 0 4px 8px rgba(7, 126, 212, 0.3);
 }
 
-.countdownStyle {
-  color: #077ed4;
-  font-weight: 600;
-}
-
-/* Suggestion List Styles */
-.suggestions-list {
-  list-style: none;
-  background: #fff;
-  border: 1px solid #dde2e4;
-  position: absolute;
-  width: calc(100% - 28px); /* Adjusted for input padding and margin */
-  max-height: 200px;
-  overflow-y: auto;
-  margin-top:15vh; /* Increased from 4px to 40px */
-  z-index: 1000;
-  border-radius: 4px;
-  padding: 0;
-}
-
-.suggestion-item {
+.tab-active {
   padding: 8px;
+  color: #3C4143;
+  font-weight: bold;
+  background-color: #ECECEC;
   cursor: pointer;
-  font-size: 14px;
-  color: #313638;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0 20px ;
+  border-radius:  6px;
 }
 
-.suggestion-item:hover {
+.tab-active:hover {
+  background-color: #d8e9f9;
+}
+
+.tab-inactive {
+  padding: 8px;
+  color: #3C4143;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0 20px ;
+
+}
+
+.tab-inactive:hover {
   background-color: #f1f1f1;
+  color: #000000;
 }
-
