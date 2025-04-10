@@ -22,8 +22,7 @@ import ExplorePage from "./Pages/ExplorePage";
 import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
 /* import NavBar from "./components/Navbar"; */
 import TeamFormationPage from "./Pages/TeamformationPage";
-import ExistedTeamSeemore from "./components/ExistedTeamSeemore";
-import NotificationPopup from "./components/modals/NotificationPopup";
+import Testing from "./Pages/testing";
 function App() {
   return (
     <Router>  
@@ -50,6 +49,7 @@ function App() {
         <Route path="/lovers" element={<LoversPage />} />
         <Route path="/TeamFormationPage" element={<TeamFormationPage/>} />
         <Route path="/pfe/explore" element={<ExplorePage />} />
+        <Route path="/testing" element={<Testing/>} />
         <Route path="/admin/sessions/topic-validation/published-topic-explore" element={<PublishedTopicsExplorePage />} />
 
         <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />

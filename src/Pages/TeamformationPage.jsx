@@ -8,10 +8,10 @@ import ExistedTeamsTab from "../components/ExistedTeamsTab";
 import MyTeamTab from "../components/MyTeamTab";
 import CreateTeamModal from "../components/CreateTeamModal";
 import Toast from "../components/Toast";
-import JoinTeamModal from "../components/JoinTeamAlert";
+
 import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/LeaveTeamPopup";
-const existedTeamsss =[]; 
+
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
