@@ -12,6 +12,7 @@ import AdminDashboard from "./Pages/AdminDashboard";
 import UserManagementTabs from "./components/UserManagementTabs";
 import SessionsManagementTabs from "./components/SessionsManagementTabs";
 import TopicsValidationPage from "./Pages/TopicsValidationPage";
+import SubmittedTopicsExplorePage from "./Pages/SubmittedTopicsExplorePage";
 import "./styles/App.css";
 import HelpPage from "./Pages/HelpPage";
 import PFEPage from "./Pages/PFEPage";
@@ -51,7 +52,7 @@ function App() {
         <Route path="/TeamFormationPage" element={<TeamFormationPage/>} />
         <Route path="/pfe/explore" element={<ExplorePage />} />
         <Route path="/admin/sessions/topic-validation/published-topic-explore" element={<PublishedTopicsExplorePage />} />
-
+        <Route path="/admin/sessions/topic-validation/submitted-topic-explore" element={<SubmittedTopicsExplorePage />} />
         <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
         

@@ -3,7 +3,8 @@
   import PFECard from "../components/CardComponent";
   import { useState } from "react";
   import classes from "../styles/TopicsValidationPage.module.css";
-  import DeleteUserModal from "../components/modals/DeleteUserModal.jsx";
+  import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
+
 
   import { useNavigate } from "react-router-dom";
 
@@ -14,7 +15,7 @@
       title: "Final year project management system ",
       specialization: ["ISI", "SIW"],
       description:
-        "A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows",
+        "A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking......",
         creator:{username: "Guessoum mohamed nizar"},
         
       photo:
@@ -116,7 +117,7 @@
     const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
     const [isChecked, setIsChecked] = useState(false);// for the select all checkbox
     const [selectedCards, setSelectedCards] = useState([]); // Moved state here
-    const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+    const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
     //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
 
     //the selectedCards array holds the ids of the currently selected cards
@@ -166,11 +167,11 @@
             <button className={classes["back-btn"]} onClick={HandleBackButton}>
               Back
             </button>
-            <button onClick={() => setDeleteUserModalOpen(true)} className={classes["delete-btn"]}>
+            <button onClick={() => setPfeTopicModalOpen(true)} className={classes["delete-btn"]}>
               Delete Selected Topics
             </button>
          
-            <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" />
+            <PfeTopicModal isOpen={isPfeTopicModalOpen} onClose={() => setPfeTopicModalOpen(false)} entityType="User" operation="delete"  />
             
           </div>
         </div>
@@ -236,7 +237,12 @@
             card={card}
             isSelected={selectedCards.includes(card.id)}
             toggleSelect={toggleSelect}
-            
+            const onExplore={(e, card) => {
+              e.stopPropagation(); // Prevent select toggle when clicking "Explore"
+              navigate("/admin/sessions/topic-validation/submitted-topic-explore", {
+                state: { card },
+              });
+            }} 
           />
         ))}
 

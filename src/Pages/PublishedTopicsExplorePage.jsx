@@ -25,9 +25,9 @@ export default function PublishedTopicsExplorePage() {
   return (
     <div className={Module["explore-container"]}>
         <AdminSidebar/>
-      <div className={Module["explore-content"]}>
+      <div className={Module["explore-content"]} style={{ marginLeft: "17vw" }}>
         <Navbar />
-        <div className={Module.padding}></div>
+        <div className={Module["scroll-container"]} >
         <h1 className={Module.title}>Exploring</h1>
         <div className={Module["banner-wrapper"]}>
           <img
@@ -35,7 +35,7 @@ export default function PublishedTopicsExplorePage() {
             alt="Project Banner"
             className={Module["project-banner"]}
           />
-        </div>
+        </div >
         <div className={Module["project-details"]}>
           <h1 className={Module["project-title"]}>{card.title}</h1>
           <p className={Module["project-description"]}>{card.description}</p>
@@ -79,6 +79,7 @@ export default function PublishedTopicsExplorePage() {
             />
           </a>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -120,12 +120,46 @@
       width: 24px;
       height: 24px;
     }
+    .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 20px;
+    }
   
-    .title {
+    .header h1{
       font-size: 1.8rem;
       font-weight: 00;
-      margin-top: 20px;
-      margin-left: 20px;
+      margin: 0;
       font-family: Manrope;
       
     }
+
+    .buttons-container{
+      display: flex;
+      flex-direction: row;
+        gap:20px;
+    }
+
+    .decline-button{
+        width: 150px;
+        
+        height:6vh;
+        border: 2px solid #D0D5DD;
+        border-radius: 6px;
+        font-weight: bold ;
+        background-color: white;
+    }
+
+    .validate-button{
+        width: 150px;
+        height: 6vh;
+        color:white;
+        background-color: rgb(7,126,212);
+        border-radius: 6px;
+        border:none;
+        font-weight: bold;
+    }
+
+    /* Button */
+
