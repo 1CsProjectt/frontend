@@ -4,19 +4,46 @@ import classes from "../../styles/DeleteUserModal.module.css";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
 
 
-const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType }) => {// the entity type is a string for now just to change the display of the message upon deletion
+const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userId }) => {// the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(true);
 
   if (!isOpen) return null;
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    setSuccessConfirmationModal(true);
 
-    // TODO: Insert backend delete logic here
-    onDelete && onDelete();
+  const handleDelete = async (user) => {
+    const confirmed = window.confirm(`Are you sure you want to delete ${userId || user.email}?`);
+    if (!confirmed) return;
+  
+    try {
+      const response = await fetch('/users/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: userId, // or email: user.email
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        alert(result.message);
+        setShowDeleteModal(false);
+    
+        setSuccessConfirmationModal(true);
+        window.location.reload();
+        
+      } else {
+        alert(result.message || 'Failed to delete user.');
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("An error occurred while deleting the user.");
+    }
   };
+  
 
   return (
     <>

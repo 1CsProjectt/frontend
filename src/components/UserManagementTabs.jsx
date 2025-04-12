@@ -15,7 +15,10 @@ const UserManagementTabs = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [customPageInput, setCustomPageInput] = useState("");
   const [showPageInput, setShowPageInput] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+
   const usersPerPage = 8;
+
 
   // Tabs for different user types
   const tabs = ["Students", "Supervisors", "Enterprises", "Jury"];
@@ -27,7 +30,7 @@ const UserManagementTabs = () => {
   useEffect(() => {
       const fetchUsers = async () => {
           try {
-              const response = await fetch('http://localhost:5433/users/getUsers'); // Adjust URL if needed
+              const response = await fetch('/users/get-all'); // Adjust URL if needed
               const data = await response.json();
   
               const usersArray = data.map(user => ({
@@ -104,6 +107,8 @@ const UserManagementTabs = () => {
     }
   };
 
+  
+
   return (
     <div className={classes["main-container"]}>
   
@@ -113,7 +118,7 @@ const UserManagementTabs = () => {
       <div className={classes["header"]}>
         <h1>Users Management</h1>
         <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a User</button>
-        <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
+        <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} operation={"createUser"}/>
       </div>
       <div className={classes["tabs"]}>
         {tabs.map((tab) => (
@@ -152,8 +157,11 @@ const UserManagementTabs = () => {
         <td>
           <button onClick={() => setUserFormModalOpen(true)} className={classes["edit-btn"]}>Edit</button>
           <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
-          <button onClick={() => setDeleteUserModalOpen(true)} className={classes["delete-btn"]}>Delete</button>
-          <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" />
+          <button   onClick={() => {
+    setUserToDelete(user); // this sets the current user
+    setDeleteUserModalOpen(true); // then open the modal
+  }} className={classes["delete-btn"]}>Delete</button>
+          <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userId={user.id}/>
         </td>
       </tr>
     ))}
