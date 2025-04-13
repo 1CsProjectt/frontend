@@ -4,16 +4,15 @@ import classes from "../../styles/DeleteUserModal.module.css";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
 
 
-const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userId }) => {// the entity type is a string for now just to change the display of the message upon deletion
+const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userToDelete}) => {// the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(true);
 
   if (!isOpen) return null;
 
 
-  const handleDelete = async (user) => {
-    const confirmed = window.confirm(`Are you sure you want to delete ${userId || user.email}?`);
-    if (!confirmed) return;
+  const handleDelete = async () => {
+  
   
     try {
       const response = await fetch('/users/delete', {
@@ -22,7 +21,8 @@ const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userId }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: userId, // or email: user.email
+          id: userToDelete.id, 
+          email: userToDelete.email,
         }),
       });
   
@@ -49,7 +49,7 @@ const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userId }) => {
     <>
       {showSuccessConfirmationModal && (
         <SuccessConfirmationModal
-          message={`The ${entityType}(s) has been successfully deleted! You won’t be able to undo this action.`}
+          message={`The ${entityType} : ${userToDelete.username} has been successfully deleted! You won’t be able to undo this action.`}
           onClose={() => {
             setSuccessConfirmationModal(false);
             onClose();
@@ -65,7 +65,7 @@ const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userId }) => {
               <h2 className={classes["modal-title"]}>Delete {entityType}</h2>
             </div>
             <p className={classes["modal-text"]}>
-              Are you sure you want to delete this {entityType}? This action cannot be undone.
+              Are you sure you want to delete this {entityType} : {userToDelete.username}? This action cannot be undone.
             </p>
             <div className={classes["modal-actions"]}>
               <button className={classes["cancel-btn"]} onClick={onClose}>

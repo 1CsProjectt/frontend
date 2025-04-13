@@ -148,7 +148,8 @@ const SessionsManagementTabs = () => {
               <div className={classes["text-container"]}>
                 <h2>Edit teams</h2>
                 <p>
-                Manage teams with ease. Add members, or remove them to keep  teams organized and running smoothly.
+                Manage teams with ease. Add members, or remove them to keep <br/>
+                 teams organized and running smoothly.
                 </p>
               </div>
               <button className={classes["edit-teams-btn"]}   onClick={() => navigate("/admin/sessions/admin-team-formation")} >Edit teams</button>

@@ -157,11 +157,15 @@ const UserManagementTabs = () => {
         <td>
           <button onClick={() => setUserFormModalOpen(true)} className={classes["edit-btn"]}>Edit</button>
           <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
-          <button   onClick={() => {
-    setUserToDelete(user); // this sets the current user
-    setDeleteUserModalOpen(true); // then open the modal
-  }} className={classes["delete-btn"]}>Delete</button>
-          <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userId={user.id}/>
+          <button className={classes["delete-btn"]}  onClick={() => {
+    setUserToDelete(user); // this sets the current user (we want the full info therefore we pass the whole object to get the name)
+    setDeleteUserModalOpen(true); // then open the modal c
+ 
+    }}
+  >
+    Delete
+  </button>
+         
         </td>
       </tr>
     ))}
@@ -218,6 +222,7 @@ const UserManagementTabs = () => {
         <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
       </div>
+      <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userToDelete={userToDelete}/>
     </div>
     
     
