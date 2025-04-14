@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
 import Seemorepage from "./ExistedTeamSeemore";
-import JoinTeamAlert from "./JoinTeamAlert";
-import Toast from "./Toast";
-import { getPaginatedData, getPageNumbers } from "./paginationFuntion"; 
-
+import JoinTeamAlert from "./modals/JoinTeamAlert";
+import Toast from "./modals/Toast";
+import axios from "axios";
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion"; 
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
 const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
@@ -13,35 +15,50 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
 
   
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
   }, [existedTeams]);
 
-  const handleJoinClick = () => {
+  const handleJoinClick = (teamId) => {
+    setSelectedTeamId(teamId);
     setShowJoinAlert(true);
   };
+  
 
   const handleCancel = () => {
     setShowJoinAlert(false);
   };
-
-  const handleConfirm = () => {
-    setShowJoinAlert(false);
-    console.log("Join confirmed!");
-    setToastMessage("Team joining was successful.");
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+  const handleConfirm = async () => {
+    try {
+      const response = await axios.post("/jointeam/sendjoinrequest", {
+        id: selectedTeamId, 
+      }, { withCredentials: true });
+  
+      if (response.data.success) {
+        setShowJoinAlert(false);
+        console.log("Join confirmed!");
+        setToastMessage("Team joining was successful.");
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Error sending join request:", error);
+    }
   };
+  
+  
+   
 
   useEffect(() => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 70; 
+        const estimatedRowHeight = 75; 
         const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
         setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 8);
       }
@@ -124,7 +141,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                       <button
                         className={Module["invite-button"]}
                         style={{ width: "90px", marginRight: "15px" }}
-                        onClick={handleJoinClick}
+                        onClick={() => handleJoinClick(team.id)}
                       >
                         Join
                       </button>

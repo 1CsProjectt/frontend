@@ -1,12 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-import CreateTeamAlert from "./CreateTeamAlert";
-import Toast from "./Toast";
+import CreateTeamAlert from "./modals/CreateTeamAlert";
+import Toast from "./modals/Toast";
 import axios from "axios";
-import { getPaginatedData, getPageNumbers } from "./paginationFuntion";
-axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const StudentsListTab = ({ user, students, myTeamNumber }) => {
+
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
+
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+axios.defaults.withCredentials = true;
+
+const StudentsListTab = ({ user, students, myTeamNumber }) => {axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
+
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage, setStudentsPerPage] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -17,9 +22,9 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 60; // Approximate height of a single table row
+        const estimatedRowHeight = 75;
         const calculatedStudentsPerPage = Math.floor(containerHeight / estimatedRowHeight);
-        setStudentsPerPage(calculatedStudentsPerPage > 0 ? calculatedStudentsPerPage : 5);
+        setStudentsPerPage(calculatedStudentsPerPage > 0 ? calculatedStudentsPerPage : 6);
       }
     };
 
@@ -28,7 +33,7 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
     return () => window.removeEventListener("resize", updateStudentsPerPage);
   }, []);
 
-  // Use the pagination utility functions to compute data for the current page
+
   const { currentItems: currentStudents, totalPages } = getPaginatedData(
     students,
     currentPage,
@@ -50,7 +55,7 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
 
     try {
       const response = await axios.post("/invitation/sendinvitation", {
-        receiver_email: receiver_email
+        receiver_email
       });
 
       if (response.data.success) {
@@ -62,17 +67,21 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
     }
   };
 
-  const handleCancel = () => {
-    setShowAlert(false);
-  };
-
-  const handleConfirm = () => {
-    console.log("Team created and student invited!");
-    setShowAlert(false);
+  const handleCancel = () => setShowAlert(false);
+  
+  const handleConfirm = async () => {
+    try {
+      
+      const response = await axios.post('/teams/creategroup', { withCredentials: true });
+      console.log(response.data);
+    
+    } catch (error) {
+      console.error("Error creating team:", error);
+      alert("Error creating the team. Please try again.");
+    }
   };
 
   return (
-
     <div className={Module["page-container"]}>
       <div className={Module["table-wrapper"]} ref={containerRef}>
         <table>
@@ -115,10 +124,9 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/*  Pagination Controls */}
       <div className={Module["pagination"]}>
         <button
-          id="previous-button"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={currentPage === 1 ? Module["disabled"] : ""}
@@ -127,15 +135,10 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
         </button>
 
         <div className={Module["page-numbers"]}>
-          {pageNumbers.map((page, idx) => {
-            if (page === "...") {
-              return (
-                <span key={idx} className={Module["ellipsis"]}>
-                  ...
-                </span>
-              );
-            }
-            return (
+          {pageNumbers.map((page, idx) =>
+            page === "..." ? (
+              <span key={idx} className={Module["ellipsis"]}>...</span>
+            ) : (
               <button
                 key={idx}
                 onClick={() => handlePageChange(page)}
@@ -143,12 +146,11 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
               >
                 {page}
               </button>
-            );
-          })}
+            )
+          )}
         </div>
 
         <button
-          id="next-button"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={currentPage === totalPages ? Module["disabled"] : ""}
@@ -157,11 +159,12 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
         </button>
       </div>
 
-      {/* Toast Notification */}
+      {/* Toast */}
       {showToast && (
         <Toast message="Invite sent successfully." onClose={() => setShowToast(false)} />
       )}
 
+      {/* Alert */}
       <CreateTeamAlert show={showAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
     </div>
   );

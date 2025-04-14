@@ -1,12 +1,19 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-/*   overflow: hidden; */
+
+#root{
+  overflow: hidden;
 }
+.my-team-container{
+overflow: auto;
+height: 72vh;
+margin-right: -15px;
+margin-bottom: 25px;
+} 
+.team-formation-page{
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
 
-
-
+}
 /* Container for the entire page */
 .team-formation-container {
   background-color: #f5f7fa;
@@ -18,6 +25,7 @@
   flex-direction: column;
   gap: 20px;
   margin-top: -3vh;
+
 }
 
 .team-formation-container h1 {
@@ -65,7 +73,7 @@ th {
   border-radius: 8px;
   overflow: hidden;
   flex-grow: 1;
-  margin: 15px 0 5px;
+  margin: 10px 0 5px;
   text-align: center;
   font-family: Manrope;
   
@@ -92,12 +100,13 @@ th {
 }
 
 .table-wrapper tbody td {
-  padding: 16px 20px;
+  padding:15px 20px;
   font-size: 1rem;
   color: #313638cc;
   border: 2px solid #dde2e4;
   border-right: none;
   border-left: none;
+
 }
 /* Status badges */
 .status-available {
@@ -151,7 +160,7 @@ th {
   margin: 16px 0;
   gap: 8px;
   position: relative;
-  margin-top: 4vh;
+  /* margin-top: 4vh; */
  
 }
 
@@ -218,6 +227,7 @@ th {
   align-items: flex-start;
   margin-bottom: 1rem;
   gap: 20px;
+  margin-top: 20px;
 }
 
 .my-team-actions {
@@ -257,7 +267,8 @@ th {
 .page-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 25vh);
+  height: calc(100vh - 30vh);
+  overflow: hidden;
 }
 
 /* A simple row for the heading and button */
@@ -280,6 +291,7 @@ th {
   font-weight: 500;
   transition: background-color 0.2s ease;
   margin-left: auto;
+ /*  margin-top: 25PX; */
 }
 
 .create-team-button:hover {
@@ -354,6 +366,7 @@ th {
   font-size: 0.95rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+  width: 100%;
 }
 
 /* Members list */
@@ -466,11 +479,10 @@ th {
   border: 1px solid #ccc;
   padding: 0.5rem;
   text-align: left;
-}
-
-th {
   background-color: #f2f2f2;
 }
+
+
 
 /* See more page */
 .BackSeeMoreBtn {
@@ -513,4 +525,16 @@ th {
 .button-container-ExistedTeams{
  margin-left: auto;
  justify-content: space-between; 
+}
+.my-team-table-wrapper  {
+overflow-y: auto;
+  max-height: 30vh;
+
+}
+.my-team-table-wrapper  td{
+font-size: 1.4rem;
+}
+.my-team-table-Pending {
+  overflow-y: auto;
+  max-height: 20vh;
 }

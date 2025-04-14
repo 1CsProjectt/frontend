@@ -1,8 +1,10 @@
+//add that if you are alredt in a team you can not click the join button(i can write in the button that you are alredy in a team)
+
 import React, { useState } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
 import axios from "axios";
-import JoinTeamAlert from "./JoinTeamAlert";
-import Toast from "./Toast";
+import JoinTeamAlert from "./modals/JoinTeamAlert";
+import Toast from "./modals/Toast";
 
 const Seemorepage = ({ myTeamNumber, myTeamMembers = [] }) => {
   const [toastMessage, setToastMessage] = useState("");
@@ -18,8 +20,8 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] }) => {
   };
 
   const handleConfirm = () => {
-    setShowJoinAlert(false);
-    // Handle join logic here (for example, an API call)
+  setShowJoinAlert(false);
+
     console.log("Join confirmed!");
     setToastMessage("Team joining was successful.");
     setShowToast(true);
@@ -32,9 +34,8 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] }) => {
 
   // If team members are not provided via props, fall back to static data.
   const staticTeamMembers = [
-    { fullName: "Alice Johnson", email: "alice@example.com", group: "Group A", role: "Leader" },
-    { fullName: "Bob Smith", email: "bob@example.com", group: "Group A", role: "Member" },
-    { fullName: "Carol Lee", email: "carol@example.com", group: "Group A", role: "Member" }
+    { fullName: "XX", email: "XX@example.com", group: "Group XX", role: "XX" },
+  
   ];
 
   // Use passed team members if available; otherwise, static data.
