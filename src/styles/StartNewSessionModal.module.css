@@ -69,6 +69,7 @@
     justify-content: center; /* Centers items horizontally */
     gap: 15px;
     width: 100%; /* Ensures full width for better alignment */
+    border-bottom: 3px solid rgb(221,226,228);
   }
   
   /* Buttons */

@@ -4,25 +4,52 @@ import classes from "../../styles/DeleteUserModal.module.css";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
 
 
-const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType }) => {// the entity type is a string for now just to change the display of the message upon deletion
+const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userToDelete}) => {// the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(true);
 
   if (!isOpen) return null;
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    setSuccessConfirmationModal(true);
 
-    // TODO: Insert backend delete logic here
-    onDelete && onDelete();
+  const handleDelete = async () => {
+  
+  
+    try {
+      const response = await fetch('/users/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: userToDelete.id, 
+          email: userToDelete.email,
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        alert(result.message);
+        setShowDeleteModal(false);
+    
+        setSuccessConfirmationModal(true);
+        window.location.reload();
+        
+      } else {
+        alert(result.message || 'Failed to delete user.');
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("An error occurred while deleting the user.");
+    }
   };
+  
 
   return (
     <>
       {showSuccessConfirmationModal && (
         <SuccessConfirmationModal
-          message={`The ${entityType}(s) has been successfully deleted! You won’t be able to undo this action.`}
+          message={`The ${entityType} : ${userToDelete.username} has been successfully deleted! You won’t be able to undo this action.`}
           onClose={() => {
             setSuccessConfirmationModal(false);
             onClose();
@@ -38,7 +65,7 @@ const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType }) => {// the e
               <h2 className={classes["modal-title"]}>Delete {entityType}</h2>
             </div>
             <p className={classes["modal-text"]}>
-              Are you sure you want to delete this {entityType}? This action cannot be undone.
+              Are you sure you want to delete this {entityType} : {userToDelete.username}? This action cannot be undone.
             </p>
             <div className={classes["modal-actions"]}>
               <button className={classes["cancel-btn"]} onClick={onClose}>

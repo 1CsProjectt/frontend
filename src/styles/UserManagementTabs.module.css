@@ -1,13 +1,21 @@
 /* User Management Styling */
 
+.main-container{
+  height: 100vh;
+
+}
 .users-management {
+ 
+
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1px;
+  padding:20px;
   background-color: #f8f9fc;
   font-family: "Inter", sans-serif;
   color: #333;
+  margin:0px;
+  padding: 0px;
 }
 
 .header {
@@ -21,11 +29,12 @@
 }
 
 .add-btn {
-  background-color: #007bff;
+  background-color: rgb(7,126,212);
   color: white;
   padding: 10px 15px;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: bold;
+  font-family: "Manrope";
   border: none;
   cursor: pointer;
   transition: 0.3s;
@@ -41,6 +50,7 @@ h1 {
 }
 .navbar-container{
   margin:0px ;
+
   margin-bottom: 5px;
 }
 
@@ -68,11 +78,13 @@ h1 {
   border-bottom: 3px solid #007bff;
 }
 
-table {
-  margin: 20px;
-  
-  margin-top: 0px;
-  width: 80%;
+.table-container{
+  padding:20px;
+}
+
+.main-table {
+
+  width: 100%;
   border-collapse: collapse;
   background: white;
   border-radius: 8px;
@@ -80,7 +92,7 @@ table {
   overflow: hidden;
 }
 
-thead {
+.main-table thead {
   
 
   text-transform: uppercase;
@@ -88,16 +100,17 @@ thead {
   color: rgb(90,94,96);
 }
 
-thead th {
+.main-table thead th {
   padding: 12px;
-  text-align: left;
+  text-align: center;
+
 }
 
-tbody tr {
+.main-table tbody tr {
   border-bottom: 1px solid #eee;
 }
 
-tbody td {
+.main-table tbody td {
   padding: 12px;
   height:20px;
   font-size: 14px;
