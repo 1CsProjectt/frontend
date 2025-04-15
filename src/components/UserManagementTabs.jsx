@@ -4,7 +4,7 @@ import classes from "../styles/UserManagementTabs.module.css";
 import UserFormModal from "./modals/UserFormModal.jsx";
 import DeleteUserModal from "./modals/DeleteUserModal.jsx";
 import NavBar from "./NavBar.jsx";
-
+import axios from "axios";
 // A modal blocks interactions with the webpage unless specified otherwise.
 // It usually appears in the middle of the screen to show a message or request input.
 const UserManagementTabs = () => {
@@ -16,46 +16,48 @@ const UserManagementTabs = () => {
   const [customPageInput, setCustomPageInput] = useState("");
   const [showPageInput, setShowPageInput] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-
+  const [userToEdit, setUserToEdit] = useState(null);
+  const [operation, setOperation] = useState("");
   const usersPerPage = 8;
 
 
   // Tabs for different user types
-  const tabs = ["Students", "Supervisors", "Enterprises", "Jury"];
+  const tabs = ["Students", "Supervisors", "Enterprises", "Admins"];
   
 
 
   const [fetchedUsers, setFetchedUsers] = useState([]);
 
-  useEffect(() => {
-      const fetchUsers = async () => {
-          try {
-              const response = await fetch('/users/get-all'); // Adjust URL if needed
-              const data = await response.json();
   
-              const usersArray = data.map(user => ({
-                  id: user.id,
-                  email: user.email,
-                  username: user.username,
-                  role: user.role,
-                  password: user.password,
-                  resetToken: user.resetToken,
-                  resetTokenExpiry: user.resetTokenExpiry,
-                  passwordChangedAt: user.passwordChangedAt,
-                  createdAt: user.createdAt, 
-                  updatedAt: user.updatedAt,
-              }));
-  
-              setFetchedUsers(usersArray);
-              console.log(usersArray);
-          } catch (error) {
-              console.error('Error fetching users:', error);
-          }
-      };
-  
-      fetchUsers();
-  }, []);
-  
+
+useEffect(() => {
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get('/users/get-all'); // Adjust baseURL in Axios config if needed
+
+            const usersArray = response.data.map(user => ({
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role,
+                password: user.password,
+                resetToken: user.resetToken,
+                resetTokenExpiry: user.resetTokenExpiry,
+                passwordChangedAt: user.passwordChangedAt,
+                createdAt: user.createdAt, 
+                updatedAt: user.updatedAt,
+            }));
+
+            setFetchedUsers(usersArray);
+            console.log(usersArray);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
+    fetchUsers();
+}, []);
+
 
     /*
   
@@ -75,7 +77,7 @@ const UserManagementTabs = () => {
       Students: fetchedUsers.filter(user => user.role === "student"),
       Supervisors: fetchedUsers.filter(user => user.role === "teacher"),
       Enterprises: fetchedUsers.filter(user => user.role === "company"),
-      Jury: fetchedUsers.filter(user => user.role === "jury"),
+      Admins: fetchedUsers.filter(user => user.role === "admin"),
     };
   }, [fetchedUsers]);
 
@@ -117,8 +119,8 @@ const UserManagementTabs = () => {
    
       <div className={classes["header"]}>
         <h1>Users Management</h1>
-        <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a User</button>
-        <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} operation={"createUser"}/>
+        <button onClick={() => { setOperation("createUser"); setUserFormModalOpen(true); }} className={classes["add-btn"]}>Add a User</button>
+        
       </div>
       <div className={classes["tabs"]}>
         {tabs.map((tab) => (
@@ -155,8 +157,12 @@ const UserManagementTabs = () => {
           {user.status || "Inactive"} {/* Ensure status exists or default to "Inactive" */}
         </td>
         <td>
-          <button onClick={() => setUserFormModalOpen(true)} className={classes["edit-btn"]}>Edit</button>
-          <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
+          <button onClick={() => {setUserToEdit(user);
+          setOperation("editUser");
+          setUserFormModalOpen(true);}} 
+            className={classes["edit-btn"]}>Edit
+            </button>
+          
           <button className={classes["delete-btn"]}  onClick={() => {
     setUserToDelete(user); // this sets the current user (we want the full info therefore we pass the whole object to get the name)
     setDeleteUserModalOpen(true); // then open the modal c
@@ -222,7 +228,8 @@ const UserManagementTabs = () => {
         <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
       </div>
-      <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userToDelete={userToDelete}/>
+      <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} userObject={userToEdit} operation={operation}/>
+      <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userToDelete={userToDelete} />
     </div>
     
     

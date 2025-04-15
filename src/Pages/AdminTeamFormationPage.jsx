@@ -3,8 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/NavBar";
-import StudentsListTab from "../components/StudentsListTab";
-import ExistedTeamsTab from "../components/ExistedTeamsTab";
+import AdminStudentsListTab from "../components/AdminStudentsListTab";
+import AdminExistedTeamsTab from "../components/AdminExistedTeamsTab";
 import MyTeamTab from "../components/MyTeamTab";
 import CreateTeamModal from "../components/modals/CreateTeamModal";
 import Toast from "../components/modals/Toast";
@@ -60,17 +60,17 @@ function TeamFormationPage() {
 
       try {
         if (activeTab === "Students List") {
-          const { data } = await axios.get("/student/liststudents", {
+          const { data } = await axios.get("/users/students", {
             withCredentials: true,
           });
           console.log("API Response (Students List):", data);
-          if (data && Array.isArray(data.students)) {
-            setStudents(data.students);
+          if (data && Array.isArray(data)) {
+            setStudents(data);
           } else {
             console.error("Unexpected API Response Format for students:", data);
           }
         } else if (activeTab === "Existed Teams") {
-          const { data } = await axios.get("/teams/allgroups", {
+          const { data } = await axios.get("/teams/all", {
             withCredentials: true,
           });
           console.log("API Response (isted Teams):", data);
@@ -123,7 +123,7 @@ function TeamFormationPage() {
   const renderTabContent = () => {
     if (activeTab === "Students List") {
       return (
-        <StudentsListTab
+        <AdminStudentsListTab
           user={user}
           students={filteredStudents}
           myTeamNumber={myTeam?.groupName || ""}
@@ -131,7 +131,7 @@ function TeamFormationPage() {
       );
     } else if (activeTab === "Existed Teams") {
       return (
-        <ExistedTeamsTab
+        <AdminExistedTeamsTab
           user={user}
           existedTeams={existedTeams}
           navigate={navigate}
