@@ -17,7 +17,7 @@ p {
   flex-direction: column;
   display: flex;
   z-index: 999;
-  background-color: transparent;
+  background-color: #f5f7fa;
   height: 125px;
 
   flex: auto;
@@ -120,8 +120,8 @@ p {
 
 .notification-badge {
   position: absolute;
-  top: -4px;       /* Adjust as needed */
-  right: -4px;     /* Adjust as needed */
+  top: -4px; /* Adjust as needed */
+  right: -4px; /* Adjust as needed */
   background-color: red;
   color: white;
   border-radius: 50%;
@@ -134,7 +134,6 @@ p {
   justify-content: center;
   padding: 0 4px;
 }
-
 
 .profile {
   flex: auto;
@@ -394,14 +393,13 @@ p {
   position: absolute;
   top: 60px;
   right: 20px;
-  width:25rem;
+  width: 25rem;
   background-color: #ffffff;
   border: 1px solid #dde2e4;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   z-index: 99;
   padding: 1rem;
-
 }
 
 /* Header: title + "Mark all as read" button */
@@ -489,7 +487,6 @@ p {
   gap: 0.5rem;
 }
 
-
 /* Invitation actions container */
 .invitation-actions {
   margin-top: 0.25rem;
@@ -508,7 +505,7 @@ p {
 }
 
 .accept-btn-notification {
-  background-color: #077ED4; /* Green */
+  background-color: #077ed4; /* Green */
   color: #ffffff;
 }
 .accept-btn-notification:hover {
@@ -516,13 +513,11 @@ p {
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
 }
 .decline-btn-notification {
-  background-color: #FFFFFF; /* Red */
+  background-color: #ffffff; /* Red */
   color: #344054;
   border: 1px solid #dde2e4;
-  
 }
 .decline-btn-notification:hover {
   background-color: #f8f9fa;
@@ -533,6 +528,6 @@ p {
 
 /* For demonstration, you can adjust your color scheme to your liking */
 .countdownStyle {
-  color: #077ED4;
+  color: #077ed4;
   font-weight: 700;
 }

@@ -15,6 +15,7 @@ import PFEIcon from "../assets/Graduation Cap.svg";
 import CheckCircleIcon from "../assets/check_circle_outline_24px.svg";
 import TeamformationIcon from "../assets/Teamformation.svg";
 const Sidebar = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState("");
@@ -24,6 +25,8 @@ const Sidebar = () => {
     const path = location.pathname;
     if (path.includes("/pfe")) {
       setActiveMenu("pfe");
+    } else if (path.includes("/teacher")) {
+      setActiveMenu("mytopics");
     } else if (path.includes("/TeamFormationPage")) {
       setActiveMenu("TeamFormationPage");
     } else if (path.includes("/notifications")) {
@@ -61,71 +64,165 @@ const Sidebar = () => {
         <li className={Module["menu-title"]}>Menu</li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "pfe" ? Module["active"] : ""}`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "pfe" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/pfe")}
           >
             <img src={PFEIcon} alt="PFE Topics" className={Module["icon"]} />
             PFE Topics
-            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
           </button>
         </li>
-        <li className={Module["menu-item"]}>
-          <button
-            className={`${Module["menu-btn"]} ${activeMenu === "TeamFormationPage" ? Module["active"] : ""}`}
-            onClick={() => toggleMenu("/TeamFormationPage")}
-          >
-            <img src={TeamformationIcon} alt="Team formation" className={Module["icon"]} />
-            Team formation
-            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
-          </button>
-        </li>
+
+        {user?.role === "teacher" && (
+          <>
+            <li className={Module["menu-item"]}>
+              <button
+                className={`${Module["menu-btn"]} ${
+                  activeMenu === "mytopics" ? Module["active"] : ""
+                }`}
+                onClick={() => toggleMenu("/teacher")}
+              >
+                <img src={PFEIcon} alt="My Topics" className={Module["icon"]} />
+                My Topics
+                <img
+                  src={ChevronRightIcon}
+                  alt="Arrow"
+                  className={Module["row-icon"]}
+                />
+              </button>
+            </li>
+            <li className={Module["menu-item"]}>
+              <button
+                className={`${Module["menu-btn"]} ${
+                  activeMenu === "teamselection" ? Module["active"] : ""
+                }`}
+                onClick={() => toggleMenu("/teamselection")}
+              >
+                <img
+                  src={TeamformationIcon}
+                  alt="Team Selection"
+                  className={Module["icon"]}
+                />
+                Team Selection
+                <img
+                  src={ChevronRightIcon}
+                  alt="Arrow"
+                  className={Module["row-icon"]}
+                />
+              </button>
+            </li>
+          </>
+        )}
+        {user?.role !== "teacher" && (
+          <li className={Module["menu-item"]}>
+            <button
+              className={`${Module["menu-btn"]} ${
+                activeMenu === "TeamFormationPage" ? Module["active"] : ""
+              }`}
+              onClick={() => toggleMenu("/TeamFormationPage")}
+            >
+              <img
+                src={TeamformationIcon}
+                alt="Team formation"
+                className={Module["icon"]}
+              />
+              Team formation
+              <img
+                src={ChevronRightIcon}
+                alt="Arrow"
+                className={Module["row-icon"]}
+              />
+            </button>
+          </li>
+        )}
         <li className={Module["menu-item"]}>
           <button
             /* className={Module[`menu-btn ${activeMenu === "notifications" ? "active" : ""}`]} */
-            className={`${Module["menu-btn"]} ${activeMenu === "notifications" ? Module["active"] : ""}`}
-
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "notifications" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/notifications")}
           >
-            <img src={NotificationsIcon} alt="Notifications" className={Module["icon"]} />
+            <img
+              src={NotificationsIcon}
+              alt="Notifications"
+              className={Module["icon"]}
+            />
             Notifications
-            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
           </button>
         </li>
+
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "loremres" ? Module["active"] : ""}`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "loremres" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/loremres")}
           >
-            <img src={CheckCircleIcon} alt="Loremres" className={Module["icon"]} />
+            <img
+              src={CheckCircleIcon}
+              alt="Loremres"
+              className={Module["icon"]}
+            />
             Loremres
-            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
           </button>
         </li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "lovers" ? Module["active"] : ""}`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "lovers" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/lovers")}
           >
             <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
             Lovers
-            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
           </button>
         </li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "export" ? Module["active"] : ""}`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "export" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/export")}
           >
             <img src={ExportIcon} alt="Export" className={Module["icon"]} />
             Export
-            <img src={ChevronRightIcon} alt="Arrow" className={Module["row-icon"]} />
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
           </button>
         </li>
       </ul>
 
       {/* Bottom Menu */}
       <div className={Module["bottom-menu"]}>
-        <button className={Module["bottom-menu-btn"]} onClick={() => navigate("/help")}>
+        <button
+          className={Module["bottom-menu-btn"]}
+          onClick={() => navigate("/help")}
+        >
           <img src={HelpIcon} alt="Help" className={Module["icon"]} />
           Help
         </button>

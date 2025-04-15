@@ -4,9 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/NavBar";
 import "../styles/layout.css";
-import Addatopic from "../components/addatopic";
+
 import Sidebar from "../components/Sidebar";
-import TeacherTopics from "../components/TeacherTopics";
 
 const Layout = () => {
   const [cards, setCards] = useState([]);
@@ -83,15 +82,18 @@ const Layout = () => {
     <div className="layout">
       <Sidebar />
       <div className="maincontent">
-        {" "}
-        <Navbar
-          title={"Normal Session"}
-          selectedFilters={selectedFilters}
-          onFilterApply={handleFilterApply}
-          onSearchChange={handleSearchChange}
-          suggestions={suggestionList}
-        />
-        <Outlet context={{ cards, setCards }} />
+        <div className="navbar-wrapper">
+          <Navbar
+            title={"Normal Session"}
+            selectedFilters={selectedFilters}
+            onFilterApply={handleFilterApply}
+            onSearchChange={handleSearchChange}
+            suggestions={suggestionList}
+          />
+        </div>
+        <div className="outlet-scroll">
+          <Outlet context={{ cards, setCards }} />
+        </div>
       </div>
     </div>
   );

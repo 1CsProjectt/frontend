@@ -25,4 +25,17 @@
   top: 0;
   height: 100vh;
 }
+.navbar-wrapper {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white; /* Make sure it's visible */
+}
+
+.outlet-scroll {
+  flex-grow: 1;
+  overflow-y: auto;
+  /* Optional */
+}
 /* Resizable Handle */

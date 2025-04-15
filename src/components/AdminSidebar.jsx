@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+
 import classNames from "classnames";
 import classes from "../styles/adminSidebar.module.css";
 import usersIcon from "../assets/users-icon.svg";
@@ -15,12 +16,36 @@ const AdminSidebar = () => {
   const location = useLocation(); // Get current URL
 
   const menuItems = [
-    { name: "Users", path: "/admin/users", icon: <img src={usersIcon} alt="Users" /> },
-    { name: "Sessions", path: "/admin/sessions", icon: <img src={sessionsIcon} alt="Sessions" /> },
-    { name: "Export", path: "/admin/export", icon: <img src={exportIcon} alt="Export" /> },
-    { name: "Loversr", path: "/admin/loversr", icon: <img src={loversrIcon} alt="Loversr" /> },
-    { name: "Dashboard", path: "/admin/dashboard", icon: <img src={dashboardIcon} alt="Dashboard" /> },
-    { name: "Settings", path: "/admin/settings", icon: <img src={settingsIcon} alt="Settings" /> },
+    {
+      name: "Users",
+      path: "/admin/users",
+      icon: <img src={usersIcon} alt="Users" />,
+    },
+    {
+      name: "Sessions",
+      path: "/admin/sessions",
+      icon: <img src={sessionsIcon} alt="Sessions" />,
+    },
+    {
+      name: "Export",
+      path: "/admin/export",
+      icon: <img src={exportIcon} alt="Export" />,
+    },
+    {
+      name: "Loversr",
+      path: "/admin/loversr",
+      icon: <img src={loversrIcon} alt="Loversr" />,
+    },
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: <img src={dashboardIcon} alt="Dashboard" />,
+    },
+    {
+      name: "Settings",
+      path: "/admin/settings",
+      icon: <img src={settingsIcon} alt="Settings" />,
+    },
   ];
 
   return (
@@ -38,7 +63,9 @@ const AdminSidebar = () => {
             key={item.name}
             to={item.path}
             className={({ isActive }) =>
-              classNames(classes["sidebar-item"], { [classes["active"]]: isActive })
+              classNames(classes["sidebar-item"], {
+                [classes["active"]]: isActive,
+              })
             }
           >
             <span className={classes["sidebar-icon"]}>{item.icon}</span>
@@ -50,11 +77,15 @@ const AdminSidebar = () => {
       {/* Bottom Buttons */}
       <div className={classes["sidebar-bottom"]}>
         <NavLink to="/admin/help" className={classes["sidebar-item"]}>
-          <span className={classes["sidebar-icon"]}><img src={helpIcon} alt="Help" /></span>
+          <span className={classes["sidebar-icon"]}>
+            <img src={helpIcon} alt="Help" />
+          </span>
           <span className={classes["sidebar-text"]}>Help</span>
         </NavLink>
-        <NavLink to="/logout" className={classes["sidebar-item"]}>
-          <span className={classes["sidebar-icon"]}><img src={logoutIcon} alt="Logout" /></span>
+        <NavLink to="/" className={classes["sidebar-item"]}>
+          <span className={classes["sidebar-icon"]}>
+            <img src={logoutIcon} alt="Logout" />
+          </span>
           <span className={classes["sidebar-text"]}>Logout</span>
         </NavLink>
       </div>

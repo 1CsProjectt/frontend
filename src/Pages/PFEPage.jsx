@@ -1,4 +1,4 @@
-//the nagrok image problem 
+//the nagrok image problem
 
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
@@ -15,15 +15,13 @@ const PFEPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user"));
+  const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/pfe/for-students", {
+        const response = await axios.get(endpoint, {
           withCredentials: true,
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
         });
 
         if (response.data && response.data.pfeList) {
@@ -52,7 +50,7 @@ const PFEPage = () => {
         card.title,
         card.specialization,
         card.creator?.username,
-        card.year ? String(card.year) : "", 
+        card.year ? String(card.year) : "",
       ])
     )
   );
@@ -90,7 +88,14 @@ const PFEPage = () => {
   return (
     <div>
       <Sidebar />
-      <div style={{ marginLeft: "16vw" }}>
+      <div
+        style={{
+          marginLeft: "16vw",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Navbar
           title={"Normal Session"}
           selectedFilters={selectedFilters}
@@ -99,29 +104,28 @@ const PFEPage = () => {
           suggestions={suggestionList}
         />
 
-        {loading ? (
-          <p className={Style["loading-text"]}>Loading projects...</p>
-        ) : error ? (
-          <p className={Style["error-text"]}>{error}</p>
-        ) : (
-          <div
-            className={Style["cards-container"]}
-            style={{ overflowY: "auto" }} 
-          >
-            {filteredCards.length > 0 ? (
-              filteredCards.map((card, index) => (
-                <PFECard
-                  key={card.id || index}
-                  card={card}
-                  isSelected={null}
-                  toggleSelect={() => {}}
-                />
-              ))
-            ) : (
-              <p className={Style["no-results-text"]}>No projects found.</p>
-            )}
-          </div>
-        )}
+        <div style={{ flexGrow: 1, overflowY: "auto" }}>
+          {loading ? (
+            <p className={Style["loading-text"]}>Loading projects...</p>
+          ) : error ? (
+            <p className={Style["error-text"]}>{error}</p>
+          ) : (
+            <div className={Style["cards-container"]}>
+              {filteredCards.length > 0 ? (
+                filteredCards.map((card, index) => (
+                  <PFECard
+                    key={card.id || index}
+                    card={card}
+                    isSelected={null}
+                    toggleSelect={() => {}}
+                  />
+                ))
+              ) : (
+                <p className={Style["no-results-text"]}>No projects found.</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

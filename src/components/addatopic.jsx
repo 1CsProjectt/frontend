@@ -64,7 +64,7 @@ const Addatopic = () => {
     formData.append("year", grade);
     formData.append("photo", presentationFile); // image file
     formData.append("pdfFile", techSheetFile); // PDF file
-    navigate(-1);
+
     try {
       const response = await axios.post("/pfe/depositPFE", formData, {
         withCredentials: true,
@@ -76,6 +76,7 @@ const Addatopic = () => {
 
       console.log("Topic submitted:", response.data);
       alert("Topic submitted successfully!");
+      navigate(-1);
     } catch (error) {
       console.error(error);
       alert(error);
