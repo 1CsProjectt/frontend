@@ -125,7 +125,6 @@ const NavBar = ({
           suggestions={suggestions || []}
         />
         <div className={Module["rightside"]}>
-<<<<<<< HEAD
           <div className={Module["notf-button"]}>
             <img
               src={notfIcon}
@@ -133,22 +132,6 @@ const NavBar = ({
               className={Module["notf-icon"]}
             />
           </div>
-=======
-          {/* Notification Icon with Notification Count */}
-<div className={Module["notf-button"]} onClick={toggleNotifications}>
-  <img
-    src={notfIcon}
-    alt="Notification Icon"
-    className={Module["notf-icon"]}
-  />
-  {notificationCount > 0 && (
-    <span className={Module["notification-badge"]}>
-      {notificationCount}
-    </span>
-  )}
-</div>
-
->>>>>>> 3f3058e0 (link the creating btn)
           {/* Profile section */}
           <div className={Module["profile"]}>
             <img src={profilepic} alt="Profile" className={Module["pic"]} />
