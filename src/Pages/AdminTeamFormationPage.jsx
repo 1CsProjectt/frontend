@@ -6,11 +6,11 @@ import Navbar from "../components/NavBar";
 import AdminStudentsListTab from "../components/AdminStudentsListTab";
 import AdminExistedTeamsTab from "../components/AdminExistedTeamsTab";
 import MyTeamTab from "../components/MyTeamTab";
-import CreateTeamModal from "../components/CreateTeamModal";
-import Toast from "../components/Toast";
+import CreateTeamModal from "../components/modals/CreateTeamModal";
+import Toast from "../components/modals/Toast";
 
 import Style from "../styles/TeamFormationPage.module.css";
-import LeaveTeamPopup from "../components/LeaveTeamPopup";
+import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
 import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
 
 // Skip ngrok warning if you're using ngrok

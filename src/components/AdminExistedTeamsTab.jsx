@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
 import Seemorepage from "./ExistedTeamSeemore";
-import JoinTeamAlert from "./JoinTeamAlert";
-import Toast from "./Toast";
-import { getPaginatedData, getPageNumbers } from "./paginationFuntion"; 
+import JoinTeamAlert from "./modals/JoinTeamAlert";
+import Toast from "./modals/Toast";
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion"; 
 
 const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
