@@ -241,6 +241,8 @@ const TopicsValidationPage = () => {
             onClose={() => setPfeTopicModalOpen(false)}
             entityType="User"
             operation="delete"
+            selectedcardsid={selectedCards}
+            setCardsArray={setCardsArray}
           />
         </div>
       </div>

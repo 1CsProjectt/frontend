@@ -1,18 +1,50 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Module from "../styles/TeamFormationPage.module.css";
 import Seemorepage from "./ExistedTeamSeemore";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
-import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion"; 
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 
 const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
+
   const [teamsPerPage, setTeamsPerPage] = useState(10);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const containerRef = useRef(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
+
+  const handledeleteteam = async (teamId) => {
+    if (!teamId) {
+      console.log("No team ID provided");
+      return;
+    }
+
+    try {
+      await deleteTeam(teamId);
+    } catch (error) {
+      console.error("Error deleting team:", error);
+    }
+  };
+
+  const deleteTeam = async (teamId) => {
+    try {
+      if (!teamId) return;
+
+      await axios.delete(`/teams//delete/${teamId}`, {
+        withCredentials: true,
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+
+      console.log(`Team ${teamId} deleted successfully`);
+    } catch (err) {
+      console.error("Error deleting team:", err);
+    }
+  };
 
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
@@ -142,7 +174,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                     <button
                       className={Module["invite-button"]}
                       style={{ width: "90px", backgroundColor: "white" }}
-                      onClick={() => setSelectedTeam(team)}
+                      onClick={() => handledeleteteam(team?.id)}
                     >
                       Delete
                     </button>

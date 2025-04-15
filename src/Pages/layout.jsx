@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Outlet } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/NavBar";
@@ -90,7 +91,7 @@ const Layout = () => {
           onSearchChange={handleSearchChange}
           suggestions={suggestionList}
         />
-        <TeacherTopics cards={cards} setCards={setCards} />
+        <Outlet context={{ cards, setCards }} />
       </div>
     </div>
   );

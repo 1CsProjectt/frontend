@@ -19,9 +19,9 @@ p {
   z-index: 999;
   background-color: transparent;
   height: 125px;
-  width: calc(100% - 290px);
+
   flex: auto;
-  position: fixed;
+  position: relative;
 }
 
 .session {

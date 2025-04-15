@@ -124,13 +124,14 @@ const NavBar = ({
     <div className={Module["container"]} ref={containerRef}>
       <div className={Module["session"]}>
         <p className={Module["sessionP"]}>
-          {!targetDate || targetDate === "" ? (
+          {!targetDate || targetDate === "" || !timeLeft ? (
             title
           ) : (
             <>
               {title}{" "}
               <span className={Module["countdownStyle"]}>
-                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min to end
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min{" "}
+                {timeLeft.countdownType}
               </span>
             </>
           )}

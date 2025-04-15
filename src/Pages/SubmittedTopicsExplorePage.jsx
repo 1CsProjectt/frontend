@@ -1,4 +1,4 @@
-import {React , useState} from "react";
+import { React, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/NavBar";
@@ -13,8 +13,7 @@ export default function PublishedTopicsExplorePage() {
   const navigate = useNavigate();
   const { card } = location.state || {};
   const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
-  const [modalOperation, setModalOperation] = useState("")//by default no operation is chosen
-
+  const [modalOperation, setModalOperation] = useState(""); //by default no operation is chosen
 
   if (!card) {
     // If no card data is found, navigate back or show a message.
@@ -28,83 +27,91 @@ export default function PublishedTopicsExplorePage() {
 
   return (
     <div className={Module["explore-container"]}>
-        <AdminSidebar/>
+      <AdminSidebar />
       <div className={Module["explore-content"]} style={{ marginLeft: "17vw" }}>
         <Navbar />
-        <div className={Module["scroll-container"]} >
-        <div className={Module["header"]}>
-        <h1 >Reading</h1>
-        <div className={Module["buttons-container"]}>
-        <button className={Module["decline-button"]} onClick={() => { setModalOperation("decline");//operation has to be set before opening the modal
-         setPfeTopicModalOpen(true)} }>
-          
-            Decline
-            </button>
-           
-        <button className={Module["validate-button"]}  onClick={() => { setModalOperation("validate"); setPfeTopicModalOpen(true)} } >
-            Validate
-            </button>
-           
-                {/*  Only one modal, controlled by operation state */}
-                <PfeTopicModal
+        <div className={Module["scroll-container"]}>
+          <div className={Module["header"]}>
+            <h1>Reading</h1>
+            <div className={Module["buttons-container"]}>
+              <button
+                className={Module["decline-button"]}
+                onClick={() => navigate(-1)}
+              >
+                Decline
+              </button>
+
+              <button
+                className={Module["validate-button"]}
+                onClick={() => {
+                  setModalOperation("validate");
+                  setPfeTopicModalOpen(true);
+                }}
+              >
+                Validate
+              </button>
+
+              {/*  Only one modal, controlled by operation state */}
+              <PfeTopicModal
                 isOpen={isPfeTopicModalOpen}
                 onClose={() => setPfeTopicModalOpen(false)}
                 entityType="Topic(s)"
                 operation={modalOperation}
+                validatedcardid={card.id}
               />
             </div>
-        </div>
-        <div className={Module["banner-wrapper"]}>
-          <img
-            src={card.photo || "https://via.placeholder.com/300x200"}
-            alt="Project Banner"
-            className={Module["project-banner"]}
-          />
-        </div >
-        <div className={Module["project-details"]}>
-          <h1 className={Module["project-title"]}>{card.title}</h1>
-          <p className={Module["project-description"]}>{card.description}</p>
-
-          <h2 className={Module["section-heading"]}>Supervisors</h2>
-          <ul className={Module["supervisors-list"]}>
-            {card.supervisors && card.supervisors.length > 0 ? (
-              card.supervisors.map((supervisor, index) => (
-                <li key={index}>
-                  {supervisor.name || "No name provided"}
-                </li>
-              ))
-            ) : (
-              <li>No supervisors available</li>
-            )}
-          </ul>
-
-          <h2 className={Module["section-heading"]}>Technical Sheet</h2>
-          <a
-            href={card.pdfFile}
-            download
-            className={Module["technical-sheet"]}
-          >
-            <div className={Module["technical-sheet-info"]}>
-              <img
-                src={FileIcon}
-                alt="PDF Icon"
-                className={Module["file-icon"]}
-              />
-              <div>
-                <span className={Module["file-name"]}>TechnicalSheet.Pdf</span>
-                <span className={Module["file-size"]}>
-                  Size not available
-                </span>
-              </div>
-            </div>
+          </div>
+          <div className={Module["banner-wrapper"]}>
             <img
-              src={ArrowIcon}
-              alt="Right Arrow"
-              className={Module["arrow-icon"]}
+              src={card.photo || "https://via.placeholder.com/300x200"}
+              alt="Project Banner"
+              className={Module["project-banner"]}
             />
-          </a>
+          </div>
+          <div className={Module["project-details"]}>
+            <h1 className={Module["project-title"]}>{card.title}</h1>
+            <p className={Module["project-description"]}>{card.description}</p>
+
+            <h2 className={Module["section-heading"]}>Supervisors</h2>
+            <ul className={Module["supervisors-list"]}>
+              {card.supervisors && card.supervisors.length > 0 ? (
+                card.supervisors.map((supervisor, index) => (
+                  <li key={index}>{supervisor.name || "No name provided"}</li>
+                ))
+              ) : (
+                <li>No supervisors available</li>
+              )}
+            </ul>
+
+            <h2 className={Module["section-heading"]}>Technical Sheet</h2>
+            <a
+              href={card.pdfFile}
+              download
+              className={Module["technical-sheet"]}
+            >
+              <div className={Module["technical-sheet-info"]}>
+                <img
+                  src={FileIcon}
+                  alt="PDF Icon"
+                  className={Module["file-icon"]}
+                />
+                <div>
+                  <span className={Module["file-name"]}>
+                    TechnicalSheet.Pdf
+                  </span>
+                  <span className={Module["file-size"]}>
+                    Size not available
+                  </span>
+                </div>
+              </div>
+              <img
+                src={ArrowIcon}
+                alt="Right Arrow"
+                className={Module["arrow-icon"]}
+              />
+            </a>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

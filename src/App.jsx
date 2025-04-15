@@ -16,6 +16,7 @@ import ResetPassword from "./Pages/ResetPassword";
 import AdminDashboard from "./Pages/AdminDashboard";
 import UserManagementTabs from "./components/UserManagementTabs";
 import SessionsManagementTabs from "./components/SessionsManagementTabs";
+import TeacherTopics from "./components/TeacherTopics";
 import Addatopic from "./components/addatopic";
 import TopicsValidationPage from "./Pages/TopicsValidationPage";
 import SubmittedTopicsExplorePage from "./Pages/SubmittedTopicsExplorePage";
@@ -27,7 +28,7 @@ import NotificationsPage from "./Pages/NotificationsPage";
 import LoversPage from "./Pages/LoversPage";
 import Layout from "./Pages/layout";
 import ExplorePage from "./Pages/ExplorePage";
-import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
+
 import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 /* import NavBar from "./components/Navbar"; */
 import TeamFormationPage from "./Pages/TeamformationPage";
@@ -45,10 +46,16 @@ function App() {
           }
 
           <Route path="/" element={<Login />} />
-          <Route path="/teacher" element={<Layout />}></Route>
+
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/CheckEmail" element={<CheckEmail />} />
+
+          <Route path="/teacher" element={<Layout />}>
+            <Route index element={<TeacherTopics />} />
+            <Route path="Addatopic" element={<Addatopic />} />
+          </Route>
+
           {/* Route with dynamic token */}
           <Route
             path="/auth/reset-password/:token"
@@ -72,10 +79,6 @@ function App() {
           <Route path="/testingteam" element={<TestingTeam />} />
           <Route path="/testingpfe" element={<TestingPFE />} />
 
-          <Route
-            path="/admin/sessions/topic-validation/published-topic-explore"
-            element={<PublishedTopicsExplorePage />}
-          />
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"
             element={<SubmittedTopicsExplorePage />}

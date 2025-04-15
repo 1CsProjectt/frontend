@@ -4,6 +4,7 @@ import warningIcon from "../../assets/warning-icon.svg";
 import blueWarningIcon from "../../assets/blue-warning-icon.svg";
 import classes from "../../styles/PfeTopicModal.module.css";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
+import { useNavigate } from "react-router-dom";
 
 const PfeTopicModal = ({
   isOpen,
@@ -11,13 +12,15 @@ const PfeTopicModal = ({
   onDelete,
   entityType,
   operation,
-  datalist,
+  selectedcardsid,
+  validatedcardid,
+  setCardsArray,
 }) => {
   // the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] =
     useState(false);
   const [showModal, setShowModal] = useState(true);
-
+  const navigate = useNavigate();
   if (!isOpen) return null;
 
   const handleDelete = async () => {
@@ -27,12 +30,15 @@ const PfeTopicModal = ({
     // TODO: Insert backend delete logic here
 
     try {
-      const validIds = datalist.filter((id) => id !== undefined && id !== null);
+      const validIds = selectedcardsid
+        .map((card) => (typeof card === "object" ? card.id : card))
+        .filter((id) => id !== undefined && id !== null);
+      console.log("Deleting IDs:", validIds);
       if (validIds.length === 0) return;
 
       await Promise.all(
         validIds.map((id) =>
-          axios.delete(`/pfe/delete/${id}`, {
+          axios.delete(`/pfe/admin/delete/${id}`, {
             withCredentials: true,
             headers: {
               "ngrok-skip-browser-warning": "true",
@@ -40,7 +46,17 @@ const PfeTopicModal = ({
           })
         )
       );
-
+      try {
+        const response = await axios.get("/pfe/pending");
+        if (response.data && response.data.pfeList) {
+          setCardsArray(response.data.pfeList);
+          console.log(response);
+        }
+        /*  setSubmittedCardsArray(data); // Save data in state */
+      } catch (error) {
+        console.error("Error fetching the submitted cards data:", error);
+        alert("An error occurred while fetching the submitted cards data.");
+      }
       // Try to re-fetch the data
       // try {
       //   const response = await axios.get("/pfe/my-pfes", {
@@ -66,13 +82,40 @@ const PfeTopicModal = ({
       // setSuccess(true);
     } catch (error) {
       console.error("Failed to delete topic(s):", error);
-      alert("Failed to delete one or more topics.");
-      // reset();
+      if (error.response) {
+        console.error("Backend responded with:", error.response.data);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Error setting up request:", error.message);
+      }
     }
   };
 
   const handleDecline = () => {};
-  const handleValidate = () => {};
+  const handleValidate = async () => {
+    try {
+      const response = await axios.patch(
+        `/pfe/${validatedcardid}/validate`,
+        {}, // optional body, or provide data if needed
+        {
+          withCredentials: true,
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
+      );
+
+      setShowModal(false);
+      setSuccessConfirmationModal(true);
+
+      // Optional: handle success
+      console.log("Validation successful:", response.data);
+    } catch (error) {
+      console.error("Validation error:", error);
+      alert("Validation failed.");
+    }
+  };
 
   entityType = "Topic"; //entityType is a prop to pass to the success confirmation modal
 
@@ -85,6 +128,7 @@ const PfeTopicModal = ({
             onClose={() => {
               setSuccessConfirmationModal(false);
               onClose();
+              navigate(-1);
             }}
           />
         )}
@@ -125,6 +169,7 @@ const PfeTopicModal = ({
             onClose={() => {
               setSuccessConfirmationModal(false);
               onClose();
+              navigate(-1);
             }}
           />
         )}
@@ -165,6 +210,7 @@ const PfeTopicModal = ({
             onClose={() => {
               setSuccessConfirmationModal(false);
               onClose();
+              navigate(-1);
             }}
           />
         )}

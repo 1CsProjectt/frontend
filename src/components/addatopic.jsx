@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/addtopic.css";
 import Upload from "../assets/upload.svg";
 import Iconup from "../assets/arrow-up.svg";
@@ -15,6 +16,7 @@ const Addatopic = () => {
   const [techSheetFile, setTechSheetFile] = useState(null);
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const presentationRef = useRef(null);
   const techSheetRef = useRef(null);
@@ -88,7 +90,7 @@ const Addatopic = () => {
       <div className="pageheader-at">
         <p className="pagetitle">Adding a topic</p>
         <p className="spacing"></p>
-        <button className="btnc">
+        <button className="btnc" onClick={() => navigate(-1)}>
           <p className="managebtns-text-at-c">Cancel</p>
         </button>
         <button className="btns" onClick={handleSubmit}>

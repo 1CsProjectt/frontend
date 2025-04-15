@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
@@ -6,13 +7,15 @@ import axios from "axios";
 import Alert from "../assets/alert-circle.svg";
 import SuccessIcon from "../assets/success-icon.svg";
 
-const TeacherTopics = ({ cards, setCards }) => {
+const TeacherTopics = () => {
+  const { cards, setCards } = useOutletContext();
   const [Success, setSuccess] = useState(false);
   const [onDelete, setOnDelete] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [selectedCount, setSelectedCount] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const navigate = useNavigate();
   console.log("TEACHE CARDS", cards);
   const totalCount = cards.length; // Get total number of PFE topics
 
@@ -129,7 +132,7 @@ const TeacherTopics = ({ cards, setCards }) => {
         </button>
         <button
           className={` ${onDelete ? "btna-on-cancel" : "btna"}`}
-          onClick={onDelete ? cancelDelete : () => {}}
+          onClick={onDelete ? cancelDelete : () => navigate("Addatopic")}
         >
           <p className={` ${onDelete ? "txt-on-cancel" : "managebtns-text"}`}>
             {onDelete ? "Cancel" : "Add a Topic"}
