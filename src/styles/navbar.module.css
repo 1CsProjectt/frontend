@@ -36,9 +36,9 @@ p {
 }
 
 .sessionP {
-  padding-top: 14px;
+  padding-top: 10px;
   font-size: 1.6rem;
-  padding-bottom: 3px;
+  padding-bottom: 8px;
 }
 
 /* Navbar Form */
@@ -325,4 +325,137 @@ p {
 .tab-inactive:hover {
   background-color: #f1f1f1;
   color: #000000;
+}
+/* Suggestion List Styles */
+.suggestions-list {
+  list-style: none;
+  background: #fff;
+  border: 1px solid #dde2e4;
+  position: absolute;
+  width: calc(100% - 28px); /* Adjusted for input padding and margin */
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top:15vh; /* Increased from 4px to 40px */
+  z-index: 1000;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #313638;
+}
+
+.suggestion-item:hover {
+  background-color: #f1f1f1;
+}
+
+/* Notification panel overall container */
+.notification-panel {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 320px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 99; /* Make sure it’s above other elements if needed */
+  padding: 0.5rem;
+}
+
+/* Header: title + "Mark all as read" button */
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.mark-read-btn {
+  background-color: transparent;
+  border: none;
+  color: #0066cc;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Each notification item */
+.notification-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+}
+
+.notification-item:hover {
+  background-color: #eef2f7;
+}
+
+.notification-content {
+  flex-grow: 1;
+  margin-right: 0.5rem;
+}
+
+.notification-title {
+  font-weight: bold;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.notification-message {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Time text on the right side */
+.notification-time {
+  font-size: 0.75rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* Invitation actions container */
+.invitation-actions {
+  margin-top: 0.25rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Accept / Decline buttons */
+.accept-btn,
+.decline-btn {
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.accept-btn {
+  background-color: #077ED4; /* Green */
+  color: #ffffff;
+}
+
+.decline-btn {
+  background-color: #FFFFFF; /* Red */
+  color: #344054;
+}
+
+/* For demonstration, you can adjust your color scheme to your liking */
+.countdownStyle {
+  color: #077ED4;
+  font-weight: 700;
 }

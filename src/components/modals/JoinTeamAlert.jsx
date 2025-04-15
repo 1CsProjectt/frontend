@@ -1,8 +1,7 @@
 import React from "react";
-import axios from "axios"; // Import axios for API calls
-import Icon from "../assets/alert-circleIcon.svg";
+import Icon from "../../assets/alert-circleIcon.svg";
 
-const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
+const JoinTeamAlert = ({ show, onCancel, onConfirm }) => {
   // Inline style objects
   const styles = {
     overlay: {
@@ -16,8 +15,7 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
       alignItems: "center",
       justifyContent: "center",
       zIndex: 999,
-      scale: 1.2,
-      fontFamily: "'Manrope', sans-serif",
+      scale:1.2,
     },
     container: {
       backgroundColor: "#fff",
@@ -27,8 +25,8 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
       boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      textAlign: "center",
+      alignItems: "center", // centers child elements horizontally
+      textAlign: "center",  // centers text inside child elements
       overflow: "hidden",
     },
     icon: {
@@ -52,7 +50,7 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
     },
     footer: {
       display: "flex",
-      justifyContent: "center",
+      justifyContent: "center", // centers buttons horizontally
       padding: "16px",
       borderTop: "1px solid #eee",
       width: "100%",
@@ -79,22 +77,10 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
     },
   };
 
-  const handleConfirm = async () => {
-    try {
-      // Send a request to leave the team
-      const response = await axios.patch('/teams/leaveTeam');
-      console.log(response.data); 
-      onConfirm(); 
-    } catch (error) {
-      console.error("Error leaving the team:", error);
-      
-    }
-  };
-
   if (!show) {
     return null;
   }
-
+ 
   return (
     <div style={styles.overlay}>
       <div style={styles.container}>
@@ -102,18 +88,17 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
           <img src={Icon} alt="Alert Icon" style={{ width: "24px", height: "24px" }} />
         </div>
         <div style={styles.header}>
-          <h2 style={styles.title}>Leave a Team</h2>
+          <h2 style={styles.title}>Join the team</h2>
         </div>
         <div style={styles.body}>
           <p>
-            Since you are a member of this team, confirming this will let you leave it.
-          </p>
+          Are you sure you want to join this team? Confirm your decision to proceed.          </p>
         </div>
         <div style={styles.footer}>
           <button style={styles.btnCancel} onClick={onCancel}>
             Cancel
           </button>
-          <button style={styles.btnConfirm} onClick={handleConfirm}>
+          <button style={styles.btnConfirm} onClick={onConfirm}>
             Confirm
           </button>
         </div>
@@ -122,4 +107,4 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
   );
 };
 
-export default LeaveTeamPopup;
+export default JoinTeamAlert;

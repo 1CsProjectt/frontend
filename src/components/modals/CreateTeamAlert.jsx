@@ -1,5 +1,5 @@
 import React from "react";
-import Icon from "../assets/alert-circleIcon.svg";
+import Icon from "../../assets/alert-circleIcon.svg";
 
 
 const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {

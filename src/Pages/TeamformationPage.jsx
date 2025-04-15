@@ -6,11 +6,10 @@ import Navbar from "../components/NavBar";
 import StudentsListTab from "../components/StudentsListTab";
 import ExistedTeamsTab from "../components/ExistedTeamsTab";
 import MyTeamTab from "../components/MyTeamTab";
-import CreateTeamModal from "../components/CreateTeamModal";
-import Toast from "../components/Toast";
-
+import CreateTeamModal from "../components/modals/CreateTeamModal";
+import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
-import LeaveTeamPopup from "../components/LeaveTeamPopup";
+import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
 
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
@@ -22,40 +21,59 @@ function TeamFormationPage() {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showLeaveTeamPopup, setShowLeaveTeamPopup] = useState(false); 
+  const [showLeaveTeamPopup, setShowLeaveTeamPopup] = useState(false);
   const [students, setStudents] = useState([]);
   const [existedTeams, setExistedTeams] = useState([]);
   const [myTeam, setMyTeam] = useState(null);
   const [myTeamPendingInvites, setMyTeamPendingInvites] = useState([]);
+  const [MyTeamteamReq, setMyTeamteamReq] = useState([]);
+
   const [collaborationInvites, setCollaborationInvites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
-  const targetDate = new Date("2025-04-29T23:59:59");
 
-  const handleJoinClick = () => {
-   setShowLeaveTeamPopup(true)
-   console.log("leave clicked")
+  // Use session date from real version
+  const session = {
+    title: "Group formation session",
+    targetDate: {
+      start: new Date("2025-03-29T00:00:00"),
+      end: new Date("2025-04-29T23:59:59")
+    }
+  };
+
+  // Leave team handlers
+  const handleLeaveClick = () => {
+    setShowLeaveTeamPopup(true);
+    console.log("leave clicked");
   };
   const handleCancel = () => {
     setShowLeaveTeamPopup(false);
   };
-
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setShowLeaveTeamPopup(false);
-    // Here you would perform the join action (APIEx call, etc.)
-    console.log("leave confirmed!");
-    setToastMessage("Team leaving was successful.");
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    
+    try {
+      
+      const response = await axios.patch('/leaveteam');
+      console.log(response.data);
+      console.log("leave confirmed!");
+      setToastMessage("Team leaving was successful.");
+      setShowToast(true);
+      
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
+  
+  // Data fetching using axios based on activeTab
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError("");
-
       try {
         if (activeTab === "Students List") {
           const { data } = await axios.get("/student/liststudents", { withCredentials: true });
@@ -67,30 +85,27 @@ function TeamFormationPage() {
           }
         } else if (activeTab === "Existed Teams") {
           const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
-          console.log("API Response (isted Teams):", data);
-          // Map teams to include a computed status.
-          // Use groupName as the team name.
+          console.log("API Response (Listed Teams):", data);
           const teamsWithStatus = data.teams.map(team => ({
             ...team,
-            status:
-              team.members && team.maxNumber && team.members.length === team.maxNumber
-                ? "full"
-                : "open"
+            status: team.members && team.maxNumber && team.members.length === team.maxNumber ? "full" : "open"
           }));
           setExistedTeams(teamsWithStatus);
         } else if (activeTab === "My Team") {
           const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
           console.log("API Response (My Team):", teamData);
           setMyTeam(teamData.team);
-          console.log("team member ",teamData.team.members)
           if (teamData?.team?.id) {
             const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
             setMyTeamPendingInvites(pendingInvites);
-            console.log("The pendingInvites",pendingInvites)
+            const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
+            setMyTeamteamReq(teamReq);
+            console.log("API Response (My Team req Invites):", teamReq);
           } else {
             const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
             setCollaborationInvites(collabInvites);
-            console.log("The collaborationInvites",collabInvites)
+            console.log("API Response (Collaboration Invites):", collabInvites);
+
             
           }
         }
@@ -101,36 +116,58 @@ function TeamFormationPage() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [activeTab]);
 
-  // Format the students for display
+  // Format students list for display
   const formattedStudents = students.map(student => ({
     fullName: `${student.firstname || ""} ${student.lastname || ""}`.trim(),
     email: student.user?.email || "No Email",
-  
     status: student.status || "No Status",
   }));
 
-  console.log("Formatted Students Data:", formattedStudents);
-
+  // Filter students based on search query; disable update if in My Team tab
   const handleSearchChange = (query) => {
+    if (activeTab === "My Team") {
+      // Do not update search query for My Team
+      return;
+    }
     setSearchQuery(query);
   };
 
-  // Filter students based on the search query
   const filteredStudents = formattedStudents.filter(student =>
     student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     student.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Render the appropriate tab content based on the active tab
+  const filteredTeams = existedTeams.filter(team =>
+    team.groupName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  let suggestionsList = [];
+  if (activeTab === "Students List") {
+    suggestionsList = formattedStudents.map(s => s.fullName);
+  } else if (activeTab === "Existed Teams") {
+    suggestionsList = existedTeams.map(team => team.groupName);
+  }
+
   const renderTabContent = () => {
     if (activeTab === "Students List") {
-      return <StudentsListTab user={user} students={filteredStudents} myTeamNumber={myTeam?.groupName || ""} />;
+      return (
+        <StudentsListTab 
+          user={user} 
+          students={filteredStudents} 
+          myTeamNumber={myTeam?.id || ""} 
+        />
+      );
     } else if (activeTab === "Existed Teams") {
-      return <ExistedTeamsTab user={user} existedTeams={existedTeams} navigate={navigate} />;
+      return (
+        <ExistedTeamsTab 
+          user={user} 
+          existedTeams={filteredTeams} 
+          navigate={navigate} 
+        />
+      );
     } else if (activeTab === "My Team") {
       return (
         <MyTeamTab
@@ -138,21 +175,23 @@ function TeamFormationPage() {
           myTeamMembers={myTeam?.members || []}
           myTeamPendingInvites={myTeamPendingInvites}
           collaborationInvites={collaborationInvites}
+          reqInvites ={MyTeamteamReq}
         />
       );
     }
   };
 
   return (
-    <div>
+    <div className={Style["team-formation-page"]}>
       <Sidebar />
       <div style={{ marginLeft: "16vw" }}>
         <Navbar
-          title={"Group formation session:"}
-          targetDate={targetDate}
+          title={session.title}
+          targetDate={session.targetDate}
           onSearchChange={handleSearchChange}
-          suggestions={formattedStudents.map(s => s.fullName)}
+          suggestions={suggestionsList}
         />
+
         <div className={Style["team-formation-container"]}>
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
@@ -161,8 +200,8 @@ function TeamFormationPage() {
                 Create a team
               </button>
             )}
-            {activeTab === "My Team" && myTeam?.groupName && (
-               <button className={Style["Leave-button"]} onClick={handleJoinClick}>
+            {activeTab === "My Team" && myTeam?.id && (
+              <button className={Style["Leave-button"]} onClick={handleLeaveClick}>
                 Leave the team
               </button>
             )}
@@ -173,7 +212,10 @@ function TeamFormationPage() {
               <div
                 key={tab}
                 className={`${Style["tab-item"]} ${activeTab === tab ? Style.active : ""}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setSearchQuery(""); // Reset search query on tab change
+                }}
               >
                 {tab}
               </div>
@@ -190,10 +232,10 @@ function TeamFormationPage() {
           onInviteSent={() => setToastMessage("Invite sent successfully.")}
         />
         <LeaveTeamPopup
-        show={showLeaveTeamPopup}
-        onCancel={handleCancel}
-        onConfirm={handleConfirm}
-      />
+          show={showLeaveTeamPopup}
+          onCancel={handleCancel}
+          onConfirm={handleConfirm}
+        />
         {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
       </div>
     </div>

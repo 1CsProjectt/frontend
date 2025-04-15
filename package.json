@@ -19,7 +19,8 @@
     "web-vitals": "^2.1.4"
     
   },
-  "proxy": "http://localhost:5433/api/v1",
+
+  "proxy": "https://9625-105-235-138-133.ngrok-free.app/api/v1",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
