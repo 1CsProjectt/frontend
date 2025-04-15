@@ -181,6 +181,7 @@ const TopicsValidationPage = () => {
             onClose={() => setPfeTopicModalOpen(false)}
             entityType="User"
             operation="delete"
+            datalist={selectedCards}
           />
         </div>
       </div>
