@@ -15,7 +15,10 @@ const UserManagementTabs = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [customPageInput, setCustomPageInput] = useState("");
   const [showPageInput, setShowPageInput] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+
   const usersPerPage = 8;
+
 
   // Tabs for different user types
   const tabs = ["Students", "Supervisors", "Enterprises", "Jury"];
@@ -27,7 +30,7 @@ const UserManagementTabs = () => {
   useEffect(() => {
       const fetchUsers = async () => {
           try {
-              const response = await fetch('http://localhost:5433/users/getUsers'); // Adjust URL if needed
+              const response = await fetch('/users/get-all'); // Adjust URL if needed
               const data = await response.json();
   
               const usersArray = data.map(user => ({
@@ -67,7 +70,7 @@ const UserManagementTabs = () => {
   */
 
   //ideally this should be implemented in the backend but this is just a temporary solution
-  const allUsers = useMemo(() => {
+  var allUsers = useMemo(() => {
     return {
       Students: fetchedUsers.filter(user => user.role === "student"),
       Supervisors: fetchedUsers.filter(user => user.role === "teacher"),
@@ -76,7 +79,10 @@ const UserManagementTabs = () => {
     };
   }, [fetchedUsers]);
 
+  
+
   console.log(allUsers);
+
   
 
   const users = allUsers[activeTab] || [];
@@ -101,16 +107,18 @@ const UserManagementTabs = () => {
     }
   };
 
-  return (
-    <div className={classes["users-management"]}>
-      <div className={classes["navbar-container"]}>
-      <NavBar />
+  
 
-      </div>
+  return (
+    <div className={classes["main-container"]}>
+  
+      <NavBar />
+    
+   
       <div className={classes["header"]}>
-        <h2>Users Management</h2>
-        <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a user account</button>
-        <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
+        <h1>Users Management</h1>
+        <button onClick={() => setUserFormModalOpen(true)} className={classes["add-btn"]}>Add a User</button>
+        <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} operation={"createUser"}/>
       </div>
       <div className={classes["tabs"]}>
         {tabs.map((tab) => (
@@ -126,8 +134,8 @@ const UserManagementTabs = () => {
           </button>
         ))}
       </div>
-
-      <table>
+        <div className={classes["table-container"]}>     
+           <table className={classes["main-table"]}>
   <thead>
     <tr>
       <th>Full Name</th>
@@ -149,13 +157,22 @@ const UserManagementTabs = () => {
         <td>
           <button onClick={() => setUserFormModalOpen(true)} className={classes["edit-btn"]}>Edit</button>
           <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} />
-          <button onClick={() => setDeleteUserModalOpen(true)} className={classes["delete-btn"]}>Delete</button>
-          <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" />
+          <button className={classes["delete-btn"]}  onClick={() => {
+    setUserToDelete(user); // this sets the current user (we want the full info therefore we pass the whole object to get the name)
+    setDeleteUserModalOpen(true); // then open the modal c
+ 
+    }}
+  >
+    Delete
+  </button>
+         
         </td>
       </tr>
     ))}
   </tbody>
 </table>
+</div>
+
       <div className={classes["pagination-container"]}>
       <div className={classes["pagination"]}>
         <p>Page {currentPage} out of {totalPages}</p>
@@ -205,7 +222,10 @@ const UserManagementTabs = () => {
         <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
       </div>
+      <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userToDelete={userToDelete}/>
     </div>
+    
+    
   );
 };
 

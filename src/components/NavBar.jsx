@@ -1,11 +1,43 @@
+import React, { useState, useEffect, useRef } from "react";
 import Module from "../styles/navbar.module.css";
 import searchicon from "../assets/Search.svg";
-import React, { useState, useEffect } from "react";
 import filterIcon from "../assets/Filter.svg";
 import filterIconup from "../assets/arrow-up.svg";
 import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
+
+// Dummy notification data
+const notificationsData = [
+  {
+    id: 1,
+    title: "New Message",
+    message: "You have received a new message.",
+    time: "2 mins ago",
+    type: "info",
+  },
+  {
+    id: 2,
+    title: "Server Alert",
+    message: "Your server is running low on space.",
+    time: "10 mins ago",
+    type: "alert",
+  },
+  {
+    id: 3,
+    title: "Team Invitation",
+    message: "Guessoum Mohamed Nizar invites you to join their team.",
+    time: "4 mins ago",
+    type: "invitation",
+  },
+  {
+    id: 4,
+    title: "Team Invitation",
+    message: "Yettou Abdallah invites you to join their team.",
+    time: "9 mins ago",
+    type: "invitation",
+  },
+];
 
 const NavBar = ({
   title,
@@ -15,29 +47,44 @@ const NavBar = ({
   onSearchChange,
   suggestions,
 }) => {
-  // Countdown timer function only active if targetDate is provided
   const calculateTimeLeft = () => {
+    if (!targetDate || !targetDate.start || !targetDate.end) return null;
+
     const now = new Date();
-    const difference = new Date(targetDate) - now;
-    let timeLeft = {};
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / (1000 * 60)) % 60),
-      };
+    let difference = 0;
+    let countdownType = "";
+
+    if (now < targetDate.start) {
+      difference = targetDate.start - now;
+      countdownType = "to start";
+    } else if (now < targetDate.end) {
+      difference = targetDate.end - now;
+      countdownType = "to end";
     } else {
-      timeLeft = { days: 0, hours: 0, minutes: 0 };
+      difference = 0;
+      countdownType = "";
     }
-    return timeLeft;
+
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((difference / (1000 * 60)) % 60);
+
+    return { days, hours, minutes, countdownType };
   };
 
   const [timeLeft, setTimeLeft] = useState(
-    targetDate && targetDate !== "" ? calculateTimeLeft() : null
+    targetDate && targetDate.start && targetDate.end
+      ? calculateTimeLeft()
+      : null
   );
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  // Ref to the main NavBar container
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    if (targetDate && targetDate !== "") {
+    if (targetDate && targetDate.start && targetDate.end) {
       const timer = setTimeout(() => {
         setTimeLeft(calculateTimeLeft());
       }, 1000);
@@ -45,8 +92,36 @@ const NavBar = ({
     }
   }, [targetDate, timeLeft]);
 
+  // Global click handler to close notifications and filter popups if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+        setFilterOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, []);
+
+  const toggleNotifications = (e) => {
+    e.stopPropagation();
+    setShowNotifications((prev) => !prev);
+  };
+
+  const toggleFilterMenu = (e) => {
+    e.stopPropagation();
+    setFilterOpen((prev) => !prev);
+  };
+
   return (
-    <div className={Module["container"]}>
+    <div className={Module["container"]} ref={containerRef}>
       <div className={Module["session"]}>
         <p className={Module["sessionP"]}>
           {!targetDate || targetDate === "" ? (
@@ -65,7 +140,11 @@ const NavBar = ({
         <FilterMenu
           onFilterApply={onFilterApply}
           currentFilters={selectedFilters}
+          isOpen={filterOpen}
+          toggleMenu={toggleFilterMenu}
+          selectedFilters={selectedFilters}
         />
+
         <Searchbar
           onSearchChange={onSearchChange}
           suggestions={suggestions || []}
@@ -78,17 +157,24 @@ const NavBar = ({
               className={Module["notf-icon"]}
             />
           </div>
+          {/* Profile section */}
           <div className={Module["profile"]}>
-            <img src={profilepic} alt="pic" className={Module["pic"]} />
+            <img src={profilepic} alt="Profile" className={Module["pic"]} />
             <p className={Module["profiletext"]}>Profile</p>
             <img
               src={filterIcondown}
-              alt="Toggle2"
+              alt="Toggle Profile"
               className={Module["arrow-icon-prfoile"]}
             />
           </div>
         </div>
       </div>
+      {/* Notification Panel */}
+      {showNotifications && (
+        <div className={Module["notification-container"]}>
+          <NotificationPanel notifications={notificationsData} />
+        </div>
+      )}
     </div>
   );
 };
@@ -96,18 +182,20 @@ const NavBar = ({
 const Searchbar = ({ onSearchChange, suggestions }) => {
   const [query, setQuery] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const suggestionsRef = useRef(null);
 
   const handleInputChange = (event) => {
     const newQuery = event.target.value;
     setQuery(newQuery);
-    // Only propagate search if the onSearchChange function is provided
     if (onSearchChange) {
       onSearchChange(newQuery);
     }
 
     if (newQuery.trim() !== "") {
-      const filtered = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(newQuery.toLowerCase())
+      const filtered = suggestions.filter(
+        (suggestion) =>
+          suggestion &&
+          suggestion.toLowerCase().includes(newQuery.toLowerCase())
       );
       setFilteredSuggestions(filtered);
     } else {
@@ -123,6 +211,22 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
     setFilteredSuggestions([]);
   };
 
+  // Close suggestions when clicking outside the suggestions list
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target)
+      ) {
+        setFilteredSuggestions([]);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside, true);
+    return () =>
+      document.removeEventListener("click", handleClickOutside, true);
+  }, []);
+
   return (
     <div className={Module["search-bar-container"]}>
       <input
@@ -133,10 +237,14 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
         onChange={handleInputChange}
       />
       <div className={Module["search-icon"]}>
-        <img src={searchicon} alt="search-icon" />
+        <img src={searchicon} alt="Search Icon" />
       </div>
       {filteredSuggestions.length > 0 && (
-        <ul className={Module["suggestions-list"]}>
+        <ul
+          className={Module["suggestions-list"]}
+          ref={suggestionsRef}
+          onClick={(e) => e.stopPropagation()} // prevent closing on internal click
+        >
           {filteredSuggestions.map((suggestion, index) => (
             <li
               key={index}
@@ -152,17 +260,18 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
   );
 };
 
-const FilterMenu = ({ onFilterApply, currentFilters }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Specialitys");
+const FilterMenu = ({
+  onFilterApply,
+  currentFilters,
+  isOpen,
+  toggleMenu,
+  selectedFilters,
+}) => {
+  const [activeTab, setActiveTab] = useState("Speciality");
   const [localFilters, setLocalFilters] = useState({
-    Specialitys: currentFilters || [],
+    Speciality: currentFilters || [],
     Other: [],
   });
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
 
   const specialityOptions = ["ISI", "SIW", "IASD"];
   const otherOptions = ["Other Option 1", "Other Option 2"];
@@ -181,19 +290,21 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
     setActiveTab(tab);
   };
 
-  const handleApply = () => {
+  const handleApply = (e) => {
+    e.stopPropagation();
     if (onFilterApply) {
       onFilterApply(localFilters[activeTab]);
     }
-    setIsOpen(false);
+    toggleMenu(e);
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    e.stopPropagation();
     setLocalFilters((prev) => ({
       ...prev,
       [activeTab]: currentFilters || [],
     }));
-    setIsOpen(false);
+    toggleMenu(e);
   };
 
   return (
@@ -207,19 +318,22 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
           className={Module["arrow-icon"]}
         />
       </button>
-      {isOpen && (
-        <div className={Module["filter-popup"]}>
+      {isOpen && selectedFilters && (
+        <div
+          className={Module["filter-popup"]}
+          onClick={(e) => e.stopPropagation()} // prevent click propagation
+        >
           <div className={Module["filter-content"]}>
             <div className={Module["filter-options"]}>
               <p
                 className={
-                  activeTab === "Specialitys"
+                  activeTab === "Speciality"
                     ? Module["tab-active"]
                     : Module["tab-inactive"]
                 }
-                onClick={() => handleTabChange("Specialitys")}
+                onClick={() => handleTabChange("Speciality")}
               >
-                Specialitys
+                Speciality
               </p>
               <p
                 className={
@@ -234,8 +348,8 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
             </div>
             <div className={Module["filter-categories"]}>
               <p className={Module["filter-header"]}>
-                {activeTab === "Specialitys"
-                  ? "Select Categories"
+                {activeTab === "Speciality"
+                  ? "show only"
                   : "Select Other Options"}
               </p>
               {(activeTab === "Specialitys"
@@ -264,6 +378,54 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+const NotificationPanel = ({ notifications }) => {
+  const handleAccept = (notificationId) => {
+    console.log("Accepted invitation with ID:", notificationId);
+    // Additional logic (such as API calls) can be added here.
+  };
+
+  const handleDecline = (notificationId) => {
+    console.log("Declined invitation with ID:", notificationId);
+    // Additional logic (such as API calls) can be added here.
+  };
+
+  return (
+    <div className={Module["notification-panel"]}>
+      <div className={Module["notification-header"]}>
+        <h3>Notifications</h3>
+        <button className={Module["mark-read-btn"]}>Mark all as read</button>
+      </div>
+      {notifications.map((notification) => (
+        <div key={notification.id} className={Module["notification-item"]}>
+          <div className={Module["notification-content"]}>
+            <p className={Module["notification-title"]}>{notification.title}</p>
+            <p className={Module["notification-message"]}>
+              {notification.message}
+            </p>
+            {notification.type === "invitation" && (
+              <div className={Module["invitation-actions"]}>
+                <button
+                  className={Module["accept-btn"]}
+                  onClick={() => handleAccept(notification.id)}
+                >
+                  Accept
+                </button>
+                <button
+                  className={Module["decline-btn"]}
+                  onClick={() => handleDecline(notification.id)}
+                >
+                  Decline
+                </button>
+              </div>
+            )}
+          </div>
+          <p className={Module["notification-time"]}>{notification.time}</p>
+        </div>
+      ))}
     </div>
   );
 };

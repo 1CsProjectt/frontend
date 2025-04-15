@@ -1,8 +1,7 @@
 import React from "react";
-import Icon from "../assets/alert-circleIcon.svg";
+import Icon from "../../assets/alert-circleIcon.svg";
 
-
-const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
+const JoinTeamAlert = ({ show, onCancel, onConfirm }) => {
   // Inline style objects
   const styles = {
     overlay: {
@@ -17,7 +16,6 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
       justifyContent: "center",
       zIndex: 999,
       scale:1.2,
-      fontFamily: "'Manrope', sans-serif",
     },
     container: {
       backgroundColor: "#fff",
@@ -27,8 +25,8 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
       boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center", 
-      textAlign: "center",  
+      alignItems: "center", // centers child elements horizontally
+      textAlign: "center",  // centers text inside child elements
       overflow: "hidden",
     },
     icon: {
@@ -52,7 +50,7 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
     },
     footer: {
       display: "flex",
-      justifyContent: "center", 
+      justifyContent: "center", // centers buttons horizontally
       padding: "16px",
       borderTop: "1px solid #eee",
       width: "100%",
@@ -79,7 +77,7 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
     },
   };
 
-   if (!show) {
+  if (!show) {
     return null;
   }
  
@@ -90,12 +88,11 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
           <img src={Icon} alt="Alert Icon" style={{ width: "24px", height: "24px" }} />
         </div>
         <div style={styles.header}>
-          <h2 style={styles.title}>Inviting a student</h2>
+          <h2 style={styles.title}>Join the team</h2>
         </div>
         <div style={styles.body}>
           <p>
-            Since you are not a member of any team, confirming this will create a team and invite this student.
-          </p>
+          Are you sure you want to join this team? Confirm your decision to proceed.          </p>
         </div>
         <div style={styles.footer}>
           <button style={styles.btnCancel} onClick={onCancel}>
@@ -110,4 +107,4 @@ const CreateTeamAlert = ({ show, onCancel, onConfirm }) => {
   );
 };
 
-export default CreateTeamAlert;
+export default JoinTeamAlert;

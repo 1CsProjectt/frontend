@@ -11,6 +11,8 @@
     max-height: 100vh   ;
     padding: 0px;
     margin:0px; 
+    overflow-x: hidden; 
+    overflow-y: hidden;
 }
 body{
     background:#F5F7FA

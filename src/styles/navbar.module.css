@@ -1,8 +1,4 @@
-/* the nav bar called like that 
-NavBar = ({ title,targetDate }) i you want to use the countdown timer
-NavBar = ({ title }) if you don't want to use the countdown timer
-*/
-
+/* Global styles */
 * {
   margin: 0;
   padding: 0;
@@ -16,6 +12,7 @@ p {
   color: #313638;
 }
 
+/* NavBar Container and Session */
 .container {
   flex-direction: column;
   display: flex;
@@ -36,14 +33,16 @@ p {
   display: flex;
   align-items: center;
   flex-direction: column;
+  background-color: #ffffff;
 }
 
 .sessionP {
-  padding-top: 14px;
+  padding-top: 10px;
   font-size: 1.6rem;
-  padding-bottom: 3px;
+  padding-bottom: 8px;
 }
 
+/* Navbar Form */
 .form {
   background-color: #f8f9fa;
   padding-right: 5px;
@@ -54,6 +53,7 @@ p {
   align-items: center;
 }
 
+/* Search Bar */
 .search-bar-container {
   flex: 1;
   background-color: #ffffff;
@@ -63,7 +63,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative; /* Needed for absolute positioning of suggestions */
+  position: relative;
 }
 
 .input {
@@ -94,6 +94,7 @@ p {
   width: 24px;
 }
 
+/* Right Section (Notifications and Profile) */
 .rightside {
   display: flex;
   align-items: center;
@@ -109,10 +110,10 @@ p {
   height: 44px;
   display: flex;
   align-items: center;
+  background-color: #ffffff;
 }
 
 .notf-icon {
-  /* object-fit: cover; */
   height: 23px;
   width: 24px;
 }
@@ -140,7 +141,9 @@ p {
   transform: translateY(-50%);
   object-fit: cover;
 }
-
+.pic img {
+  margin-left: -10px;
+}
 .profiletext {
   padding-left: 28px;
 }
@@ -150,6 +153,7 @@ p {
   height: 11px;
 }
 
+/* Filter Menu */
 .filter {
   background-color: white;
   width: 128px;
@@ -197,26 +201,22 @@ p {
   height: 9px;
 }
 
-.icon {
-  font-size: 14px;
-}
-
-/* Popup */
+/* Popup for Filter Menu */
 .filter-popup {
   position: absolute;
-  top: 117px;
+  top: 95%;
+
   background: #ffffff;
   border: 1px solid #dde2e4;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  height: 221px;
-  width: 414px;
+  height: auto;
+  width: 25vw;
   border-radius: 8px;
   overflow: hidden;
   z-index: 999;
 }
 
 .filter-content {
-  height: 154px;
   display: flex;
   border-bottom: 1px solid #dde2e4;
   align-items: center;
@@ -233,9 +233,9 @@ p {
 
 .filter-header {
   color: #313638cc;
-  font-size: 12px;
-  padding-left: 8px;
-  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .filter-categories .active {
@@ -265,69 +265,22 @@ p {
   width: 50%;
   cursor: default;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .optionstext {
   font-size: 16px;
   color: #313638;
-}
-
-/* Style the labels */
-.filter-options label {
-  padding-left: 8px;
-  padding-bottom: 2px;
-  display: flex;
-  align-items: center;
-  color: #313638;
-  cursor: pointer;
-  gap: 8px;
-}
-
-/* Default radio button hidden */
-.filter-options input[type="radio"] {
-  appearance: none;
-  width: 13px;
-  height: 13px;
-  border: 2px solid #6c757d;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-/* Create custom radio button */
-.filter-options input[type="radio"]::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: transparent;
-  border-radius: 50%;
-  transition: background 0.2s ease;
-}
-
-/* When selected, add inner dot */
-.filter-options input[type="radio"]:checked {
-  border-color: #343a40;
-}
-
-.filter-options input[type="radio"]:checked::before {
-  background: #343a40;
-}
-
-/* Hover effect */
-.filter-options label:hover input[type="radio"] {
-  border-color: #000;
+  margin-left: 8px;
 }
 
 .filter-buttons {
   display: flex;
-  padding-top: 16px;
-  padding-left: 24px;
-  padding-right: 24px;
+  justify-content: center;
+  gap: 8px;
   justify-content: space-between;
-  align-items: center;
+  margin: 10px 20px 0;
 }
 
 .cancel-btn {
@@ -364,11 +317,33 @@ p {
   box-shadow: 0 4px 8px rgba(7, 126, 212, 0.3);
 }
 
-.countdownStyle {
-  color: #077ed4;
-  font-weight: 600;
+.tab-active {
+  padding: 8px;
+  color: #3c4143;
+  font-weight: bold;
+  background-color: #ececec;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0 20px;
+  border-radius: 6px;
 }
 
+.tab-active:hover {
+  background-color: #d8e9f9;
+}
+
+.tab-inactive {
+  padding: 8px;
+  color: #3c4143;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0 20px;
+}
+
+.tab-inactive:hover {
+  background-color: #f1f1f1;
+  color: #000000;
+}
 /* Suggestion List Styles */
 .suggestions-list {
   list-style: none;

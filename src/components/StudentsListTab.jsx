@@ -1,22 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-import CreateTeamAlert from "../components/CreateTeamAlert";
-import Toast from "../components/Toast";
-const StudentsListTab = ({ students ,myTeamNumber}) => {
+import CreateTeamAlert from "./modals/CreateTeamAlert";
+import Toast from "./modals/Toast";
+import axios from "axios";
+
+
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
+
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+axios.defaults.withCredentials = true;
+
+const StudentsListTab = ({ user, students, myTeamNumber }) => {axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [studentsPerPage, setStudentsPerPage] = useState(5);
+  const [studentsPerPage, setStudentsPerPage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const containerRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
+
   useEffect(() => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 50; // Approximate height of a single table row
-        const calculatedStudentsPerPage = Math.floor(
-          containerHeight / estimatedRowHeight
-        );
-        setStudentsPerPage(calculatedStudentsPerPage > 0 ? calculatedStudentsPerPage : 5);
+        const estimatedRowHeight = 75;
+        const calculatedStudentsPerPage = Math.floor(containerHeight / estimatedRowHeight);
+        setStudentsPerPage(calculatedStudentsPerPage > 0 ? calculatedStudentsPerPage : 6);
       }
     };
 
@@ -25,11 +33,13 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
     return () => window.removeEventListener("resize", updateStudentsPerPage);
   }, []);
 
-  // Pagination calculations
-  const totalPages = Math.ceil(students.length / studentsPerPage);
-  const indexOfLastStudent = currentPage * studentsPerPage;
-  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-  const currentStudents = students.slice(indexOfFirstStudent, indexOfLastStudent);
+
+  const { currentItems: currentStudents, totalPages } = getPaginatedData(
+    students,
+    currentPage,
+    studentsPerPage
+  );
+  const pageNumbers = getPageNumbers(totalPages, currentPage);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -37,61 +47,38 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
     }
   };
 
-  // Generate page numbers with ellipses
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      pageNumbers.push(1);
-      if (currentPage < 5) {
-        for (let i = 2; i <= 5; i++) {
-          pageNumbers.push(i);
-        }
-        pageNumbers.push("...");
-      } else if (currentPage > totalPages - 4) {
-        pageNumbers.push("...");
-        for (let i = totalPages - 4; i < totalPages; i++) {
-          pageNumbers.push(i);
-        }
-      } else {
-        pageNumbers.push("...");
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pageNumbers.push(i);
-        }
-        pageNumbers.push("...");
-      }
-      pageNumbers.push(totalPages);
-    }
-    return pageNumbers;
-  };
-
-  const pageNumbers = getPageNumbers();
-
-  // Handle invite click
-  const handleInviteClick = () => {
-    // If myTeamNumber is not empty, show a toast message
-    if (myTeamNumber !== "") {
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    } else {
-      // If no team number, open the CreateTeamAlert modal to handle team creation/invitation
+  const handleInviteClick = async (receiver_email) => {
+    if (user.team_id === null) {
       setShowAlert(true);
+      return;
+    }
+
+    try {
+      const response = await axios.post("/invitation/sendinvitation", {
+        receiver_email
+      });
+
+      if (response.data.success) {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      }
+    } catch (error) {
+      console.error("Error sending invite:", error);
     }
   };
 
-  // Handle cancel action from the alert modal
-  const handleCancel = () => {
-    setShowAlert(false);
-  };
-  const handleConfirm = () => {
-    // You can include additional logic here for creating a team and sending an invite.
-    console.log("Team created and student invited!");
-    setShowAlert(false);
+  const handleCancel = () => setShowAlert(false);
+  
+  const handleConfirm = async () => {
+    try {
+      
+      const response = await axios.post('/teams/creategroup', { withCredentials: true });
+      console.log(response.data);
+    
+    } catch (error) {
+      console.error("Error creating team:", error);
+      alert("Error creating the team. Please try again.");
+    }
   };
 
   return (
@@ -112,17 +99,17 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
               <tr key={index}>
                 <td>{student.fullName}</td>
                 <td>{student.email}</td>
-                <td>{student.group}</td>
+                <td>G5</td>
                 <td>
-                  {student.status === "Available" ? (
+                  {student.status === "available" ? (
                     <span className={Module["status-available"]}>Available</span>
                   ) : (
                     <span className={Module["status-in-team"]}>In a team</span>
                   )}
                 </td>
                 <td>
-                  {student.status === "Available" ? (
-                    <button className={Module["invite-button"]} onClick={handleInviteClick}>
+                  {student.status === "available" ? (
+                    <button className={Module["invite-button"]} onClick={() => handleInviteClick(student.email)}>
                       Invite
                     </button>
                   ) : (
@@ -137,65 +124,48 @@ const StudentsListTab = ({ students ,myTeamNumber}) => {
         </table>
       </div>
 
-      {/* Fixed Pagination */}
+      {/*  Pagination Controls */}
       <div className={Module["pagination"]}>
         <button
-          id="previous-button"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={currentPage === 1 ? Module["disabled"] : ""}
-
         >
           Previous
         </button>
 
         <div className={Module["page-numbers"]}>
-          {pageNumbers.map((page, idx) => {
-            if (page === "...") {
-              return (
-                <span key={idx} className={Module["ellipsis"]}>
-                  ...
-                </span>
-              );
-            } else {
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handlePageChange(page)}
-                  className={page === currentPage ? Module["active"] : ""}
-
-                >
-                  {page}
-                </button>
-              );
-            }
-          })}
+          {pageNumbers.map((page, idx) =>
+            page === "..." ? (
+              <span key={idx} className={Module["ellipsis"]}>...</span>
+            ) : (
+              <button
+                key={idx}
+                onClick={() => handlePageChange(page)}
+                className={page === currentPage ? Module["active"] : ""}
+              >
+                {page}
+              </button>
+            )
+          )}
         </div>
 
         <button
-          id="next-button"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={currentPage === totalPages ? Module["disabled"] : ""}
-
         >
           Next
         </button>
       </div>
 
-      {/* Toast Notification */}
+      {/* Toast */}
       {showToast && (
-        <Toast 
-          message="Invite sent successfully." 
-          onClose={() => setShowToast(false)} 
-        />
-        
+        <Toast message="Invite sent successfully." onClose={() => setShowToast(false)} />
       )}
-      <CreateTeamAlert
-        show={showAlert}
-        onCancel={handleCancel}
-        onConfirm={handleConfirm}
-      />
+
+      {/* Alert */}
+      <CreateTeamAlert show={showAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
     </div>
   );
 };

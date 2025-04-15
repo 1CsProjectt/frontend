@@ -3,7 +3,7 @@ import Navbar from "../components/NavBar";
 import PFECard from "../components/CardComponent";
 import { useState } from "react";
 import classes from "../styles/TopicsValidationPage.module.css";
-import DeleteUserModal from "../components/modals/DeleteUserModal.jsx";
+import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
 
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,7 @@ const cardsArray = [
     title: "Final year project management system ",
     specialization: ["ISI", "SIW"],
     description:
-      "A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows",
+      "A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking......",
     creator: { username: "Guessoum mohamed nizar" },
 
     photo:
@@ -116,7 +116,7 @@ const TopicsValidationPage = () => {
   const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
   const [isChecked, setIsChecked] = useState(false); // for the select all checkbox
   const [selectedCards, setSelectedCards] = useState([]); // Moved state here
-  const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+  const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
   //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
 
   //the selectedCards array holds the ids of the currently selected cards
@@ -170,32 +170,47 @@ const TopicsValidationPage = () => {
             Back
           </button>
           <button
-            onClick={() => setDeleteUserModalOpen(true)}
+            onClick={() => setPfeTopicModalOpen(true)}
             className={classes["delete-btn"]}
           >
             Delete Selected Topics
           </button>
-          <DeleteUserModal
-            isOpen={isDeleteUserModalOpen}
-            onClose={() => setDeleteUserModalOpen(false)}
+
+          <PfeTopicModal
+            isOpen={isPfeTopicModalOpen}
+            onClose={() => setPfeTopicModalOpen(false)}
             entityType="User"
+            operation="delete"
           />
-          isDeleteUserModalOpen
         </div>
       </div>
-      <div className={classes["tabs"]}>
+      {/*   <div className={classes["tabs"]}>
+          <button
+            className={
+              activeTab === "tab1" ? classes["tab active"] : classes["tab"]
+            }
+            onClick={() => setActiveTab("tab1")}
+          >
+            Published Topics
+          </button>
+          <button
+            className={
+              activeTab === "tab2" ? classes["tab active"] : classes["tab"]
+            }
+            onClick={() => setActiveTab("tab2")}
+          >
+            Submitted Topics
+          </button>
+        </div> */}
+      <div className={classes.tabs}>
         <button
-          className={
-            activeTab === "tab1" ? classes["tab active"] : classes["tab"]
-          }
+          className={activeTab === "tab1" ? classes.active : ""}
           onClick={() => setActiveTab("tab1")}
         >
           Published Topics
         </button>
         <button
-          className={
-            activeTab === "tab2" ? classes["tab active"] : classes["tab"]
-          }
+          className={activeTab === "tab2" ? classes.active : ""}
           onClick={() => setActiveTab("tab2")}
         >
           Submitted Topics
@@ -212,11 +227,42 @@ const TopicsValidationPage = () => {
                 card={card}
                 isSelected={selectedCards.includes(card.id)}
                 toggleSelect={toggleSelect}
+                const
+                onExplore={(e, card) => {
+                  e.stopPropagation(); // Prevent select toggle when clicking "Explore"
+                  navigate(
+                    "/admin/sessions/topic-validation/published-topic-explore",
+                    {
+                      state: { card },
+                    }
+                  );
+                }}
               />
             ))}
           </div>
         )}
-        {activeTab === "tab2" && <div>Content for Tab 2</div>}
+        {activeTab === "tab2" && (
+          <div className={classes["cards-container"]}>
+            {cardsArray.map((card) => (
+              <PFECard
+                key={card.id}
+                card={card}
+                isSelected={selectedCards.includes(card.id)}
+                toggleSelect={toggleSelect}
+                const
+                onExplore={(e, card) => {
+                  e.stopPropagation(); // Prevent select toggle when clicking "Explore"
+                  navigate(
+                    "/admin/sessions/topic-validation/submitted-topic-explore",
+                    {
+                      state: { card },
+                    }
+                  );
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

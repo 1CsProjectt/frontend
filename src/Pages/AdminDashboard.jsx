@@ -12,7 +12,7 @@
       <div className={classes["admin-dashboard"]}>
         
         <AdminSidebar />
-        <div className={classes["main-content"]}>
+        <div className={classes["main-content"]} style={{ marginLeft: "17vw" }}>
         <Outlet /> {/* This will render subpages dynamically */}
           
           

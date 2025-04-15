@@ -1,15 +1,20 @@
-import React from "react";
+import {React , useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+
 import Navbar from "../components/NavBar";
 import FileIcon from "../assets/fileIcon.svg";
 import ArrowIcon from "../assets/expand_less_black.svg";
-import Module from "../styles/ExplorePage.module.css";
+import Module from "../styles/SubmittedTopicsExplorePage.module.css";
+import AdminSidebar from "../components/AdminSidebar";
+import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
 
-export default function ExplorePage() {
+export default function PublishedTopicsExplorePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { card } = location.state || {};
+  const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
+  const [modalOperation, setModalOperation] = useState("")//by default no operation is chosen
+
 
   if (!card) {
     // If no card data is found, navigate back or show a message.
@@ -23,18 +28,39 @@ export default function ExplorePage() {
 
   return (
     <div className={Module["explore-container"]}>
-      <Sidebar />
-      <div className={Module["explore-content"]}>
+        <AdminSidebar/>
+      <div className={Module["explore-content"]} style={{ marginLeft: "17vw" }}>
         <Navbar />
-        <div className={Module.padding}></div>
-        <h1 className={Module.title}>Exploring</h1>
+        <div className={Module["scroll-container"]} >
+        <div className={Module["header"]}>
+        <h1 >Reading</h1>
+        <div className={Module["buttons-container"]}>
+        <button className={Module["decline-button"]} onClick={() => { setModalOperation("decline");//operation has to be set before opening the modal
+         setPfeTopicModalOpen(true)} }>
+          
+            Decline
+            </button>
+           
+        <button className={Module["validate-button"]}  onClick={() => { setModalOperation("validate"); setPfeTopicModalOpen(true)} } >
+            Validate
+            </button>
+           
+                {/*  Only one modal, controlled by operation state */}
+                <PfeTopicModal
+                isOpen={isPfeTopicModalOpen}
+                onClose={() => setPfeTopicModalOpen(false)}
+                entityType="Topic(s)"
+                operation={modalOperation}
+              />
+            </div>
+        </div>
         <div className={Module["banner-wrapper"]}>
           <img
-            src={card.photo }
+            src={card.photo || "https://via.placeholder.com/300x200"}
             alt="Project Banner"
             className={Module["project-banner"]}
           />
-        </div>
+        </div >
         <div className={Module["project-details"]}>
           <h1 className={Module["project-title"]}>{card.title}</h1>
           <p className={Module["project-description"]}>{card.description}</p>
@@ -44,7 +70,7 @@ export default function ExplorePage() {
             {card.supervisors && card.supervisors.length > 0 ? (
               card.supervisors.map((supervisor, index) => (
                 <li key={index}>
-                 {( supervisor.firstname +" "+ supervisor.lastname ) || "No name provided"}
+                  {supervisor.name || "No name provided"}
                 </li>
               ))
             ) : (
@@ -78,6 +104,7 @@ export default function ExplorePage() {
             />
           </a>
         </div>
+      </div>
       </div>
     </div>
   );
