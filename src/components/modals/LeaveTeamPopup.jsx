@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios"; // Import axios for API calls
 import Icon from "../../assets/alert-circleIcon.svg";
+import Toast from "./Toast"; 
 
 const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
+  const [toastMessage, setToastMessage] = useState(""); // State to hold toast message
+  const [showToast, setShowToast] = useState(false); // State to control toast visibility
+
   // Inline style objects
   const styles = {
     overlay: {
@@ -79,18 +83,6 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
     },
   };
 
-  const handleConfirm = async () => {
-    try {
-      // Send a request to leave the team
-      const response = await axios.patch('/teams/leaveTeam');
-      console.log(response.data); 
-      onConfirm(); 
-    } catch (error) {
-      console.error("Error leaving the team:", error);
-      
-    }
-  };
-
   if (!show) {
     return null;
   }
@@ -113,11 +105,12 @@ const LeaveTeamPopup = ({ show, onCancel, onConfirm }) => {
           <button style={styles.btnCancel} onClick={onCancel}>
             Cancel
           </button>
-          <button style={styles.btnConfirm} onClick={handleConfirm}>
+          <button style={styles.btnConfirm} onClick={onConfirm}>
             Confirm
           </button>
         </div>
       </div>
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 };

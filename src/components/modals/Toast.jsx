@@ -3,7 +3,7 @@ import React from "react";
 
 const containerStyle = {
   marginLeft: "17vw",
-  marginBottom: "2vh",
+  marginBottom: "10vh",
   position: "fixed",
   bottom: "1rem",
   left: "1rem",

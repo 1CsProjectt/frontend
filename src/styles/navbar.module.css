@@ -3,7 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
+  font-family: Manrope, sans-serif;
 }
 
 p {
@@ -100,8 +100,8 @@ p {
   align-items: center;
   gap: 24px;
 }
-
 .notf-button {
+  position: relative; /* Allow absolute positioning for the badge */
   margin-right: 16px;
   border: 1px solid #dde2e4;
   border-radius: 50%;
@@ -117,6 +117,24 @@ p {
   height: 23px;
   width: 24px;
 }
+
+.notification-badge {
+  position: absolute;
+  top: -4px;       /* Adjust as needed */
+  right: -4px;     /* Adjust as needed */
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
 
 .profile {
   flex: auto;
@@ -368,4 +386,153 @@ p {
 
 .suggestion-item:hover {
   background-color: #f1f1f1;
+}
+
+/* Notification panel overall container */
+/* Notification panel container */
+.notification-panel {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width:25rem;
+  background-color: #ffffff;
+  border: 1px solid #dde2e4;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 99;
+  padding: 1rem;
+
+}
+
+/* Header: title + "Mark all as read" button */
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mark-read-btn {
+  background-color: transparent;
+  border: none;
+  color: #0066cc;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Each notification item */
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  background-color: #fff;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.notification-item:hover {
+  background-color: #f9fbfc;
+}
+
+/* The upper part: text on the left, time on the right */
+.notification-upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.notification-text {
+  max-width: 100%;
+}
+
+/* Title + message */
+.notification-title {
+  font-weight: bold;
+  margin: 0 0 0.25rem 0;
+  font-size: 1.05rem;
+}
+
+.notification-message {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+.notification-message span {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+/* Time text on the right side */
+.notification-time {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 5px;
+  white-space: nowrap;
+}
+
+/* Lower part: Accept/Decline buttons for invitations */
+.notification-lower {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+
+/* Invitation actions container */
+.invitation-actions {
+  margin-top: 0.25rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Accept / Decline buttons */
+.accept-btn-notification,
+.decline-btn-notification {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 3.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.accept-btn-notification {
+  background-color: #077ED4; /* Green */
+  color: #ffffff;
+}
+.accept-btn-notification:hover {
+  background-color: #056bb7;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+.decline-btn-notification {
+  background-color: #FFFFFF; /* Red */
+  color: #344054;
+  border: 1px solid #dde2e4;
+  
+}
+.decline-btn-notification:hover {
+  background-color: #f8f9fa;
+  border-color: #c4cacf;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* For demonstration, you can adjust your color scheme to your liking */
+.countdownStyle {
+  color: #077ED4;
+  font-weight: 700;
 }

@@ -27,7 +27,6 @@ function TeamFormationPage() {
   const [myTeam, setMyTeam] = useState(null);
   const [myTeamPendingInvites, setMyTeamPendingInvites] = useState([]);
   const [MyTeamteamReq, setMyTeamteamReq] = useState([]);
-
   const [collaborationInvites, setCollaborationInvites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,7 +40,36 @@ function TeamFormationPage() {
       end: new Date("2025-04-29T23:59:59")
     }
   };
-
+  const fetchExsitedTeamData = async () => {
+    const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
+    console.log("API Response (Listed Teams):", data);
+    const teamsWithStatus = data.teams.map(team => ({
+      ...team,
+      status: team.members && team.maxNumber && team.members.length === team.maxNumber ? "full" : "open"
+    }));
+    setExistedTeams(teamsWithStatus);
+  };
+  const fetchMyTeamData = async () => {
+    try {
+      const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
+      setMyTeam(teamData.team);
+  
+      if (teamData?.team?.id) {
+        const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
+        setMyTeamPendingInvites(pendingInvites);
+  
+        const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
+        setMyTeamteamReq(teamReq);
+      } else {
+        const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
+        setCollaborationInvites(collabInvites);
+      }
+    } catch (err) {
+      console.error("Fetch My Team Error:", err);
+      setError(err.response?.data?.message || err.message);
+    }
+  };
+  
   // Leave team handlers
   const handleLeaveClick = () => {
     setShowLeaveTeamPopup(true);
@@ -52,15 +80,13 @@ function TeamFormationPage() {
   };
   const handleConfirm = async () => {
     setShowLeaveTeamPopup(false);
-    
-    try {
-      
-      const response = await axios.patch('/leaveteam');
+    try {      
+      const response = await axios.patch('/teams/leaveTeam');
       console.log(response.data);
       console.log("leave confirmed!");
+      fetchMyTeamData();
       setToastMessage("Team leaving was successful.");
       setShowToast(true);
-      
       setTimeout(() => {
         setShowToast(false);
       }, 3000);
@@ -84,30 +110,9 @@ function TeamFormationPage() {
             console.error("Unexpected API Response Format for students:", data);
           }
         } else if (activeTab === "Existed Teams") {
-          const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
-          console.log("API Response (Listed Teams):", data);
-          const teamsWithStatus = data.teams.map(team => ({
-            ...team,
-            status: team.members && team.maxNumber && team.members.length === team.maxNumber ? "full" : "open"
-          }));
-          setExistedTeams(teamsWithStatus);
+          fetchExsitedTeamData();
         } else if (activeTab === "My Team") {
-          const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
-          console.log("API Response (My Team):", teamData);
-          setMyTeam(teamData.team);
-          if (teamData?.team?.id) {
-            const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
-            setMyTeamPendingInvites(pendingInvites);
-            const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
-            setMyTeamteamReq(teamReq);
-            console.log("API Response (My Team req Invites):", teamReq);
-          } else {
-            const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
-            setCollaborationInvites(collabInvites);
-            console.log("API Response (Collaboration Invites):", collabInvites);
-
-            
-          }
+          fetchMyTeamData();
         }
       } catch (err) {
         console.error("Fetch Error:", err);
@@ -129,7 +134,6 @@ function TeamFormationPage() {
   // Filter students based on search query; disable update if in My Team tab
   const handleSearchChange = (query) => {
     if (activeTab === "My Team") {
-      // Do not update search query for My Team
       return;
     }
     setSearchQuery(query);
@@ -196,12 +200,18 @@ function TeamFormationPage() {
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
             {activeTab === "Existed Teams" && (
-              <button className={Style["create-team-button"]} onClick={() => setShowCreateTeamModal(true)}>
+              <button 
+                className={Style["create-team-button"]} 
+                onClick={() => setShowCreateTeamModal(true)}
+              >
                 Create a team
               </button>
             )}
             {activeTab === "My Team" && myTeam?.id && (
-              <button className={Style["Leave-button"]} onClick={handleLeaveClick}>
+              <button 
+                className={Style["Leave-button"]} 
+                onClick={handleLeaveClick}
+              >
                 Leave the team
               </button>
             )}
@@ -222,21 +232,47 @@ function TeamFormationPage() {
             ))}
           </div>
 
-          {loading ? <div>Loading...</div> : error ? <div>Error: {error}</div> : renderTabContent()}
+          {loading 
+            ? <div>Loading...</div> 
+            : error 
+              ? <div>Error: {error}</div> 
+              : renderTabContent()
+          }
         </div>
 
+        {/* Moved the CreateTeamModal link (le lien) directly in TeamFormationPage */}
         <CreateTeamModal
           show={showCreateTeamModal}
           onClose={() => setShowCreateTeamModal(false)}
-          onTeamCreated={() => setToastMessage("Team created successfully.")}
-          onInviteSent={() => setToastMessage("Invite sent successfully.")}
+          onTeamCreated={() => {
+            fetchExsitedTeamData();
+            setToastMessage("Team created successfully.");
+            setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
+          }}
+          onInviteSent={() => {
+            setToastMessage("Invite sent successfully.");
+            setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
+          }}
+          user={user}
         />
+
         <LeaveTeamPopup
           show={showLeaveTeamPopup}
           onCancel={handleCancel}
           onConfirm={handleConfirm}
         />
-        {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
+        {showToast && (
+          <Toast 
+            message={toastMessage} 
+            onClose={() => setShowToast(false)} 
+          />
+        )}
       </div>
     </div>
   );

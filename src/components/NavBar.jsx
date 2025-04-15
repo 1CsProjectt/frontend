@@ -6,38 +6,12 @@ import filterIconup from "../assets/arrow-up.svg";
 import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
-
+import{io } from "socket.io-client"; // Import Socket.IO client
+import axios from "axios";
 // Dummy notification data
-const notificationsData = [
-  {
-    id: 1,
-    title: "New Message",
-    message: "You have received a new message.",
-    time: "2 mins ago",
-    type: "info",
-  },
-  {
-    id: 2,
-    title: "Server Alert",
-    message: "Your server is running low on space.",
-    time: "10 mins ago",
-    type: "alert",
-  },
-  {
-    id: 3,
-    title: "Team Invitation",
-    message: "Guessoum Mohamed Nizar invites you to join their team.",
-    time: "4 mins ago",
-    type: "invitation",
-  },
-  {
-    id: 4,
-    title: "Team Invitation",
-    message: "Yettou Abdallah invites you to join their team.",
-    time: "9 mins ago",
-    type: "invitation",
-  },
-];
+
+
+let notificationCount = 0;
 
 const NavBar = ({
   title,
@@ -173,7 +147,7 @@ const NavBar = ({
       {/* Notification Panel */}
       {showNotifications && (
         <div className={Module["notification-container"]}>
-          <NotificationPanel notifications={notificationsData} />
+          <NotificationsContainer />
         </div>
       )}
     </div>
@@ -386,12 +360,12 @@ const FilterMenu = ({
 const NotificationPanel = ({ notifications }) => {
   const handleAccept = (notificationId) => {
     console.log("Accepted invitation with ID:", notificationId);
-    // Additional logic (such as API calls) can be added here.
+    // Additional logic (API calls, etc.) can be placed here.
   };
 
   const handleDecline = (notificationId) => {
     console.log("Declined invitation with ID:", notificationId);
-    // Additional logic (such as API calls) can be added here.
+    // Additional logic (API calls, etc.) can be placed here.
   };
 
   return (
@@ -424,11 +398,70 @@ const NotificationPanel = ({ notifications }) => {
               </div>
             )}
           </div>
-          <p className={Module["notification-time"]}>{notification.time}</p>
+
+          {/* Invitation buttons (if "invitation" type) */}
+          {notification.type === "invitation" && (
+            <div className={Module["notification-lower"]}>
+              <button
+                className={Module["decline-btn-notification"]}
+                onClick={() => handleDecline(notification.id)}
+              >
+                Decline
+              </button>
+              <button
+                className={Module["accept-btn-notification"]}
+                onClick={() => handleAccept(notification.id)}
+              >
+                Accept
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>
   );
+};
+const NotificationsContainer = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000"); 
+
+    socket.on("receive-notification", (data) => {
+      setNotifications((prevNotifications) => [data, ...prevNotifications]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/notifications");
+        setNotifications(response.data);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  // Update the global notification count if applicable
+  // (It looks like notificationCount is a global variable you are using.)
+  notificationCount = notifications.length;
+
+  if (loading) return <div>Loading notifications...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return <NotificationPanel notifications={notifications} />;
 };
 
 export default NavBar;
