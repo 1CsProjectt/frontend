@@ -109,7 +109,7 @@
 /* Button at the bottom */
 .card-button {
   width: 100%;
-  background: rgb(7,126,212);
+  background: rgb(7, 126, 212);
   color: white;
   border: none;
   padding: 15px;
@@ -123,7 +123,6 @@
 .card-button:hover {
   background: #0056b3;
 }
-
 
 .card.selected {
   border-color: blue;

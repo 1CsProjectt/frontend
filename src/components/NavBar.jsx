@@ -49,17 +49,16 @@ const NavBar = ({
     <div className={Module["container"]}>
       <div className={Module["session"]}>
         <p className={Module["sessionP"]}>
-          {(!targetDate || targetDate === "")
-            ? title
-            : (
-              <>
-                {title}{" "}
-                <span className={Module["countdownStyle"]}>
-                  {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min to end
-                </span>
-              </>
-            )
-          }
+          {!targetDate || targetDate === "" ? (
+            title
+          ) : (
+            <>
+              {title}{" "}
+              <span className={Module["countdownStyle"]}>
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min to end
+              </span>
+            </>
+          )}
         </p>
       </div>
       <div className={Module["form"]}>
@@ -73,7 +72,11 @@ const NavBar = ({
         />
         <div className={Module["rightside"]}>
           <div className={Module["notf-button"]}>
-            <img src={notfIcon} alt="notf-icon" className={Module["notf-icon"]} />
+            <img
+              src={notfIcon}
+              alt="notf-icon"
+              className={Module["notf-icon"]}
+            />
           </div>
           <div className={Module["profile"]}>
             <img src={profilepic} alt="pic" className={Module["pic"]} />
@@ -197,7 +200,7 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
     <div className={Module["filter"]}>
       <button className={Module["filter-button"]} onClick={toggleMenu}>
         <img src={filterIcon} alt="Filter" className={Module["custom-icon"]} />
-        <p>Filter</p>
+        <p className={Module["filtertext"]}>Filter</p>
         <img
           src={isOpen ? filterIconup : filterIcondown}
           alt="Toggle"
@@ -207,7 +210,7 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
       {isOpen && (
         <div className={Module["filter-popup"]}>
           <div className={Module["filter-content"]}>
-            <div className={Module["filter-tabs"]}>
+            <div className={Module["filter-options"]}>
               <p
                 className={
                   activeTab === "Specialitys"
@@ -235,19 +238,20 @@ const FilterMenu = ({ onFilterApply, currentFilters }) => {
                   ? "Select Categories"
                   : "Select Other Options"}
               </p>
-              {(activeTab === "Specialitys" ? specialityOptions : otherOptions).map(
-                (option) => (
-                  <label key={option} className={Module["option-label"]}>
-                    <input
-                      type="checkbox"
-                      value={option}
-                      checked={localFilters[activeTab].includes(option)}
-                      onChange={(e) => handleCheckboxChange(e, activeTab)}
-                    />
-                    <span className={Module["optionstext"]}>{option}</span>
-                  </label>
-                )
-              )}
+              {(activeTab === "Specialitys"
+                ? specialityOptions
+                : otherOptions
+              ).map((option) => (
+                <label key={option} className={Module["option-label"]}>
+                  <input
+                    type="checkbox"
+                    value={option}
+                    checked={localFilters[activeTab].includes(option)}
+                    onChange={(e) => handleCheckboxChange(e, activeTab)}
+                  />
+                  <span className={Module["optionstext"]}>{option}</span>
+                </label>
+              ))}
             </div>
           </div>
           <div className={Module["filter-buttons"]}>

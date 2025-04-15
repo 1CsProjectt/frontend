@@ -88,6 +88,7 @@ const PFEPage = () => {
           onSearchChange={handleSearchChange}
           suggestions={suggestionList}
         />
+
         {loading ? (
           <p className={Style["loading-text"]}>Loading projects...</p>
         ) : error ? (
@@ -96,7 +97,12 @@ const PFEPage = () => {
           <div className={Style["cards-container"]}>
             {filteredCards.length > 0 ? (
               filteredCards.map((card, index) => (
-                <PFECard key={card.id || index} card={card} isSelected={null} toggleSelect={() => {}}  />
+                <PFECard
+                  key={card.id || index}
+                  card={card}
+                  isSelected={null}
+                  toggleSelect={() => {}}
+                />
               ))
             ) : (
               <p className={Style["no-results-text"]}>No projects found.</p>

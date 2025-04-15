@@ -21,8 +21,9 @@ const Login = () => {
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
-    const emailPattern = /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
-  return emailPattern.test(email);
+    const emailPattern =
+      /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
+    return emailPattern.test(email);
   };
 
   const handleSignIn = async (e) => {
@@ -43,8 +44,11 @@ const Login = () => {
 
     try {
       // Make the POST request to the login endpoint
-      const response =await axios.post(`/auth/login`, { email, password }, { withCredentials: true });
-
+      const response = await axios.post(
+        `/auth/login`,
+        { email, password },
+        { withCredentials: true }
+      );
 
       // Destructure the response to get the user object
       const { user } = response.data;
@@ -56,12 +60,18 @@ const Login = () => {
       alert("Login successful!");
 
       // Redirect the user to the main page or dashboard
-      if (user.role === "admin") navigate("/admin");
-      else if (user.role === "student")
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else if (user.role === "student") {
         navigate("/pfe");
+      } else {
+        navigate("/teacher");
+      }
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -74,7 +84,11 @@ const Login = () => {
         <div className={Module["logo"]}>
           <img src={logo} alt="PFE Logo" />
         </div>
-        <img className={Module["school-logo"]} src={schoolIcon} alt="ESI School Logo" />
+        <img
+          className={Module["school-logo"]}
+          src={schoolIcon}
+          alt="ESI School Logo"
+        />
       </div>
 
       {/* Right Side */}
@@ -82,8 +96,8 @@ const Login = () => {
         <div className={Module["right-content"]}>
           <h1>Welcome back!</h1>
           <p>
-            Simplify your PFE journey with an all-in-one platform to manage, track, and
-            organize your final project.
+            Simplify your PFE journey with an all-in-one platform to manage,
+            track, and organize your final project.
           </p>
           <form onSubmit={handleSignIn}>
             <label>Email address</label>
@@ -111,7 +125,11 @@ const Login = () => {
               </span>
             </div>
 
-            {error && <p className={Module["error-message"]} style={{ color: "red" }}>{error}</p>}
+            {error && (
+              <p className={Module["error-message"]} style={{ color: "red" }}>
+                {error}
+              </p>
+            )}
 
             <div className={Module["remember-forgot"]}>
               <label>

@@ -19,15 +19,16 @@ p {
 .container {
   flex-direction: column;
   display: flex;
-  z-index: 2;
-  background-color: #ffffff;
+  z-index: 999;
+  background-color: transparent;
   height: 125px;
-  width: 100%;
+  width: calc(100% - 290px);
   flex: auto;
-  position: relative;  
+  position: fixed;
 }
 
 .session {
+  background-color: white;
   border-bottom-width: 1px;
   height: 50px;
   border-bottom-style: solid;
@@ -44,6 +45,8 @@ p {
 }
 
 .form {
+  background-color: #f8f9fa;
+  padding-right: 5px;
   gap: 16px;
   width: 100%;
   padding-top: 14px;
@@ -125,7 +128,7 @@ p {
   height: 40px;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 2px;
 }
 
 .pic {
@@ -139,16 +142,16 @@ p {
 }
 
 .profiletext {
-  padding-left: 32px;
+  padding-left: 28px;
 }
 
 .arrow-icon-profile {
-  margin-left: 4px;
   width: 11px;
   height: 11px;
 }
 
 .filter {
+  background-color: white;
   width: 128px;
   margin-left: 16px;
   margin-right: 16px;
@@ -183,10 +186,12 @@ p {
 }
 
 .filtertext {
-  flex: auto;
+  font-size: 14px;
+  color: #313638;
 }
 
 .arrow-icon {
+  margin-left: 30px;
   margin-top: 2px;
   width: 9px;
   height: 9px;
@@ -207,6 +212,7 @@ p {
   width: 414px;
   border-radius: 8px;
   overflow: hidden;
+  z-index: 999;
 }
 
 .filter-content {
@@ -214,14 +220,13 @@ p {
   display: flex;
   border-bottom: 1px solid #dde2e4;
   align-items: center;
-  overflow: hidden;
 }
 
 .filter-categories {
   padding-top: 24px;
   height: 100%;
   width: 50%;
-  border-right: 1px solid #dde2e4;
+
   padding-left: 24px;
   cursor: default;
 }
@@ -253,6 +258,7 @@ p {
 }
 
 .filter-options {
+  border-right: 1px solid #dde2e4;
   padding-top: 24px;
   height: 100%;
   padding-left: 24px;
@@ -372,7 +378,7 @@ p {
   width: calc(100% - 28px); /* Adjusted for input padding and margin */
   max-height: 200px;
   overflow-y: auto;
-  margin-top:15vh; /* Increased from 4px to 40px */
+  margin-top: 15vh; /* Increased from 4px to 40px */
   z-index: 1000;
   border-radius: 4px;
   padding: 0;
@@ -388,4 +394,3 @@ p {
 .suggestion-item:hover {
   background-color: #f1f1f1;
 }
-
