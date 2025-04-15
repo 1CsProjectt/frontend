@@ -3,8 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/NavBar";
-import StudentsListTab from "../components/StudentsListTab";
-import ExistedTeamsTab from "../components/ExistedTeamsTab";
+import AdminStudentsListTab from "../components/AdminStudentsListTab";
+import AdminExistedTeamsTab from "../components/AdminExistedTeamsTab";
 import MyTeamTab from "../components/MyTeamTab";
 import CreateTeamModal from "../components/CreateTeamModal";
 import Toast from "../components/Toast";
@@ -60,15 +60,15 @@ function TeamFormationPage() {
 
       try {
         if (activeTab === "Students List") {
-          const { data } = await axios.get("/student/liststudents", { withCredentials: true });
+          const { data } = await axios.get("/users/students", { withCredentials: true });
           console.log("API Response (Students List):", data);
-          if (data && Array.isArray(data.students)) {
-            setStudents(data.students);
+          if (data && Array.isArray(data)) {
+            setStudents(data);
           } else {
             console.error("Unexpected API Response Format for students:", data);
           }
         } else if (activeTab === "Existed Teams") {
-          const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
+          const { data } = await axios.get("/teams/all", { withCredentials: true });
           console.log("API Response (isted Teams):", data);
           // Map teams to include a computed status.
           // Use groupName as the team name.
@@ -115,9 +115,9 @@ function TeamFormationPage() {
   // Render the appropriate tab content based on the active tab
   const renderTabContent = () => {
     if (activeTab === "Students List") {
-      return <StudentsListTab user={user} students={filteredStudents} myTeamNumber={myTeam?.groupName || ""} />;
+      return <AdminStudentsListTab user={user} students={filteredStudents} myTeamNumber={myTeam?.groupName || ""} />;
     } else if (activeTab === "Existed Teams") {
-      return <ExistedTeamsTab user={user} existedTeams={existedTeams} navigate={navigate} />
+      return <AdminExistedTeamsTab user={user} existedTeams={existedTeams} navigate={navigate} />
     }
   };
 

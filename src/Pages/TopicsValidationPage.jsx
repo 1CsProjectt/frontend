@@ -1,26 +1,33 @@
-  import React from "react";
+  import {React ,useEffect} from "react";
   import Navbar from "../components/NavBar";
   import PFECard from "../components/CardComponent";
   import { useState } from "react";
   import classes from "../styles/TopicsValidationPage.module.css";
   import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
-
+  import axios from "axios";
 
   import { useNavigate } from "react-router-dom";
 
+  import { PulseLoader } from 'react-spinners'; // Import the spinner you want to use
+
+
+
+
+
+/* 
   // Example data to pass to the PFECard
   const cardsArray = [
-    {
-      id: 1,
-      title: "Final year project management system ",
-      specialization: ["ISI", "SIW"],
-      description:
-        "A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking......",
-        creator:{username: "Guessoum mohamed nizar"},
-        
-      photo:
-        "https://cdn.pixabay.com/photo/2016/11/19/22/52/coding-1841550_960_720.jpg",
-    },
+  {
+    id: 1,
+    title: "Final year project management system ",
+    specialization: ["ISI", "SIW"],
+    description:
+      "A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows A smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflowsA smart and efficient platform for seamless final year project management, enhancing collaboration, tracking progress, and simplifying workflows IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking...... IA smart task management system designed to enhance team collaboration, streamline workflow, and improve productivity through efficient task tracking......",
+      creator:{username: "Guessoum mohamed nizar"},
+      
+    photo:
+      "https://cdn.pixabay.com/photo/2016/11/19/22/52/coding-1841550_960_720.jpg",
+  },
     {
       id: 2,
       title: "Smart task management system for team collaboration",
@@ -112,12 +119,16 @@
         "https://s3-alpha-sig.figma.com/img/601f/4cd0/b7c927eafaa2a13576589cde4c54bb25?Expires=1743379200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=trIcs11Y75HyiQyk6KW8IFKqkQaYROMNoshuGSpG9k08VLHNH~mHYQOITv26wwlEeP~qXseSsuKaxNgng9ayQaXNtWRSBMvqD638etfr2jyp~Spz7RJTauILrofk68r11F-5RjVbtdOFIuBHr-h9dM7EN-xLo4L6on1tC~-xG-h9U4F7TIJ7CYKi571IFrvP-eCqNnFWVdIgPA255BZN4V6xmQ048gZ5ocNT-lW2-APe9~qT1X51GOi7BsaVTnoTE4LHA0gN5sAPsddE4dn9Ln1HsYwmUhpxRgvR2eLOBvwSd2tb21UKXRsymdoxX8AFWMjh8Q3pRjcP8cQMhpoHTw__",
     },
   ];
-
+ */
   const TopicsValidationPage = () => {
     const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
     const [isChecked, setIsChecked] = useState(false);// for the select all checkbox
     const [selectedCards, setSelectedCards] = useState([]); // Moved state here
     const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
+    const [submittedCardsArray, setSubmittedCardsArray] = useState([]); // State to hold the submitted cards
+    const [publishedCardsArray, setPublishedCardsArray] = useState([]); // State to hold the published cards
+    const [cardsArray, setCardsArray] = useState([]); // State to hold the cards array
+    const [loading, setLoading] = useState(false);
     //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
 
     //the selectedCards array holds the ids of the currently selected cards
@@ -148,52 +159,104 @@
       setIsChecked(checked);
       setSelectedCards(checked ? cardsArray.map((card) => card.id) : []);
     };
-    
-    return (
-      <div>
-        <Navbar />
 
-        {/* Tab Buttons */}
-        <div className={classes["header"]}>
-          <div className={classes["left-side-container"]}>
+
+  useEffect(() => {
+    if (activeTab === "tab1") {
+      setSelectedCards([]); // Reset selected cards when switching tabs
+      setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
+      const fetchPublishedCards = async () => {
+        if (loading) return; // Prevent multiple fetches when already loading
+        setLoading(true); // Start loading
+        try {
+          const response = await axios.get("/pfe/validpfe");
+          if (response.data && response.data.pfeList) {
+            setCardsArray(response.data.pfeList);
+            console.log(response);
+          }
+          /* setPublishedCardsArray(data); // Save data in state */
+        
+        } catch (error) {
+          console.error("Error fetching the submitted cards data:", error);
+          alert("An error occurred while fetching the published cards data.");
+        }finally{
+          setLoading(false); // Stop loading
+        }
+      };
+  
+      fetchPublishedCards();
+      console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
+
+     /*  setCardsArray(publishedCardsArray); */
+    } else if (activeTab === "tab2") {
+      setSelectedCards([]); // Reset selected cards when switching tabs
+      setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
+      const fetchSubmittedCards = async () => {
+        if (loading) return; // Prevent multiple fetches when already loading
+        setLoading(true); // Start loading
+        try {
+          const response = await axios.get("/pfe/pending");
+          if (response.data && response.data.pfeList) {
+            setCardsArray(response.data.pfeList);
+            console.log(response);
+          }
+         /*  setSubmittedCardsArray(data); // Save data in state */
+     
+        } catch (error) {
+          console.error("Error fetching the submitted cards data:", error);
+          alert("An error occurred while fetching the submitted cards data.");
+        }finally{
+          setLoading(false); // Stop loading
+        }
+      };
+      
+  
+      fetchSubmittedCards();
+      console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
+
+     /*  setCardsArray(submittedCardsArray); */
+    }
+    
+  }, [activeTab]);
+  
+
+     return (
+    <div>
+      <Navbar />
+
+      <div className={classes.header}>
+        <div className={classes["left-side-container"]}>
           <h1>Validate and Control Topics</h1>
           <label>
-          <input type="checkbox" checked={isChecked} onChange={handleCheckboxChange} />
-          All
-        </label>
-        <p>{selectedCards.length} Selected</p>
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+            />{" "}
+            All
+          </label>
+          <p>{selectedCards.length} Selected</p>
         </div>
-          <div className={classes["buttons-container"]}>
-            <button className={classes["back-btn"]} onClick={HandleBackButton}>
-              Back
-            </button>
-            <button onClick={() => setPfeTopicModalOpen(true)} className={classes["delete-btn"]}>
-              Delete Selected Topics
-            </button>
-         
-            <PfeTopicModal isOpen={isPfeTopicModalOpen} onClose={() => setPfeTopicModalOpen(false)} entityType="User" operation="delete"  />
-            
-          </div>
-        </div>
-      {/*   <div className={classes["tabs"]}>
-          <button
-            className={
-              activeTab === "tab1" ? classes["tab active"] : classes["tab"]
-            }
-            onClick={() => setActiveTab("tab1")}
-          >
-            Published Topics
+        <div className={classes["buttons-container"]}>
+          <button className={classes["back-btn"]} onClick={() => navigate(-1)}>
+            Back
           </button>
           <button
-            className={
-              activeTab === "tab2" ? classes["tab active"] : classes["tab"]
-            }
-            onClick={() => setActiveTab("tab2")}
+            className={classes["delete-btn"]}
+            onClick={() => setPfeTopicModalOpen(true)}
           >
-            Submitted Topics
+            Delete Selected Topics
           </button>
-        </div> */}
-         <div className={classes.tabs}>
+          <PfeTopicModal
+            isOpen={isPfeTopicModalOpen}
+            onClose={() => setPfeTopicModalOpen(false)}
+            entityType="User"
+            operation="delete"
+          />
+        </div>
+      </div>
+
+      <div className={classes.tabs}>
         <button
           className={activeTab === "tab1" ? classes.active : ""}
           onClick={() => setActiveTab("tab1")}
@@ -208,49 +271,35 @@
         </button>
       </div>
 
-        {/* Tab Content */}
-        <div className={classes["tab-content"]}>
-          {activeTab === "tab1" && (
-            <div className={classes["cards-container"]}>
-              {cardsArray.map((card) => (
-          <PFECard
-            key={card.id}
-            card={card}
-            isSelected={selectedCards.includes(card.id)}
-            toggleSelect={toggleSelect}
-             const onExplore={(e, card) => {
-              e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-              navigate("/admin/sessions/topic-validation/published-topic-explore", {
-                state: { card },
-              });
-            }} 
-          />
-        ))}
-
-            </div>
-          )}
-          {activeTab === "tab2" && (
-            <div className={classes["cards-container"]}>
-              {cardsArray.map((card) => (
-          <PFECard
-            key={card.id}
-            card={card}
-            isSelected={selectedCards.includes(card.id)}
-            toggleSelect={toggleSelect}
-            const onExplore={(e, card) => {
-              e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-              navigate("/admin/sessions/topic-validation/submitted-topic-explore", {
-                state: { card },
-              });
-            }} 
-          />
-        ))}
-
-            </div>
-          )}
-        </div>
+      <div key={activeTab} className={classes["tab-content"]}>
+        {loading ? (
+          <div className={classes.loader}>
+            <PulseLoader color="#36d7b7" loading={loading} size={15} />
+          </div>
+        ) : (
+          <div className={classes["cards-container"]}>
+            {cardsArray.map((card) => (
+              <PFECard
+                key={card.id}
+                card={card}
+                isSelected={selectedCards.includes(card.id)}
+                toggleSelect={toggleSelect}
+                onExplore={(e) => {
+                  e.stopPropagation();
+                  navigate(
+                    activeTab === "tab1"
+                      ? "/admin/sessions/topic-validation/published-topic-explore"
+                      : "/admin/sessions/topic-validation/submitted-topic-explore",
+                    { state: { card } }
+                  );
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    );
+    </div>
+  );
   };
 
   export default TopicsValidationPage;

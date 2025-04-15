@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react"; // Using Lucide to import the eye /eye off icons
 import classes from "../../styles/UserFormModal.module.css"; // Import the separate CSS file
 
-const UserFormModal = ({ isOpen, onClose, operation ,userObject }) => {
+const UserFormModal = ({ isOpen, onClose ,userObject ,operation}) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,23 +20,61 @@ const UserFormModal = ({ isOpen, onClose, operation ,userObject }) => {
   const [admin_level, setAdminLevel] = useState("");
   const [permissions, setPermissions] = useState("");
   const [errors, setErrors] = useState({});
+  const handleClose = () => {
+/*   // Clear all input fields
+// the fields are already cleared in the useEffect hook (removed the operation prop)
+  setFirstName("");
+  setLastName("");
+  setEmail("");
+  setPassword("");
+  setRole("");
+  setYear("1CS");
+  setSpecialite("");
+  setCompanyName("");
+  setPhone("");
+  setAddress("");
+  setWebsite("");
+  setAdminLevel("");
+  setPermissions("");
+  setErrors({});
+  setShowPassword(false);
+  setAdminLevel("");
+  setPermissions("all");
 
-  useEffect(() => {
-    setCompanyName("ESI");
-    setPhone("0555555555");
-    setAddress("SBA");
-    setWebsite("www.esi-sba.dz");
-    setAdminLevel("admin");
-    setPermissions("all");
-  }, []);
+  setLoading(false);
+  
+ */
+  onClose(); // Call parent’s close handler after cleanup
+};
+
+useEffect(() => {
+  //if a user object is passed, populate the form with its data else clear the form again
+  //equivalent to passing an operation prop but better for reducing type errors when calling the model
+  if (userObject && isOpen) {
+    setFirstName(userObject.firstName || "");
+    setLastName(userObject.lastName || "");
+    setEmail(userObject.email || "");
+    setRole(userObject.role || "");
+    setPassword(""); // Password should be left blank for security
+    setYear(userObject.year || "1CS");
+    setSpecialite(userObject.specialite || "");
+    setCompanyName(userObject.companyName || "");
+    setPhone(userObject.phone || "");
+    setAddress(userObject.address || "");
+    setWebsite(userObject.website || "");
+    setAdminLevel(userObject.admin_level || "");
+    setPermissions(userObject.permissions || "all");
+  }
+}, [userObject, isOpen]);
+
 
   if (!isOpen) return null;
 
-  const validateEmail = (email) => {
+ /*  const validateEmail = (email) => {
     const emailPattern = /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
-    return emailPattern.test(email);
+  return emailPattern.test(email);
   };
-
+ */
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -45,13 +83,35 @@ const UserFormModal = ({ isOpen, onClose, operation ,userObject }) => {
     if (!firstName.trim()) newErrors.firstName = "First name is required.";
     if (!lastName.trim() && role !== "company") newErrors.lastName = "Last name is required.";
     if (!email.trim()) newErrors.email = "Email is required.";
-    else if (!validateEmail(email)) newErrors.email = "Invalid email format.";
+   /*  if (!validateEmail(email)) newErrors.email = "Invalid email format."; */
     if (!role) newErrors.role = "Please select a role.";
     if (!password.trim()) newErrors.password = "Password is required.";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      alert(
+        "💡 Form state:\n" +
+          JSON.stringify(
+            {
+              firstName,
+              lastName,
+              email,
+              password,
+              role,
+              year,
+              specialite,
+              companyName,
+              phone,
+              address,
+              website,
+              admin_level,
+              permissions,
+            },
+            null,
+            2
+          )
+      );
       const userData = {
         username: firstName + " " + lastName,
         firstName,
@@ -68,10 +128,34 @@ const UserFormModal = ({ isOpen, onClose, operation ,userObject }) => {
         admin_level,
         permissions,
       };
-
+      if (operation === "editUser") {
+        handleUpdateUser({
+          id: userObject.id,
+          firstName,
+          lastName,
+          email,
+          password,
+          role,
+          year,
+          specialite,
+          companyName,
+          phone,
+          address,
+          website,
+          admin_level,
+          permissions,
+        });
+      }
+      else if (operation === "createUser") {
       handleCreateUser(userData);
+      
+    }else{
+      alert("Invalid operationcheck for typing errors only 'createUser' or 'updateUser' are accepted");
+      
     }
-  };
+      
+    }
+  }
 
   const handleCreateUser = async (userData) => {
     const payload = {
@@ -112,18 +196,61 @@ const UserFormModal = ({ isOpen, onClose, operation ,userObject }) => {
 
       console.log("✅ User created:", result);
       alert("User created successfully!");
-      onClose();
-    } catch (err) {
+
+      handleClose();
+    } catch (err) {  setFirstName("");
+
       console.error("❌ Error:", err.message);
       alert("Error creating the user: " + err.message);
-      onClose();
+      handleClose();
     }
   };
 
-  const handleClose = () => {
-    setErrors({});
-    onClose();
+  const handleUpdateUser = async (formData) => {
+    console.log("Updating user with ID:", formData.id);
+    const payload = {
+      email:userObject.email,//this is the old email that the backed checks for the user by
+      newEmail: formData.email,//this is the new email to set if it's provided
+      id: formData.id,
+      firstname: formData.firstName,
+      lastname: formData.lastName,
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+    };
+    if (formData.role === "student") {
+      payload.year = formData.year;
+      if (["2CS", "3CS"].includes(formData.year?.toUpperCase())) {
+        payload.specialite = formData.specialite;
+      }
+    } else if (formData.role === "company") {
+      payload.companyName = formData.companyName;
+      payload.phone = formData.phone;
+      payload.address = formData.address;
+      payload.website = formData.website;
+    } else if (formData.role === "admin") {
+      payload.admin_level = formData.admin_level;
+      payload.permissions = formData.permissions;
+    }
+  
+    try {
+      const res = await fetch("/users/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Something went wrong");
+      console.log("✅ User Updated:", result);
+      alert("User updated successfully!");
+      handleClose();
+    } catch (err) {
+      console.error("❌ Error updating user:", err.message);
+      alert("Error updating the user: " + err.message);
+      handleClose();
+    }
   };
+  
 
   return (
     <div className={classes["modal-overlay"]}>
@@ -191,7 +318,7 @@ const UserFormModal = ({ isOpen, onClose, operation ,userObject }) => {
               <option value="admin">Admin</option>
               <option value="student">Student</option>
               <option value="supervisor">Supervisor</option>
-              <option value="jury">Jury</option>
+              {/* <option value="jury">Jury</option> */}
               <option value="company">Company</option>
             </select>
             {errors.role && <p className={classes["error-message"]}>{errors.role}</p>}
