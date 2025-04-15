@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
-import CreateTeamAlert from "./CreateTeamAlert";
-import Toast from "./Toast";
+import CreateTeamAlert from "./modals/CreateTeamAlert";
+import Toast from "./modals/Toast";
 import axios from "axios";
-import { getPaginatedData, getPageNumbers } from "./paginationFuntion";
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 const StudentsListTab = ({ user, students, myTeamNumber }) => {

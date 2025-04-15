@@ -11,7 +11,7 @@ import Toast from "../components/modals/Toast";
 
 import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
-import { useSharedState } from "../contexts/SharedStateContext"; // Import the custom hook
+import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
 
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
