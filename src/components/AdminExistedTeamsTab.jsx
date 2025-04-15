@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
 import Seemorepage from "./ExistedTeamSeemore";
-import JoinTeamAlert from "./JoinTeamAlert";
-import Toast from "./Toast";
-import { getPaginatedData, getPageNumbers } from "./paginationFuntion"; 
+import JoinTeamAlert from "./modals/JoinTeamAlert";
+import Toast from "./modals/Toast";
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 
 const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -14,7 +14,6 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
 
-  
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
   }, [existedTeams]);
@@ -41,7 +40,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 70; 
+        const estimatedRowHeight = 70;
         const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
         setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 8);
       }
@@ -64,10 +63,10 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
 
   // If a team is selected, show its detailed view
   if (selectedTeam) {
-    const mappedMembers = selectedTeam.members.map(member => ({
+    const mappedMembers = selectedTeam.members.map((member) => ({
       fullName: `${member.firstname} ${member.lastname}`,
       email: member.user?.email || "N/A",
-      role: member.role || "Member" // Default to "Member" if role isn't provided
+      role: member.role || "Member", // Default to "Member" if role isn't provided
     }));
 
     return (
@@ -94,7 +93,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
             <tr>
               <th>Team Number</th>
               <th>Team Creator</th>
-              <th>Status</th>  
+              <th>Status</th>
               <th></th>
             </tr>
           </thead>
@@ -131,9 +130,13 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                     ) : (
                       <span
                         className={Module["disable-button"]}
-                        style={{ display: "inline-block", width: "90px", marginRight: "15px" }}
+                        style={{
+                          display: "inline-block",
+                          width: "90px",
+                          marginRight: "15px",
+                        }}
                       >
-                       Edit
+                        Edit
                       </span>
                     )}
                     <button
@@ -195,7 +198,10 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
         onConfirm={handleConfirm}
       />
       {showToast && (
-        <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />
+        <Toast
+          message={toastMessage || "Test Toast"}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );
