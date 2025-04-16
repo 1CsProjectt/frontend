@@ -3,7 +3,7 @@ import { Eye, EyeOff } from "lucide-react"; // Using Lucide to import the eye /e
 import classes from "../../styles/UserFormModal.module.css"; // Import the separate CSS file
 import axios from 'axios';
 
-const UserFormModal = ({ isOpen, onClose ,userObject ,operation}) => {
+const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementActiveTab}) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,6 +48,31 @@ const UserFormModal = ({ isOpen, onClose ,userObject ,operation}) => {
   onClose(); // Call parent’s close handler after cleanup
 };
 
+
+  // Tabs for different user types
+/*   const tabs = ["Students", "Supervisors", "Enterprises", "Admins"]; */
+//these tabs are used to set the role accroding to the currently selected tab
+useEffect(() => {
+  switch (userManagementActiveTab) {
+    case "Students":
+      setRole("student");
+      break;
+    case "Supervisors":
+      setRole("teacher");
+      break;
+    case "Enterprises":
+      setRole("company");
+      break;
+    case "Admins":
+      setRole("admin");
+      break;
+    default:
+      setRole(""); // or keep previous role
+  }
+}, [userManagementActiveTab]);
+
+
+
 useEffect(() => {
   //if a user object is passed, populate the form with its data else clear the form again
   //equivalent to passing an operation prop but better for reducing type errors when calling the model
@@ -73,7 +98,8 @@ useEffect(() => {
     setFirstName("");
     setLastName("");
     setEmail("");
-    setRole("");
+    /* setRole(""); */
+    //now the role is set according to the selected tab 
     setPassword("");
     setYear("1CS");
     setSpecialite("");
@@ -113,7 +139,7 @@ useEffect(() => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      alert(
+     /*  alert(
         "💡 Form state:\n" +
           JSON.stringify(
             {
@@ -134,7 +160,7 @@ useEffect(() => {
             null,
             2
           )
-      );
+      ); */
       const userData = {
         username: firstName + " " + lastName,
         firstName,
@@ -196,7 +222,7 @@ useEffect(() => {
         payload.specialite = userData.specialite;
       }
     } else if (userData.role === "company") {
-      payload.companyName = userData.companyName;
+      payload.companyName = userData.firstName;
       payload.phone = userData.phone;
       payload.address = userData.address;
       payload.website = userData.website;
@@ -251,9 +277,12 @@ const handleUpdateUser = async (formData) => {
       payload.specialite = formData.specialite;
     }
   } else if (formData.role === "company") {
-    payload.companyName = formData.companyName;
+    /* payload.companyName = formData.companyName; */
+    //i am using the same form for both the firstname and company name just changing the name of the form not the entire form therefore no i used the firstname
+    payload.companyName = formData.firstName;
     payload.phone = formData.phone;
     payload.address = formData.address;
+  
     payload.website = formData.website;
   } else if (formData.role === "admin") {
     payload.admin_level = formData.admin_level;

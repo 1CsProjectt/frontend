@@ -19,7 +19,6 @@
     "react-spinners": "^0.16.1",
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
-    
   },
   "proxy": "https://backend-pfe-1.onrender.com/api/v1",
   "scripts": {

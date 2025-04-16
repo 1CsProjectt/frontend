@@ -18,7 +18,7 @@ const UserManagementTabs = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const [userToEdit, setUserToEdit] = useState(null);
   const [operation, setOperation] = useState("");
-  const usersPerPage = 8;
+  const usersPerPage = 7;
 
 
   // Tabs for different user types
@@ -229,7 +229,7 @@ useEffect(() => {
         <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
       </div>
-      <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} userObject={userToEdit} operation={operation}/>
+      <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} userObject={userToEdit} operation={operation} userManagementActiveTab={activeTab}/>
       <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userToDelete={userToDelete} />
     </div>
     
