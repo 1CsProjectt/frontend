@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import classes from "../../styles/StartNewSessionModal.module.css";
-
-const StartNewSessionModal = ({ isOpen, onClose }) => {
+import axios from "axios";
+const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
   
 
   // State for form fields
@@ -12,6 +12,59 @@ const StartNewSessionModal = ({ isOpen, onClose }) => {
 
 
   if (!isOpen) return null;
+
+//later add the check for the session name (type) based on the current tab
+  const handleCreateTopicSubmissionSession = async () => {
+    const payload = {
+      name: "PFE_SUBMISSION", // fixed to topic submission session
+      startTime: startDate,
+      endTime: endDate,
+      year: grade,
+    };
+
+    try {
+      const res = await axios.post("/session/setsessoin", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // include credentials if required
+      });
+
+      alert(" Submission session created: " + res.data.message);
+      onClose();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      console.error(" Error creating session:", msg);
+      alert(" Error: " + msg);
+    }
+  };
+
+  const handleCreateTeamFormationSession = async () => {
+    const payload = {
+      name: "TEAM_CREATION", // or change this dynamically later
+      startTime: startDate,
+      endTime: endDate,
+      maxNumber: parseInt(maxMembers, 10),
+      year: grade,
+    };
+  
+    try {
+      const res = await axios.post("/session/setsessoin", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // in case cookies/token needed
+      });
+  
+      alert("✅ Session created: " + res.data.message);
+      onClose(); // close modal after success
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      console.error("❌ Error creating session:", msg);
+      alert("❌ Error: " + msg);
+    }
+  };
+
 
   return (
     <div className={classes["modal-overlay"]}>
@@ -72,7 +125,16 @@ const StartNewSessionModal = ({ isOpen, onClose }) => {
           </button>
           <button
             className={classes["create-btn"]}
-            onClick={() => console.log({ grade, maxMembers, startDate, endDate })}
+            onClick={() => { console.log({ grade, maxMembers, startDate, endDate }); if (sessionsPageActiveTab === "Topic Submission Session"){handleCreateTopicSubmissionSession(); 
+
+            }else if(sessionsPageActiveTab === "Team Formation Session"){
+              handleCreateTeamFormationSession();
+          }else{
+            alert("Please select a valid session type.");
+          }
+        }
+          
+          }
           >
             Create
           </button>

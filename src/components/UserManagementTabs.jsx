@@ -31,6 +31,7 @@ const UserManagementTabs = () => {
   
 
 useEffect(() => {
+ 
     const fetchUsers = async () => {
         try {
             const response = await axios.get('/users/get-all'); // Adjust baseURL in Axios config if needed

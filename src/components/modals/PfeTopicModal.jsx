@@ -25,7 +25,7 @@ const PfeTopicModal = ({ isOpen, onClose, onDelete, entityType ,operation }) => 
   const handleValidate = () => {
   };
 
-
+  
 entityType = "Topic";//entityType is a prop to pass to the success confirmation modal
 
 

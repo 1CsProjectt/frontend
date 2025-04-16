@@ -37,7 +37,8 @@
   font-family: "Manrope";
   border: none;
   cursor: pointer;
-  transition: 0.3s;
+transition: 0.3s;
+  width: 15%;
 }
 
 .add-btn:hover {

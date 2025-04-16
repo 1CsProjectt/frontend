@@ -8,7 +8,6 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.8.4",
     "classnames": "^2.5.1",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.484.0",
@@ -17,10 +16,10 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.4.1",
     "react-scripts": "5.0.1",
-    "react-spinners": "^0.16.1",
     "web-vitals": "^2.1.4"
+    
   },
-  "proxy": "https://9625-105-235-138-133.ngrok-free.app/api/v1",
+  "proxy": "https://backend-pfe-1.onrender.com/api/v1",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

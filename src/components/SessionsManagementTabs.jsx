@@ -1,31 +1,85 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect } from "react";
 import classes from "../styles/SessionsManagementTabs.module.css";
 import NavBar from "./NavBar.jsx";
 import StartNewSessionModal from "./modals/StartNewSessionModal.jsx";
 import { useNavigate } from "react-router-dom";
 import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
-
+import axios from "axios";
 import TopicsValidationPage from "../Pages/TopicsValidationPage.jsx";
 
 const SessionsManagementTabs = () => {
   const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState("Topic Submission Session");
   const navigate = useNavigate();
-   
+  const [sessionsArray,setSessionsArray] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const tabs = [
     "Topic Submission Session",
     "Team Formation Session",
     "Select Topics Session",
     "Project Realization Session",
   ];
+/* 
+  {
+    "status": "success",
+    "data": {
+        "events": [
+            {
+                "id": 1,
+                "name": "PFE_SUBMISSION",
+                "startTime": "2025-04-15T00:00:00.000Z",
+                "endTime": "2025-04-19T00:00:00.000Z",
+                "year": "1CS",
+                "maxNumber": null,
+                "createdAt": "2025-04-15T10:39:37.073Z",
+                "updatedAt": "2025-04-15T10:39:37.073Z"
+            },
+            {
+                "id": 2,
+                "name": "PFE_SUBMISSION",
+                "startTime": "2025-04-15T00:00:00.000Z",
+                "endTime": "2025-04-30T00:00:00.000Z",
+                "year": "2CS",
+                "maxNumber": null,
+                "createdAt": "2025-04-15T10:56:03.516Z",
+                "updatedAt": "2025-04-15T10:56:03.516Z"
+            }
+        ]
+    }
+} */
+    const tabToSessionType = {
+      "Topic Submission Session": "PFE_SUBMISSION",
+      "Team Formation Session": "TEAM_FORMATION",
+      "Select Topics Session": "TOPIC_SELECTION",
+      "Project Realization Session": "PROJECT_REALIZATION",
+    };
 
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const res = await axios.get(
+          "https://backend-pfe-1.onrender.com/api/v1/session/allevents"
+        );
+        setSessionsArray(res.data.data.events);
+        console.log(res.data.data.events);
+      } catch (err) {
+        const msg = err.response?.data?.message || err.message;
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSessions();
+  }, []);
   return (
     <div className={classes["main-wrapper"]}>
+
       <NavBar />
       
       <div className={classes["tabs-container"]}>
+        
         <h1>Sessions Management</h1>
         {/* Tabs Navigation */}
         <div className={classes["tabs"]}>
@@ -81,7 +135,7 @@ const SessionsManagementTabs = () => {
                   </table>
                 </div>
                 <button className={classes["primary-btn"]}  onClick={() => setIsModalOpen(true)}>Start new session</button>
-                <StartNewSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+               
                 </div>
               </div>
 
@@ -124,7 +178,7 @@ const SessionsManagementTabs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {["2CPI", "1CS", "2CS"].map((grade, index) => (
+                    {/* {["2CPI", "1CS", "2CS"].map((grade, index) => (
                       <tr key={index}>
                         <td>{grade}</td>
                         <td>05</td>
@@ -134,7 +188,23 @@ const SessionsManagementTabs = () => {
                           <button className={classes["cancel-btn"]}>Cancel</button>
                         </td>
                       </tr>
-                    ))}
+                    ))} */}
+                    {sessionsArray
+  .filter(session => session.name === tabToSessionType[sessionsPageActiveTab])
+  .map((session, index) => (
+    <tr key={index}>
+      <td>{session.year}</td>
+      <td>{session.maxNumber ?? "N/A"}</td>
+      <td>
+        {new Date(session.startTime).toLocaleDateString()} -{" "}
+        {new Date(session.endTime).toLocaleDateString()}
+      </td>
+      <td>
+        <button className={classes["edit-btn"]}>Edit</button>
+        <button className={classes["cancel-btn"]}>Cancel</button>
+      </td>
+    </tr>
+))}
                   </tbody>
                 </table>
               </div>
@@ -172,6 +242,7 @@ const SessionsManagementTabs = () => {
           )}
         </div>
       </div>
+      <StartNewSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab}/>
     </div>
   );
 };

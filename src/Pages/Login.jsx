@@ -11,12 +11,7 @@ mohamed.boudja@gmgail.com"
 
 mohamed, [3/30/25 2:47 PM]
 12345678 pass */
-
-axios.defaults.withCredentials = true;
-axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
-
 const Login = () => {
-
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
