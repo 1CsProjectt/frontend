@@ -1,3 +1,5 @@
+/node_modules/
+/node_modules/.cache/ 
 # Node.js dependencies
 node_modules/
 

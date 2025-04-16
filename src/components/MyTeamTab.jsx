@@ -3,12 +3,16 @@ import Module from "../styles/TeamFormationPage.module.css";
 import axios from "axios";
 import SetRoleModal from './modals/SetaroleModal';
 import Toast from "../components/modals/Toast";
+import { useNavigate } from "react-router-dom";
+
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
 const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites }) => {
+  const navigate = useNavigate();
   const [showSetRoleModal, setShowSetRoleModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  
   const invites = (collaborationInvites && collaborationInvites.length > 0)
     ? collaborationInvites
     : [{
@@ -160,9 +164,14 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
         <div className={Module["my-team-header"]} id="pending">
           <h2>Pending Invites</h2>
           <div className={Module["my-team-actions"]}>
-            <button className={Module["create-team-button"]} style={{ marginRight: "10px" }}>
-              Invite members
-            </button>
+          <button
+      className={Module["create-team-button"]}
+      style={{ marginRight: "10px" }}
+      onClick={() => navigate("/TeamFormationPage")}
+
+    >
+      Invite members
+    </button>
           </div>
         </div>
         <div className={Module["table-wrapper"]}>

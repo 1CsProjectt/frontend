@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Module from "../styles/TeamFormationPage.module.css";
 import Seemorepage from "./ExistedTeamSeemore";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
-import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion"; 
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 
 const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [currentPage, setCurrentPage] = useState(1);
+
   const [teamsPerPage, setTeamsPerPage] = useState(10);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const containerRef = useRef(null);
@@ -14,7 +16,36 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
 
-  
+  const handledeleteteam = async (teamId) => {
+    if (!teamId) {
+      console.log("No team ID provided");
+      return;
+    }
+
+    try {
+      await deleteTeam(teamId);
+    } catch (error) {
+      console.error("Error deleting team:", error);
+    }
+  };
+
+  const deleteTeam = async (teamId) => {
+    try {
+      if (!teamId) return;
+
+      await axios.delete(`/teams//delete/${teamId}`, {
+        withCredentials: true,
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+
+      console.log(`Team ${teamId} deleted successfully`);
+    } catch (err) {
+      console.error("Error deleting team:", err);
+    }
+  };
+
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
   }, [existedTeams]);
@@ -41,7 +72,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 70; 
+        const estimatedRowHeight = 70;
         const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
         setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 8);
       }
@@ -64,10 +95,10 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
 
   // If a team is selected, show its detailed view
   if (selectedTeam) {
-    const mappedMembers = selectedTeam.members.map(member => ({
+    const mappedMembers = selectedTeam.members.map((member) => ({
       fullName: `${member.firstname} ${member.lastname}`,
       email: member.user?.email || "N/A",
-      role: member.role || "Member" // Default to "Member" if role isn't provided
+      role: member.role || "Member", // Default to "Member" if role isn't provided
     }));
 
     return (
@@ -94,7 +125,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
             <tr>
               <th>Team Number</th>
               <th>Team Creator</th>
-              <th>Status</th>  
+              <th>Status</th>
               <th></th>
             </tr>
           </thead>
@@ -131,15 +162,19 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                     ) : (
                       <span
                         className={Module["disable-button"]}
-                        style={{ display: "inline-block", width: "90px", marginRight: "15px" }}
+                        style={{
+                          display: "inline-block",
+                          width: "90px",
+                          marginRight: "15px",
+                        }}
                       >
-                       Edit
+                        Edit
                       </span>
                     )}
                     <button
                       className={Module["invite-button"]}
                       style={{ width: "90px", backgroundColor: "white" }}
-                      onClick={() => setSelectedTeam(team)}
+                      onClick={() => handledeleteteam(team?.id)}
                     >
                       Delete
                     </button>
@@ -195,7 +230,10 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
         onConfirm={handleConfirm}
       />
       {showToast && (
-        <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />
+        <Toast
+          message={toastMessage || "Test Toast"}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );

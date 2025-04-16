@@ -7,14 +7,13 @@
 }
 
 .containert {
-  padding-top: 124px;
+  background-color: #f5f7fa;
 
-  padding-right: 16px;
   width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  z-index: 999;
+  z-index: 99;
 }
 .pageheader {
   margin-left: 308px;
@@ -25,7 +24,7 @@
   left: 0;
   right: 0;
   height: 55px;
-
+  z-index: 99;
   padding-right: 4px;
   gap: 16px;
   background-color: #f5f7fa;
@@ -112,28 +111,31 @@
 
 .radio-input {
   margin-bottom: 4px;
-  appearance: none; /* Hides default radio button styling */
+  appearance: none;
   width: 16px;
   height: 16px;
   border: 2px solid #b0babfcc;
   border-radius: 50%;
-  display: inline-block; /* Ensures the input stays in line */
-  vertical-align: middle; /* Aligns properly with text */
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  background-color: #fff;
+  cursor: pointer;
 }
 
 .radio-input:checked {
   border-color: rgb(129, 129, 129); /* Change border color when checked */
 }
-
 .radio-input:checked::after {
   content: "";
-  width: 8px;
-  height: 8px;
-  background-color: rgb(129, 129, 129); /* Inner circle color */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background-color: rgb(129, 129, 129);
   border-radius: 50%;
-  display: block; /* Ensures it's visible */
-  margin: auto; /* Centers inside the radio */
-  margin-top: 2px; /* Fine-tune for better centering */
+  transform: translate(-50%, -50%);
 }
 .label-text {
   line-height: 0.5;
@@ -268,32 +270,11 @@
   color: #ffffff;
 }
 
-.pfe-list {
-  margin-top: 44px;
+.cards-container {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
-  gap: 24px; /* Adjust this if needed for better spacing */
-  padding: 34px; /* 16px margin on left and right */
-}
-
-@media (max-width: 1024px) {
-  .pfe-list {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on smaller screens */
-  }
-}
-
-@media (max-width: 768px) {
-  .pfe-list {
-    grid-template-columns: repeat(1, 1fr); /* 1 column on mobile */
-  }
-}
-.card-wrapper {
-  background-color: transparent;
-}
-.card-wrapper.selected {
-  border: 3px solid #077ed4;
-  border-radius: 12px; /* Optional: To make it look nice */
-}
-.card-wrapper:hover {
-  transform: translateY(-5px);
+  grid-template-columns: repeat(auto-fill, 26vw);
+  gap: 25px;
+  padding: 20px;
+  padding-top: 80px;
 }

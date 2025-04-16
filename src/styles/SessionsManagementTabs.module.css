@@ -1,23 +1,20 @@
 /* Global Styling */
-*{
+* {
   margin: 0;
   padding: 0;
-  
 }
 body {
-    font-family: "Manrope", sans-serif;
-
-  }
+  font-family: "Manrope", sans-serif;
+}
 
 body p {
   font-size: 20px;
 }
-  
-  .main-wrapper {
-    width: 100%;
-    padding: 1px;
- 
-  }
+
+.main-wrapper {
+  width: 100%;
+  padding: 1px;
+}
 
 
 
@@ -166,60 +163,60 @@ body p {
     cursor: pointer;
     margin-top: 10px;
 
-    width: 100%;
-  }
-  .see-topics-btn,.edit-teams-btn {
-    background-color: rgb(7,126,212);
-    height: 50px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    color: white;
-    cursor: pointer;
-    width:70vh;
-  }
-  
-  .validate-btn {
-    background-color: rgb(7,126,212);
-    height: 50px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    color: white;
-    cursor: pointer;
-    margin-right:17px;
-    margin-top: 10px;
-    width:70%;
-  }
-  
-  .primary-btn:hover, .validate-btn:hover {
-    opacity: 0.9;
-  }
+  width: 100%;
+}
+.see-topics-btn,
+.edit-teams-btn {
+  background-color: rgb(7, 126, 212);
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  width: 70vh;
+}
 
-  
-  .edit-btn {
-    background-color:rgb(241,241,241);
-    color:  rgb(52,64,84);
-    padding: 8px 12px;
-    width: 40%;
-    border: 2px solid rgb(208, 213, 221);
-    cursor: pointer;
-    
-    border-radius: 4px;
-  }
-  
-  .cancel-btn {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 8px 12px;
-    width: 40%;
-    border: none;
-    cursor: pointer;
-    
-    border-radius: 4px;
-  }
-  
-  .cancel-btn:hover {
-    background-color: #d43f3f;
-  }
-  
+.validate-btn {
+  background-color: rgb(7, 126, 212);
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  margin-right: 17px;
+  margin-top: 10px;
+  width: 70%;
+}
+
+.primary-btn:hover,
+.validate-btn:hover {
+  opacity: 0.9;
+}
+
+.edit-btn {
+  background-color: rgb(241, 241, 241);
+  color: rgb(52, 64, 84);
+  padding: 8px 12px;
+  width: 40%;
+  border: 2px solid rgb(208, 213, 221);
+  cursor: pointer;
+
+  border-radius: 4px;
+}
+
+.cancel-btn {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 8px 12px;
+  width: 40%;
+  border: none;
+  cursor: pointer;
+
+  border-radius: 4px;
+}
+
+.cancel-btn:hover {
+  background-color: #d43f3f;
+}

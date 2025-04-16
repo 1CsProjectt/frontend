@@ -1,98 +1,26 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
-import PFE1 from "../assets/pfe1.svg";
-import PFE2 from "../assets/pfe2.svg";
-import PFE3 from "../assets/pfe3.svg";
+import axios from "axios";
 import Alert from "../assets/alert-circle.svg";
 import SuccessIcon from "../assets/success-icon.svg";
+
 const TeacherTopics = () => {
-  const [pfeTopics, setPfeTopics] = useState([
-    {
-      id: 1,
-      title: "Final Year Project Management System",
-      categories: ["ISI", "SIW"],
-      description:
-        "A smart platform for managing final year projects efficizn uebvzuei.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE1,
-    },
-    {
-      id: 2,
-      title: "Smart Task Management System",
-      categories: ["ISI", "IASD"],
-      description: "Enhances team collaboration with efficient task tracking.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE2,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot",
-      categories: ["SIW"],
-      description: "An AI chatbot for improved customer support automation.",
-      author: "Guessoum Mohamed Nizar",
-      image: PFE3,
-    },
-  ]);
+  const { cards, setCards } = useOutletContext();
   const [Success, setSuccess] = useState(false);
   const [onDelete, setOnDelete] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [selectedCount, setSelectedCount] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-
-  const totalCount = pfeTopics.length; // Get total number of PFE topics
+  const navigate = useNavigate();
+  console.log("TEACHE CARDS", cards);
+  const totalCount = cards.length; // Get total number of PFE topics
 
   const handleButtons = () => {
-    if (pfeTopics.length === 0) return; // Do nothing if there are no topics
+    // Do nothing if there are no topics
 
     if (onDelete) {
       setShowConfirmation(true); // Show confirmation popup
@@ -108,12 +36,52 @@ const TeacherTopics = () => {
     setIsChecked(false);
   };
 
-  const confirmDelete = () => {
-    setPfeTopics((prevTopics) =>
-      prevTopics.filter((topic) => !selectedIds.includes(topic.id))
-    );
-    reset();
-    setSuccess(true);
+  const confirmDelete = async () => {
+    try {
+      const validIds = selectedIds.filter(
+        (id) => id !== undefined && id !== null
+      );
+      if (validIds.length === 0) return;
+
+      await Promise.all(
+        validIds.map((id) =>
+          axios.delete(`/pfe/delete/${id}`, {
+            withCredentials: true,
+            headers: {
+              "ngrok-skip-browser-warning": "true",
+            },
+          })
+        )
+      );
+
+      // Try to re-fetch the data
+      try {
+        const response = await axios.get("/pfe/my-pfes", {
+          withCredentials: true,
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
+
+        if (response.data?.data) {
+          setCards(response.data.data);
+        }
+      } catch (err) {
+        if (err.response?.status === 404) {
+          // Backend is saying no PFEs exist — that's okay
+          setCards([]); // Set an empty list
+        } else {
+          throw err; // Other errors still need to be caught
+        }
+      }
+
+      reset();
+      setSuccess(true);
+    } catch (error) {
+      console.error("Failed to delete topic(s):", error);
+      alert("Failed to delete one or more topics.");
+      reset();
+    }
   };
   const cancelDelete = () => {
     reset();
@@ -128,7 +96,7 @@ const TeacherTopics = () => {
       setSelectedIds([]); // If unchecked, reset count
     } else {
       setSelectedCount(totalCount);
-      setSelectedIds(pfeTopics.map((topic) => topic.id));
+      setSelectedIds(cards.map((card) => card.id));
     }
     setIsChecked(!isChecked); // Toggle state
   };
@@ -158,13 +126,14 @@ const TeacherTopics = () => {
         )}
 
         <p className="spacing"></p>
-        <button className="btnd">
+        <button className="btnd" onClick={handleButtons}>
           {" "}
-          <p className="managebtns-text" onClick={handleButtons}>
-            Delete Topics
-          </p>
+          <p className="managebtns-text">Delete Topics</p>
         </button>
-        <button className={` ${onDelete ? "btna-on-cancel" : "btna"}`}>
+        <button
+          className={` ${onDelete ? "btna-on-cancel" : "btna"}`}
+          onClick={onDelete ? cancelDelete : () => navigate("Addatopic")}
+        >
           <p className={` ${onDelete ? "txt-on-cancel" : "managebtns-text"}`}>
             {onDelete ? "Cancel" : "Add a Topic"}
           </p>
@@ -176,7 +145,7 @@ const TeacherTopics = () => {
 
       {Success && <Popup poproud={2} onOkey={onOkey} />}
       <PFEList
-        pfeTopics={pfeTopics}
+        filteredCards={cards}
         onDelete={onDelete}
         selectedIds={selectedIds}
         setSelectedIds={setSelectedIds}
@@ -248,12 +217,14 @@ const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
 };
 
 const PFEList = ({
-  pfeTopics,
+  filteredCards,
   onDelete,
   selectedIds,
   setSelectedIds,
   setSelectedCount,
 }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const handleCardClick = (id) => {
     if (onDelete) {
       setSelectedIds((prevSelected) => {
@@ -271,18 +242,21 @@ const PFEList = ({
   };
 
   return (
-    <div className="pfe-list">
-      {pfeTopics.map((topic) => (
-        <div
-          key={topic.id}
-          className={`card-wrapper ${
-            selectedIds.includes(topic.id) ? "selected" : ""
-          }`}
-          onClick={() => handleCardClick(topic.id)}
-        >
-          <PFECard {...topic} />
-        </div>
-      ))}
+    <div className="cards-container">
+      {console.log("Filtered Cards: ", filteredCards)}{" "}
+      {/* Debugging filteredCards */}
+      {filteredCards.length > 0 ? (
+        filteredCards.map((card, index) => (
+          <PFECard
+            key={card.id || index}
+            card={card}
+            isSelected={selectedIds.includes(card.id)}
+            toggleSelect={() => handleCardClick(card.id)}
+          />
+        ))
+      ) : (
+        <p className="no-results-text">No projects found.</p>
+      )}
     </div>
   );
 };

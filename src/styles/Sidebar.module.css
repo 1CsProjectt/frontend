@@ -5,10 +5,10 @@
 
 /* Sidebar (Barre latérale) */
 .sidebar {
-  position: fixed; 
+  position: fixed;
   width: 16vw;
   height: 100vh;
-  background-color: rgb(7,126,212);
+  background-color: rgb(7, 126, 212);
   color: white;
   display: flex;
   flex-direction: column;
@@ -23,7 +23,7 @@
   width: 10vw;
   height: 10vh;
   margin: auto;
- 
+
   margin-bottom: 4vh;
 }
 
@@ -58,7 +58,8 @@
 }
 
 /* Default icon color */
-.icon, .row-icon {
+.icon,
+.row-icon {
   filter: brightness(0) invert(1); /* Makes the SVG appear white */
   transition: filter 0.3s;
   width: 24px;
@@ -106,12 +107,13 @@
 .menu-btn.active {
   padding: 12px;
   background-color: white;
-  color: #077ED4;
+  color: #077ed4;
   border-radius: 5px;
 }
 
 /* Change icon color when active */
 .menu-btn.active .icon,
 .menu-btn.active .row-icon {
-  filter: brightness(0) saturate(100%) invert(30%) sepia(72%) saturate(500%) hue-rotate(180deg);
+  filter: brightness(0) saturate(100%) invert(30%) sepia(72%) saturate(500%)
+    hue-rotate(180deg);
 }

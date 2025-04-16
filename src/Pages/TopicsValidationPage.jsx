@@ -1,18 +1,14 @@
-  import {React ,useEffect} from "react";
-  import Navbar from "../components/NavBar";
-  import PFECard from "../components/CardComponent";
-  import { useState } from "react";
-  import classes from "../styles/TopicsValidationPage.module.css";
-  import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
-  import axios from "axios";
+import { React, useEffect } from "react";
+import Navbar from "../components/NavBar";
+import PFECard from "../components/CardComponent";
+import { useState } from "react";
+import classes from "../styles/TopicsValidationPage.module.css";
+import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
+import axios from "axios";
 
-  import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-  import { PulseLoader } from 'react-spinners'; // Import the spinner you want to use
-
-
-
-
+import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 
 /* 
   // Example data to pass to the PFECard
@@ -120,46 +116,44 @@
     },
   ];
  */
-  const TopicsValidationPage = () => {
-    const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
-    const [isChecked, setIsChecked] = useState(false);// for the select all checkbox
-    const [selectedCards, setSelectedCards] = useState([]); // Moved state here
-    const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
-    const [submittedCardsArray, setSubmittedCardsArray] = useState([]); // State to hold the submitted cards
-    const [publishedCardsArray, setPublishedCardsArray] = useState([]); // State to hold the published cards
-    const [cardsArray, setCardsArray] = useState([]); // State to hold the cards array
-    const [loading, setLoading] = useState(false);
-    //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
+const TopicsValidationPage = () => {
+  const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
+  const [isChecked, setIsChecked] = useState(false); // for the select all checkbox
+  const [selectedCards, setSelectedCards] = useState([]); // Moved state here
+  const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
+  const [submittedCardsArray, setSubmittedCardsArray] = useState([]); // State to hold the submitted cards
+  const [publishedCardsArray, setPublishedCardsArray] = useState([]); // State to hold the published cards
+  const [cardsArray, setCardsArray] = useState([]); // State to hold the cards array
+  const [loading, setLoading] = useState(false);
+  //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
 
-    //the selectedCards array holds the ids of the currently selected cards
+  //the selectedCards array holds the ids of the currently selected cards
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const HandleBackButton = () => {
-      /*  if the user has some cards selected it will undo the selection 
+  const HandleBackButton = () => {
+    /*  if the user has some cards selected it will undo the selection 
         else if nothing is selected it will go back to the previous page */
-      navigate(-1);
-    };
+    navigate(-1);
+  };
 
-    const toggleSelect = (id) => {
-      setSelectedCards((prev) => {
-        const newSelected = prev.includes(id)
-          ? prev.filter((cardId) => cardId !== id)
-          : [...prev, id];
-    
-        // If all cards are selected, check the "Select All" box; otherwise, uncheck it
-        setIsChecked(newSelected.length === cardsArray.length);
-        return newSelected;
-      });
-    };
-    
+  const toggleSelect = (id) => {
+    setSelectedCards((prev) => {
+      const newSelected = prev.includes(id)
+        ? prev.filter((cardId) => cardId !== id)
+        : [...prev, id];
 
-    const handleCheckboxChange = (event) => {
-      const checked = event.target.checked;
-      setIsChecked(checked);
-      setSelectedCards(checked ? cardsArray.map((card) => card.id) : []);
-    };
+      // If all cards are selected, check the "Select All" box; otherwise, uncheck it
+      setIsChecked(newSelected.length === cardsArray.length);
+      return newSelected;
+    });
+  };
 
+  const handleCheckboxChange = (event) => {
+    const checked = event.target.checked;
+    setIsChecked(checked);
+    setSelectedCards(checked ? cardsArray.map((card) => card.id) : []);
+  };
 
   useEffect(() => {
     if (activeTab === "tab1") {
@@ -175,19 +169,18 @@
             console.log(response);
           }
           /* setPublishedCardsArray(data); // Save data in state */
-        
         } catch (error) {
           console.error("Error fetching the submitted cards data:", error);
           alert("An error occurred while fetching the published cards data.");
-        }finally{
+        } finally {
           setLoading(false); // Stop loading
         }
       };
-  
+
       fetchPublishedCards();
       console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
 
-     /*  setCardsArray(publishedCardsArray); */
+      /*  setCardsArray(publishedCardsArray); */
     } else if (activeTab === "tab2") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
@@ -200,27 +193,23 @@
             setCardsArray(response.data.pfeList);
             console.log(response);
           }
-         /*  setSubmittedCardsArray(data); // Save data in state */
-     
+          /*  setSubmittedCardsArray(data); // Save data in state */
         } catch (error) {
           console.error("Error fetching the submitted cards data:", error);
           alert("An error occurred while fetching the submitted cards data.");
-        }finally{
+        } finally {
           setLoading(false); // Stop loading
         }
       };
-      
-  
+
       fetchSubmittedCards();
       console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
 
-     /*  setCardsArray(submittedCardsArray); */
+      /*  setCardsArray(submittedCardsArray); */
     }
-    
   }, [activeTab]);
-  
 
-     return (
+  return (
     <div>
       <Navbar />
 
@@ -252,6 +241,8 @@
             onClose={() => setPfeTopicModalOpen(false)}
             entityType="User"
             operation="delete"
+            selectedcardsid={selectedCards}
+            setCardsArray={setCardsArray}
           />
         </div>
       </div>
@@ -300,6 +291,6 @@
       </div>
     </div>
   );
-  };
+};
 
-  export default TopicsValidationPage;
+export default TopicsValidationPage;

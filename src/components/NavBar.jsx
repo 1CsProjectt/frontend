@@ -6,48 +6,21 @@ import filterIconup from "../assets/arrow-up.svg";
 import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
-
+import{io } from "socket.io-client"; // Import Socket.IO client
+import axios from "axios";
 // Dummy notification data
-const notificationsData = [
-  {
-    id: 1,
-    title: "New Message",
-    message: "You have received a new message.",
-    time: "2 mins ago",
-    type: "info",
-  },
-  {
-    id: 2,
-    title: "Server Alert",
-    message: "Your server is running low on space.",
-    time: "10 mins ago",
-    type: "alert",
-  },
-  {
-    id: 3,
-    title: "Team Invitation",
-    message: "Guessoum Mohamed Nizar invites you to join their team.",
-    time: "4 mins ago",
-    type: "invitation",
-  },
-  {
-    id: 4,
-    title: "Team Invitation",
-    message: "Yettou Abdallah invites you to join their team.",
-    time: "9 mins ago",
-    type: "invitation",
-  },
-];
+
+
+let notificationCount = 0;
 
 const NavBar = ({
   title,
-  targetDate, 
+  targetDate,
   selectedFilters,
   onFilterApply,
   onSearchChange,
   suggestions,
 }) => {
- 
   const calculateTimeLeft = () => {
     if (!targetDate || !targetDate.start || !targetDate.end) return null;
 
@@ -56,15 +29,12 @@ const NavBar = ({
     let countdownType = "";
 
     if (now < targetDate.start) {
-    
       difference = targetDate.start - now;
       countdownType = "to start";
     } else if (now < targetDate.end) {
-     
       difference = targetDate.end - now;
       countdownType = "to end";
     } else {
-    
       difference = 0;
       countdownType = "";
     }
@@ -99,7 +69,10 @@ const NavBar = ({
   // Global click handler to close notifications and filter popups if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
         setShowNotifications(false);
         setFilterOpen(false);
       }
@@ -125,15 +98,15 @@ const NavBar = ({
     <div className={Module["container"]} ref={containerRef}>
       <div className={Module["session"]}>
         <p className={Module["sessionP"]}>
-          {(!targetDate || !targetDate.start || !targetDate.end || !timeLeft) ? (
+          {!targetDate || targetDate === "" || !timeLeft ? (
             title
           ) : (
             <>
               {title}{" "}
               <span className={Module["countdownStyle"]}>
-                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min
-              </span>{" "}
-              {timeLeft.countdownType}
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}min{" "}
+                {timeLeft.countdownType}
+              </span>
             </>
           )}
         </p>
@@ -147,13 +120,15 @@ const NavBar = ({
           selectedFilters={selectedFilters}
         />
 
-        <Searchbar onSearchChange={onSearchChange} suggestions={suggestions || []} />
+        <Searchbar
+          onSearchChange={onSearchChange}
+          suggestions={suggestions || []}
+        />
         <div className={Module["rightside"]}>
-          {/* Notification Icon */}
-          <div className={Module["notf-button"]} onClick={toggleNotifications}>
+          <div className={Module["notf-button"]}>
             <img
               src={notfIcon}
-              alt="Notification Icon"
+              alt="notf-icon"
               className={Module["notf-icon"]}
             />
           </div>
@@ -172,7 +147,7 @@ const NavBar = ({
       {/* Notification Panel */}
       {showNotifications && (
         <div className={Module["notification-container"]}>
-          <NotificationPanel notifications={notificationsData} />
+          <NotificationsContainer />
         </div>
       )}
     </div>
@@ -192,8 +167,10 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
     }
 
     if (newQuery.trim() !== "") {
-      const filtered = suggestions.filter((suggestion) =>
-        suggestion && suggestion.toLowerCase().includes(newQuery.toLowerCase())
+      const filtered = suggestions.filter(
+        (suggestion) =>
+          suggestion &&
+          suggestion.toLowerCase().includes(newQuery.toLowerCase())
       );
       setFilteredSuggestions(filtered);
     } else {
@@ -258,7 +235,13 @@ const Searchbar = ({ onSearchChange, suggestions }) => {
   );
 };
 
-const FilterMenu = ({ onFilterApply, currentFilters, isOpen, toggleMenu, selectedFilters }) => {
+const FilterMenu = ({
+  onFilterApply,
+  currentFilters,
+  isOpen,
+  toggleMenu,
+  selectedFilters,
+}) => {
   const [activeTab, setActiveTab] = useState("Speciality");
   const [localFilters, setLocalFilters] = useState({
     Speciality: currentFilters || [],
@@ -303,21 +286,20 @@ const FilterMenu = ({ onFilterApply, currentFilters, isOpen, toggleMenu, selecte
     <div className={Module["filter"]}>
       <button className={Module["filter-button"]} onClick={toggleMenu}>
         <img src={filterIcon} alt="Filter" className={Module["custom-icon"]} />
-        <p>Filter</p>
+        <p className={Module["filtertext"]}>Filter</p>
         <img
           src={isOpen ? filterIconup : filterIcondown}
           alt="Toggle"
           className={Module["arrow-icon"]}
         />
       </button>
-      {(isOpen && selectedFilters) && (
+      {isOpen && selectedFilters && (
         <div
           className={Module["filter-popup"]}
           onClick={(e) => e.stopPropagation()} // prevent click propagation
         >
           <div className={Module["filter-content"]}>
-            <div className={Module["filter-tabs"]}>
-              <div className={Module["filter-header"]}>Filters Type</div>
+            <div className={Module["filter-options"]}>
               <p
                 className={
                   activeTab === "Speciality"
@@ -345,19 +327,20 @@ const FilterMenu = ({ onFilterApply, currentFilters, isOpen, toggleMenu, selecte
                   ? "show only"
                   : "Select Other Options"}
               </p>
-              {(activeTab === "Speciality" ? specialityOptions : otherOptions).map(
-                (option) => (
-                  <label key={option} className={Module["option-label"]}>
-                    <input
-                      type="checkbox"
-                      value={option}
-                      checked={localFilters[activeTab].includes(option)}
-                      onChange={(e) => handleCheckboxChange(e, activeTab)}
-                    />
-                    <span className={Module["optionstext"]}>{option}</span>
-                  </label>
-                )
-              )}
+              {(activeTab === "Specialitys"
+                ? specialityOptions
+                : otherOptions
+              ).map((option) => (
+                <label key={option} className={Module["option-label"]}>
+                  <input
+                    type="checkbox"
+                    value={option}
+                    checked={localFilters[activeTab].includes(option)}
+                    onChange={(e) => handleCheckboxChange(e, activeTab)}
+                  />
+                  <span className={Module["optionstext"]}>{option}</span>
+                </label>
+              ))}
             </div>
           </div>
           <div className={Module["filter-buttons"]}>
@@ -377,12 +360,12 @@ const FilterMenu = ({ onFilterApply, currentFilters, isOpen, toggleMenu, selecte
 const NotificationPanel = ({ notifications }) => {
   const handleAccept = (notificationId) => {
     console.log("Accepted invitation with ID:", notificationId);
-    // Additional logic (such as API calls) can be added here.
+    // Additional logic (API calls, etc.) can be placed here.
   };
 
   const handleDecline = (notificationId) => {
     console.log("Declined invitation with ID:", notificationId);
-    // Additional logic (such as API calls) can be added here.
+    // Additional logic (API calls, etc.) can be placed here.
   };
 
   return (
@@ -394,9 +377,7 @@ const NotificationPanel = ({ notifications }) => {
       {notifications.map((notification) => (
         <div key={notification.id} className={Module["notification-item"]}>
           <div className={Module["notification-content"]}>
-            <p className={Module["notification-title"]}>
-              {notification.title}
-            </p>
+            <p className={Module["notification-title"]}>{notification.title}</p>
             <p className={Module["notification-message"]}>
               {notification.message}
             </p>
@@ -417,11 +398,70 @@ const NotificationPanel = ({ notifications }) => {
               </div>
             )}
           </div>
-          <p className={Module["notification-time"]}>{notification.time}</p>
+
+          {/* Invitation buttons (if "invitation" type) */}
+          {notification.type === "invitation" && (
+            <div className={Module["notification-lower"]}>
+              <button
+                className={Module["decline-btn-notification"]}
+                onClick={() => handleDecline(notification.id)}
+              >
+                Decline
+              </button>
+              <button
+                className={Module["accept-btn-notification"]}
+                onClick={() => handleAccept(notification.id)}
+              >
+                Accept
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>
   );
+};
+const NotificationsContainer = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000"); 
+
+    socket.on("receive-notification", (data) => {
+      setNotifications((prevNotifications) => [data, ...prevNotifications]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/notifications");
+        setNotifications(response.data);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  // Update the global notification count if applicable
+  // (It looks like notificationCount is a global variable you are using.)
+  notificationCount = notifications.length;
+
+  if (loading) return <div>Loading notifications...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return <NotificationPanel notifications={notifications} />;
 };
 
 export default NavBar;
