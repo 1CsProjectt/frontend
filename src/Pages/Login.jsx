@@ -66,10 +66,8 @@ const Login = () => {
       // Redirect the user to the main page or dashboard
       if (user.role === "admin") {
         navigate("/admin");
-      } else if (user.role === "student") {
-        navigate("/pfe");
       } else {
-        navigate("/teacher");
+        navigate("/pfe");
       }
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
