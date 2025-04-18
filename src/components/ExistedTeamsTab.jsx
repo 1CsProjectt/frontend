@@ -4,10 +4,10 @@ import Seemorepage from "./ExistedTeamSeemore";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 import axios from "axios";
-import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion"; 
+import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
-const ExistedTeamsTab = ({ user, existedTeams }) => {
+const ExistedTeamsTab = ({ user, existedTeams, session }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -17,7 +17,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
 
-  
+
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
   }, [existedTeams]);
@@ -26,7 +26,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
     setSelectedTeamId(teamId);
     setShowJoinAlert(true);
   };
-  
+
 
   const handleCancel = () => {
     setShowJoinAlert(false);
@@ -34,9 +34,9 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   const handleConfirm = async () => {
     try {
       const response = await axios.post("/jointeam/sendjoinrequest", {
-        id: selectedTeamId, 
+        id: selectedTeamId,
       }, { withCredentials: true });
-  
+
       if (response.data.success) {
         setShowJoinAlert(false);
         console.log("Join confirmed!");
@@ -50,15 +50,15 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
       console.error("Error sending join request:", error);
     }
   };
-  
-  
-   
+
+
+
 
   useEffect(() => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 75; 
+        const estimatedRowHeight = 75;
         const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
         setTeamsPerPage(rowsPerPage > 1 ? rowsPerPage : 8);
       }
@@ -111,7 +111,8 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
             <tr>
               <th>Team Number</th>
               <th>Team Creator</th>
-              <th>Status</th>  
+              <th>Status</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>
@@ -125,8 +126,13 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                 <tr key={idx}>
                   <td>{team.id || "N/A"}</td>
                   <td>{teamCreator}</td>
-                  <td>
-                    {team.status === "open" ? (
+
+                  <td style={{ marginLeft: "200px" }}>
+                    {session === "select topics session" ? (
+                      <span className={Module["status-in-team"]}>
+                        {team.status}
+                      </span>
+                    ) : team.status === "Open" ? (
                       <span className={Module["status-available"]}>
                         {team.status} ({team.members.length}/{team.maxNumber})
                       </span>
@@ -136,8 +142,13 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                       </span>
                     )}
                   </td>
+
+                  <td></td>
+                  <td></td>
                   <td className={Module["button-container"]}>
-                    {team.status === "open" ? (
+                    {session === "select topics session" ? (
+                      <div></div>
+                    ) : team.status === "Open" ? (
                       <button
                         className={Module["invite-button"]}
                         style={{ width: "90px", marginRight: "15px" }}
@@ -150,9 +161,12 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                         className={Module["disable-button"]}
                         style={{ display: "inline-block", width: "90px", marginRight: "15px" }}
                       >
-                       join
+                        Join
                       </span>
                     )}
+
+
+
                     <button
                       className={Module["invite-button"]}
                       style={{ width: "90px", backgroundColor: "white" }}

@@ -10,7 +10,7 @@ import CreateTeamModal from "../components/modals/CreateTeamModal";
 import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
-
+import Infoicon from "../assets/info_24px.svg";
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
@@ -34,42 +34,60 @@ function TeamFormationPage() {
 
   // Use session date from real version
   const session = {
-    title: "Group formation session",
+    title: "select topics session",
     targetDate: {
       start: new Date("2025-03-29T00:00:00"),
       end: new Date("2025-04-29T23:59:59")
     }
   };
-  const fetchExsitedTeamData = async () => {
+  const fetchexistedTeamData = async () => {
     const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
     console.log("API Response (Listed Teams):", data);
     const teamsWithStatus = data.teams.map(team => ({
       ...team,
-      status: team.members && team.maxNumber && team.members.length === team.maxNumber ? "full" : "open"
+      status:
+        session.title === "select topics session"
+          ? "Full"
+          : team.members && team.maxNumber && team.members.length === team.maxNumber
+            ? "Full"
+            : "Open",
     }));
+
     setExistedTeams(teamsWithStatus);
   };
+  const fetchStudentData = async () => {
+    const { data } = await axios.get("/student/liststudents", { withCredentials: true });
+    console.log("API Response (Students List):", data);
+    if (data && Array.isArray(data.students)) {
+      setStudents(data.students);
+    } else {
+      console.error("Unexpected API Response Format for students:", data);
+    }
+  };
+
   const fetchMyTeamData = async () => {
     try {
       const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
       setMyTeam(teamData.team);
-  
-      if (teamData?.team?.id) {
-        const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
-        setMyTeamPendingInvites(pendingInvites);
-  
-        const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
-        setMyTeamteamReq(teamReq);
-      } else {
-        const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
-        setCollaborationInvites(collabInvites);
+      if (session.title === "Group formation session") {
+        if (teamData?.team?.id) {
+          const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
+          setMyTeamPendingInvites(pendingInvites);
+
+          const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
+          setMyTeamteamReq(teamReq);
+        } else {
+          const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
+          setCollaborationInvites(collabInvites);
+        }
       }
+
     } catch (err) {
       console.error("Fetch My Team Error:", err);
       setError(err.response?.data?.message || err.message);
     }
   };
-  
+
   // Leave team handlers
   const handleLeaveClick = () => {
     setShowLeaveTeamPopup(true);
@@ -80,7 +98,7 @@ function TeamFormationPage() {
   };
   const handleConfirm = async () => {
     setShowLeaveTeamPopup(false);
-    try {      
+    try {
       const response = await axios.patch('/teams/leaveTeam');
       console.log(response.data);
       console.log("leave confirmed!");
@@ -94,23 +112,17 @@ function TeamFormationPage() {
       console.error("Error:", error);
     }
   };
-  
+
   // Data fetching using axios based on activeTab
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError("");
       try {
-        if (activeTab === "Students List") {
-          const { data } = await axios.get("/student/liststudents", { withCredentials: true });
-          console.log("API Response (Students List):", data);
-          if (data && Array.isArray(data.students)) {
-            setStudents(data.students);
-          } else {
-            console.error("Unexpected API Response Format for students:", data);
-          }
+        if (activeTab === "Students List" && session.title === "Group formation session") {
+          fetchStudentData();
         } else if (activeTab === "Existed Teams") {
-          fetchExsitedTeamData();
+          fetchexistedTeamData();
         } else if (activeTab === "My Team") {
           fetchMyTeamData();
         }
@@ -158,18 +170,32 @@ function TeamFormationPage() {
   const renderTabContent = () => {
     if (activeTab === "Students List") {
       return (
-        <StudentsListTab 
-          user={user} 
-          students={filteredStudents} 
-          myTeamNumber={myTeam?.id || ""} 
-        />
+        <>
+          {session.title === "Group formation session" ? (
+            <StudentsListTab
+              user={user}
+              students={filteredStudents}
+              myTeamNumber={myTeam?.id || ""}
+            />
+          ) : (
+            <div className={Style["topicssession-students-list"]}>
+
+              <img src={Infoicon} alt="PFE Topics" className={Style["icon"]} />
+              <p>The team formation session has ended, and the teams have been created.</p>
+
+            </div>
+          )}
+        </>
       );
-    } else if (activeTab === "Existed Teams") {
+    }
+
+    else if (activeTab === "Existed Teams") {
       return (
-        <ExistedTeamsTab 
-          user={user} 
-          existedTeams={filteredTeams} 
-          navigate={navigate} 
+        <ExistedTeamsTab
+          user={user}
+          existedTeams={filteredTeams}
+          navigate={navigate}
+          session={session.title}
         />
       );
     } else if (activeTab === "My Team") {
@@ -179,7 +205,8 @@ function TeamFormationPage() {
           myTeamMembers={myTeam?.members || []}
           myTeamPendingInvites={myTeamPendingInvites}
           collaborationInvites={collaborationInvites}
-          reqInvites ={MyTeamteamReq}
+          reqInvites={MyTeamteamReq}
+          session={session.title}
         />
       );
     }
@@ -199,22 +226,28 @@ function TeamFormationPage() {
         <div className={Style["team-formation-container"]}>
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
-            {activeTab === "Existed Teams" && (
-              <button 
-                className={Style["create-team-button"]} 
-                onClick={() => setShowCreateTeamModal(true)}
-              >
-                Create a team
-              </button>
+
+            {session.title === "Group formation session" && (
+              <>
+                {(activeTab === "Existed Teams") && (
+                  <button
+                    className={Style["create-team-button"]}
+                    onClick={() => setShowCreateTeamModal(true)}
+                  >
+                    Create a team
+                  </button>
+                )}
+                {activeTab === "My Team" && myTeam?.id && (
+                  <button
+                    className={Style["Leave-button"]}
+                    onClick={handleLeaveClick}
+                  >
+                    Leave the team
+                  </button>
+                )}
+              </>
             )}
-            {activeTab === "My Team" && myTeam?.id && (
-              <button 
-                className={Style["Leave-button"]} 
-                onClick={handleLeaveClick}
-              >
-                Leave the team
-              </button>
-            )}
+
           </div>
 
           <div className={Style["tabs"]}>
@@ -224,7 +257,7 @@ function TeamFormationPage() {
                 className={`${Style["tab-item"]} ${activeTab === tab ? Style.active : ""}`}
                 onClick={() => {
                   setActiveTab(tab);
-                  setSearchQuery(""); // Reset search query on tab change
+                  setSearchQuery("");
                 }}
               >
                 {tab}
@@ -232,10 +265,10 @@ function TeamFormationPage() {
             ))}
           </div>
 
-          {loading 
-            ? <div>Loading...</div> 
-            : error 
-              ? <div>Error: {error}</div> 
+          {loading
+            ? <div>Loading...</div>
+            : error
+              ? <div>Error: {error}</div>
               : renderTabContent()
           }
         </div>
@@ -245,7 +278,7 @@ function TeamFormationPage() {
           show={showCreateTeamModal}
           onClose={() => setShowCreateTeamModal(false)}
           onTeamCreated={() => {
-            fetchExsitedTeamData();
+            fetchexistedTeamData();
             setToastMessage("Team created successfully.");
             setShowToast(true);
             setTimeout(() => {
@@ -268,9 +301,9 @@ function TeamFormationPage() {
           onConfirm={handleConfirm}
         />
         {showToast && (
-          <Toast 
-            message={toastMessage} 
-            onClose={() => setShowToast(false)} 
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
           />
         )}
       </div>

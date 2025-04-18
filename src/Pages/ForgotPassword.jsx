@@ -37,7 +37,7 @@ const ForgotPassword = () => {
 
     try {
       // Make a POST request to the forgot-password endpoint
-      const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      const response = await axios.post(`/auth/forgot-password`, { email });
 
       console.log("Recovery link sent:", response.data);
 

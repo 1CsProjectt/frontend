@@ -55,7 +55,7 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {axios.defaults.he
 
     try {
       const response = await axios.post("/invitation/sendinvitation", {
-        receiver_email
+        receiver_emails:[receiver_email],//change it later to array
       });
 
       if (response.data.success) {

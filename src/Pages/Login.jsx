@@ -66,6 +66,8 @@ const Login = () => {
       // Redirect the user to the main page or dashboard
       if (user.role === "admin") {
         navigate("/admin");
+      } else if (user.role === "student") {
+        navigate("/pfe-student");
       } else {
         navigate("/pfe");
       }
