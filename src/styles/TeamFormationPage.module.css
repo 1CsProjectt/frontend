@@ -18,7 +18,7 @@
   min-height: 80vh;
   padding: 20px;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: Manrope, sans-serif;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -62,7 +62,18 @@
 }
 th {
   text-transform: none;
+
 }
+
+.table-wrapper td {
+  max-width: 200px;        
+  white-space: nowrap;     
+  overflow: hidden;       
+  text-overflow: ellipsis; 
+  text-align: start;
+  
+}
+
 /* Wrapper around the table itself */
 .table-wrapper {
   background-color: #ffffff;
@@ -87,17 +98,19 @@ th {
 }
 
 .table-wrapper thead th {
+  
   border: none;
-  padding: 12px 16px;
+  padding: 12px 16px 12px 36px;
   font-size: 0.9rem;
   font-weight: 500;
   color: #313638cc;
-  text-align: center;
+  text-align: start;
   background-color: #ffffff;
+  
 }
 
 .table-wrapper tbody td {
-  padding: 15px 20px;
+  padding: 15px 16px 15px 36px;
   font-size: 1rem;
   color: #313638cc;
   border: 2px solid #dde2e4;
@@ -273,6 +286,7 @@ th {
   align-items: center;
   gap: 16px;
   margin-bottom: -10px;
+  margin-top: 10px;
 }
 .go-back-button {
   background-color: white;
@@ -490,6 +504,7 @@ th {
   padding: 0.5rem;
   text-align: left;
   background-color: #f2f2f2;
+ 
 }
 
 /* See more page */

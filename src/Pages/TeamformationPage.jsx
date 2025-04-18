@@ -30,23 +30,41 @@ function TeamFormationPage() {
   const [collaborationInvites, setCollaborationInvites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const user = JSON.parse(localStorage.getItem("user"));
+  // ▶️ change to state + effect
+  const [user, setUser] = useState(() => {
+    const json = localStorage.getItem("user");
+    return json ? JSON.parse(json) : {};
+  });
 
+  // ▶️ whenever `user` changes, save it
+  useEffect(() => {
+    localStorage.setItem("user", JSON.stringify(user));
+  }, [user]);
   // Use session date from real version
   const session = {
-    title: "select topics session",
+    title: "TEAM_CREATION",
     targetDate: {
       start: new Date("2025-03-29T00:00:00"),
       end: new Date("2025-04-29T23:59:59")
     }
   };
+
+  let sessionTitle;
+
+  if (session.title === "TEAM_CREATION") {
+    sessionTitle = "Group formation session";
+  } else if (session.title === "TOPIC_SELECTION") {
+    sessionTitle = "Select topics session";
+  } else {
+    sessionTitle = "Unknown session";
+  }
   const fetchexistedTeamData = async () => {
     const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
     console.log("API Response (Listed Teams):", data);
     const teamsWithStatus = data.teams.map(team => ({
       ...team,
       status:
-        session.title === "select topics session"
+        sessionTitle === "select topics session"
           ? "Full"
           : team.members && team.maxNumber && team.members.length === team.maxNumber
             ? "Full"
@@ -69,11 +87,11 @@ function TeamFormationPage() {
     try {
       const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
       setMyTeam(teamData.team);
-      if (session.title === "Group formation session") {
+      if (sessionTitle === "Group formation session") {
         if (teamData?.team?.id) {
           const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
           setMyTeamPendingInvites(pendingInvites);
-
+console.log(pendingInvites);
           const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
           setMyTeamteamReq(teamReq);
         } else {
@@ -90,8 +108,12 @@ function TeamFormationPage() {
 
   // Leave team handlers
   const handleLeaveClick = () => {
+
     setShowLeaveTeamPopup(true);
     console.log("leave clicked");
+       // ▶️ Update user.team_id to null in state + localStorage
+         const updatedUser = { ...user, team_id: null };
+      setUser(updatedUser);
   };
   const handleCancel = () => {
     setShowLeaveTeamPopup(false);
@@ -119,7 +141,7 @@ function TeamFormationPage() {
       setLoading(true);
       setError("");
       try {
-        if (activeTab === "Students List" && session.title === "Group formation session") {
+        if (activeTab === "Students List" && sessionTitle === "Group formation session") {
           fetchStudentData();
         } else if (activeTab === "Existed Teams") {
           fetchexistedTeamData();
@@ -171,11 +193,12 @@ function TeamFormationPage() {
     if (activeTab === "Students List") {
       return (
         <>
-          {session.title === "Group formation session" ? (
+          {sessionTitle === "Group formation session" ? (
             <StudentsListTab
               user={user}
               students={filteredStudents}
               myTeamNumber={myTeam?.id || ""}
+              setUser={setUser}
             />
           ) : (
             <div className={Style["topicssession-students-list"]}>
@@ -195,7 +218,7 @@ function TeamFormationPage() {
           user={user}
           existedTeams={filteredTeams}
           navigate={navigate}
-          session={session.title}
+          session={sessionTitle}
         />
       );
     } else if (activeTab === "My Team") {
@@ -206,7 +229,8 @@ function TeamFormationPage() {
           myTeamPendingInvites={myTeamPendingInvites}
           collaborationInvites={collaborationInvites}
           reqInvites={MyTeamteamReq}
-          session={session.title}
+          session={sessionTitle}
+          reloadMyTeam={fetchMyTeamData}
         />
       );
     }
@@ -217,7 +241,7 @@ function TeamFormationPage() {
       <Sidebar />
       <div style={{ marginLeft: "16vw" }}>
         <Navbar
-          title={session.title}
+          title={sessionTitle}
           targetDate={session.targetDate}
           onSearchChange={handleSearchChange}
           suggestions={suggestionsList}
@@ -227,7 +251,7 @@ function TeamFormationPage() {
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
 
-            {session.title === "Group formation session" && (
+            {sessionTitle === "Group formation session" && (
               <>
                 {(activeTab === "Existed Teams") && (
                   <button

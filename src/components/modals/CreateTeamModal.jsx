@@ -22,7 +22,7 @@ const CreateTeamModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) =
     try {
       const response = await axios.post(
         "/invitation/sendinvitation",
-        { receiver_email },
+        {  receiver_emails: [receiver_email] },
         { withCredentials: true }
       );
 

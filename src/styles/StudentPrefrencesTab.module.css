@@ -1,0 +1,146 @@
+.header {
+    font-family: Manrope;
+    font-weight: 400;
+
+    color: #313638;
+ 
+    
+}  
+
+.pagecontainer{
+    height: 72vh;
+    overflow: auto;
+}
+
+
+.Read-button {
+    background-color: #f1f1f1;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+  
+    font-weight: 600;
+  
+    letter-spacing: -0.6%;
+  
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 7vw;
+  }
+  
+  .Read-button:hover {
+    background-color: #adafb2;
+    color: #344054;
+  }
+
+
+.Remove-button {
+    background-color: #F76659;
+    border: 1px solid #d0d5dd;
+    color: #ffffff;
+  
+    font-weight: 600;
+  
+    letter-spacing: -0.6%;
+  
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 7vw;
+  }
+  
+  .Remove-button:hover {
+    background-color: #c23e32;
+  
+  }
+
+  .submit-button {
+   
+    background-color: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 18px 120px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    margin-right: 25PX;
+   margin:35px 25px 25px 0;
+  
+  }
+  
+  .submit-button:hover {
+    background-color: #026799;
+  }
+.motivation-card {
+    display: flex;
+    background: #ffffff;
+    border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    padding: 24px;
+    margin: 32px 0;
+    font-family: Manrope, sans-serif;
+    
+  }
+  
+  .motivation-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2c3e50;
+  }
+  
+  .motivation-text {
+    margin: 12px 0 20px;
+    font-size: 1rem;
+    color: #555555;
+  }
+  
+  .upload-area {
+    margin-left: 20px;
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    border: 2px dashed #a0aec0;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: relative;
+  }
+  
+  .upload-area:hover {
+    background: #f0f4f8;
+  }
+  
+  .upload-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .upload-icon {
+    font-size: 1.8rem;
+    margin-right: 12px;
+  }
+  
+  .upload-label {
+    font-size: 1rem;
+    color: #2d3748;
+  }
+  
+
+  .left-side{
+width: 40%;
+  }
+  .right-side{
+    width: 50%;
+   margin-left: auto;
+  }
