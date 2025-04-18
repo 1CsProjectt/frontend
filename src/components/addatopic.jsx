@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/addtopic.css";
 import Upload from "../assets/upload.svg";
@@ -11,21 +11,43 @@ const Addatopic = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [grade, setGrade] = useState("2CS");
-  const [speciality, setSpeciality] = useState("ISI");
+  const [speciality, setSpeciality] = useState([]);
   const [presentationFile, setPresentationFile] = useState(null);
   const [techSheetFile, setTechSheetFile] = useState(null);
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [supervisorsList, setsupervisorsList] = useState([]);
 
   const presentationRef = useRef(null);
   const techSheetRef = useRef(null);
 
-  const supervisorsList = [
-    "Guessoum mohamed nizar",
-    "Kennouche abderahmene",
-    "Yettou abdallah",
-  ];
+  const specialityList = ["ISI", "SIW", "7Arag"];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/users/teachers", {
+          withCredentials: true,
+        });
+
+        if (response.data) {
+          setsupervisorsList(response.data);
+        }
+      } catch (err) {
+        console.error(
+          "Error fetching supervisors:",
+          err.response?.data || err.message
+        );
+        if (err.response?.status === 404) {
+          setsupervisorsList([]);
+        } else {
+          throw err;
+        }
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
 
   const handlePresentationChange = (event) => {
     const file = event.target.files[0];
@@ -44,7 +66,11 @@ const Addatopic = () => {
       alert("Please upload a valid PDF file.");
     }
   };
-
+  const handleSpecialityToggle = (name) => {
+    setSpeciality((prev) =>
+      prev.includes(name) ? prev.filter((sup) => sup !== name) : [...prev, name]
+    );
+  };
   const handleSupervisorToggle = (name) => {
     setSelectedSupervisors((prev) =>
       prev.includes(name) ? prev.filter((sup) => sup !== name) : [...prev, name]
@@ -58,8 +84,10 @@ const Addatopic = () => {
 
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("specialization", speciality);
-    formData.append("supervisor", selectedSupervisors.join(", "));
+    formData.append("specialization", speciality.join(","));
+    selectedSupervisors.forEach((sup, index) => {
+      formData.append(`supervisors[${index}]`, sup); // makes an array
+    });
     formData.append("description", description);
     formData.append("year", grade);
     formData.append("photo", presentationFile); // image file
@@ -84,7 +112,14 @@ const Addatopic = () => {
   };
 
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const [isspec, setisspec] = useState(false);
+  function toggleMenu(type) {
+    if (type === "dynamic") {
+      setIsOpen(!isOpen);
+    } else {
+      setisspec(!isspec);
+    }
+  }
 
   return (
     <div className="containert-at">
@@ -171,17 +206,48 @@ const Addatopic = () => {
                   <option value="2CS">2CS</option>
                   <option value="1CS">1CS</option>
                 </select>
+                {isspec && <div className="space-year"></div>}{" "}
               </div>
               <div className="form-section">
                 <label className="ttl-fs-at">Speciality</label>
-                <select
-                  value={speciality}
-                  onChange={(e) => setSpeciality(e.target.value)}
-                  className="select-at"
-                >
-                  <option value="ISI">ISI</option>
-                  <option value="SIW">SIW</option>
-                </select>
+
+                <div className="select-sv-at">
+                  <button
+                    className="sv-button-at"
+                    onClick={() => toggleMenu("static")}
+                  >
+                    <p className="ttl-fs-at">
+                      {speciality.length === 0
+                        ? "Select speciality"
+                        : `${speciality.length} specialities selected`}
+                    </p>
+                    <img
+                      src={isOpen ? Iconup : Icondown}
+                      alt="Toggle"
+                      className="arrow-icon"
+                    />
+                  </button>
+                </div>
+                {isspec && (
+                  <div className="border-form-at">
+                    <div className="sv-list">
+                      {specialityList
+                        .filter((name) =>
+                          name.toLowerCase().includes(searchTerm.toLowerCase())
+                        )
+                        .map((name) => (
+                          <label key={name} className="sv-item">
+                            <input
+                              type="checkbox"
+                              checked={speciality.includes(name)}
+                              onChange={() => handleSpecialityToggle(name)}
+                            />
+                            {name}
+                          </label>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -229,7 +295,10 @@ const Addatopic = () => {
             </div>
             <div className="form-section">
               <div className="select-sv-at">
-                <button className="sv-button-at" onClick={toggleMenu}>
+                <button
+                  className="sv-button-at"
+                  onClick={() => toggleMenu("dynamic")}
+                >
                   <p className="sv-msg-at"> Select supervisors</p>
                   <img
                     src={isOpen ? Iconup : Icondown}
@@ -255,19 +324,24 @@ const Addatopic = () => {
                   </div>
                   <div className="sv-list">
                     {supervisorsList
-                      .filter((name) =>
-                        name.toLowerCase().includes(searchTerm.toLowerCase())
+                      .filter((teacher) =>
+                        `${teacher.firstname} ${teacher.lastname}`
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                       )
-                      .map((name) => (
-                        <label key={name} className="sv-item">
-                          <input
-                            type="checkbox"
-                            checked={selectedSupervisors.includes(name)}
-                            onChange={() => handleSupervisorToggle(name)}
-                          />
-                          {name}
-                        </label>
-                      ))}
+                      .map((teacher) => {
+                        const fullName = `${teacher.firstname} ${teacher.lastname}`;
+                        return (
+                          <label key={teacher._id} className="sv-item">
+                            <input
+                              type="checkbox"
+                              checked={selectedSupervisors.includes(fullName)}
+                              onChange={() => handleSupervisorToggle(fullName)}
+                            />
+                            {fullName}
+                          </label>
+                        );
+                      })}
                   </div>
                 </div>
               )}
