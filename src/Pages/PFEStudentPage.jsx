@@ -14,6 +14,9 @@ const PFEPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // Set the default active tab to "PFE Topics"
+  const [activeTab, setActiveTab] = useState("PFE Topics");
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
@@ -44,6 +47,7 @@ const PFEPage = () => {
     fetchData();
   }, [navigate]);
 
+  // Build a suggestion list from card attributes
   const suggestionList = Array.from(
     new Set(
       cards.flatMap((card) => [
@@ -64,6 +68,7 @@ const PFEPage = () => {
     setSearchQuery(query);
   }, []);
 
+  // Filter cards based on search query and selected filters
   const filteredCards = cards.filter((card) => {
     const lowerQuery = searchQuery.toLowerCase();
     const matchesSearch =
@@ -84,6 +89,46 @@ const PFEPage = () => {
   useEffect(() => {
     console.log("Filtered cards:", filteredCards);
   }, [filteredCards]);
+
+  // Render the content for the active tab
+  const renderTabContent = () => {
+    if (activeTab === "PFE Topics") {
+      return (
+        <div
+          className={Style["cards-container"]}
+          style={{ overflowY: "auto", marginTop: "1rem" }}
+        >
+          {loading ? (
+            <p className={Style["loading-text"]}>Loading projects...</p>
+          ) : error ? (
+            <p className={Style["error-text"]}>{error}</p>
+          ) : filteredCards.length > 0 ? (
+            filteredCards.map((card, index) => (
+              <PFECard
+                key={card.id || index}
+                card={card}
+                isSelected={null}
+                toggleSelect={() => {}}
+              />
+            ))
+          ) : (
+            <p className={Style["no-results-text"]}>No projects found.</p>
+          )}
+        </div>
+      );
+    } else if (activeTab === "My Preferences List") {
+      return (
+        <div className={Style["preferences-container"]} style={{ marginTop: "1rem", padding: "1rem" }}>
+          {/*  
+              Replace the content below with the actual component or content for your Preferences List.
+              You might want to fetch the user's preferred PFEs or any other relevant data here.
+          */}
+          <h2>My Preferences List</h2>
+          <p>This is where your preferred PFE projects or other user-specific content will be displayed.</p>
+        </div>
+      );
+    }
+  };
 
   return (
     <div>

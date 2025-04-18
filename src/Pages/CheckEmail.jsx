@@ -19,7 +19,7 @@ const CheckEmail = () => {
       setError("");
 
       // Simulate resending the email via API
-      await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      await axios.post(`/auth/forgot-password`, { email });
       alert("A new recovery link has been sent to your email.");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resend recovery link. Please try again.");

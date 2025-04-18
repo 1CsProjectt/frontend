@@ -10,7 +10,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-    navigate("/pfe/explore", { state: { card } });
+    navigate("/pfe-student/explore", { state: { card } });
   };
 
   // If onExplore prop is not passed, fallback to defaultHandleExplore

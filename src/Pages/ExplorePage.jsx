@@ -16,69 +16,96 @@ export default function ExplorePage() {
     return (
       <div>
         <p>No project data available. Please go back and select a project.</p>
-        <button onClick={() => navigate("/pfe")}>Go Back</button>
+        <button onClick={() => navigate(-1)}>Go Back</button>
       </div>
     );
   }
 
   return (
-    <div className={Module["explore-container"]}>
+    <div className={Module["explore-page"]}>
       <Sidebar />
       <div className={Module["explore-content"]}>
-        <Navbar />
-        <div className={Module.padding}></div>
-        <h1 className={Module.title}>Exploring</h1>
-        <div className={Module["banner-wrapper"]}>
-          <img
-            src={card.photo }
-            alt="Project Banner"
-            className={Module["project-banner"]}
-          />
+        <div style={{ marginRight: "6vw" }}>
+          <Navbar />
         </div>
-        <div className={Module["project-details"]}>
-          <h1 className={Module["project-title"]}>{card.title}</h1>
-          <p className={Module["project-description"]}>{card.description}</p>
 
-          <h2 className={Module["section-heading"]}>Supervisors</h2>
-          <ul className={Module["supervisors-list"]}>
-            {card.supervisors && card.supervisors.length > 0 ? (
-              card.supervisors.map((supervisor, index) => (
-                <li key={index}>
-                 {( supervisor.firstname +" "+ supervisor.lastname ) || "No name provided"}
-                </li>
-              ))
-            ) : (
-              <li>No supervisors available</li>
-            )}
-          </ul>
+    <div style={{ 
+     
+    height:"90vh",
+    
+      overflowY: "auto" 
+    }}>
+          <div className={Module.padding}></div>
+          <div className={Module.header}>
 
-          <h2 className={Module["section-heading"]}>Technical Sheet</h2>
-          <a
-            href={card.pdfFile}
-            download
-            className={Module["technical-sheet"]}
-          >
-            <div className={Module["technical-sheet-info"]}>
-              <img
-                src={FileIcon}
-                alt="PDF Icon"
-                className={Module["file-icon"]}
-              />
-              <div>
-                <span className={Module["file-name"]}>TechnicalSheet.Pdf</span>
-                <span className={Module["file-size"]}>
-                  Size not available
-                </span>
-              </div>
+            <h1 >Exploring</h1>
+
+            <div className={Module.btnContainer}>
+
+              <button className={Module["BackBtn"]} onClick={() => window.history.back()}>
+                Back
+              </button>
+              <button className={Module["AddBtn"]} >
+                Add to my List
+              </button>
+
             </div>
+          </div>
+
+          <div className={Module["banner-wrapper"]}>
             <img
-              src={ArrowIcon}
-              alt="Right Arrow"
-              className={Module["arrow-icon"]}
+              src={card.photo}
+              alt="Project Banner"
+              className={Module["project-banner"]}
             />
-          </a>
+          </div>
+          <div className={Module["project-details"]}>
+            <h1 className={Module["project-title"]}>{card.title}</h1>
+            <p className={Module["project-description"]}>{card.description}</p>
+
+            <h2 className={Module["section-heading"]}>Supervisors</h2>
+            <p>Here is a list of supervisors who will assist in developing this project, along with the publisher of this topic.</p>
+            <ul className={Module["supervisors-list"]}>
+              {card.supervisors && card.supervisors.length > 0 ? (
+                card.supervisors.map((supervisor, index) => (
+                  <li key={index}>
+                    {(supervisor.firstname + " " + supervisor.lastname) || "No name provided"}
+                  </li>
+                ))
+              ) : (
+                <li>No supervisors available</li>
+              )}
+            </ul>
+
+            <h2 className={Module["section-heading"]}>Technical Sheet</h2>
+            <a
+              href={card.pdfFile}
+              download
+              className={Module["technical-sheet"]}
+            >
+              <div className={Module["technical-sheet-info"]}>
+                <img
+                  src={FileIcon}
+                  alt="PDF Icon"
+                  className={Module["file-icon"]}
+                />
+                <div>
+                  <span className={Module["file-name"]}>TechnicalSheet.Pdf</span>
+                  <span className={Module["file-size"]}>
+                    Size not available
+                  </span>
+                </div>
+              </div>
+              <img
+                src={ArrowIcon}
+                alt="Right Arrow"
+                className={Module["arrow-icon"]}
+              />
+            </a>
+          </div>
         </div>
       </div>
+
     </div>
   );
 }

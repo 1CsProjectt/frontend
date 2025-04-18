@@ -2,19 +2,16 @@
   padding: 0;
   margin: 0;
   font-family: Manrope;
- 
+ overflow: hidden;
 }
 
+.explore-page {
+  width: 100%;
 
+  overflow: hidden;
+}
 /* General container layout */
-.explore-container {
-  
-    display: flex;
-   
-    overflow-x: auto;      
-  overflow-y: hidden;
-  }
-  
+
   .explore-content {
     margin-left: 16vw;
     width: 90%;
@@ -23,12 +20,13 @@
  
   /* Banner image */
   .project-banner {
-    width: 94%;
+    width: 90%;
     height: 24vh;
     object-fit: cover;
     margin: 25px;
     border-radius: 5px;
-     overflow-y: hidden;
+     overflow: hidden;
+    
      
   }
   .project-title{
@@ -119,11 +117,56 @@
     height: 24px;
   }
 
-  .title {
+  .header h1 {
     font-size: 1.8rem;
     font-weight: 00;
     margin-top: 20px;
     margin-left: 20px;
     font-family: Manrope;
     
+  }
+
+  .header {
+display: flex;
+flex-direction: row;
+  }
+
+  .btnContainer{
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+ 
+    margin: 20px 8vw 5vh auto;
+  }
+
+
+  .BackBtn {
+    background-color: #f1f1f1;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    padding: 10px 50px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  
+  }
+  .BackBtn:hover {
+    background-color: #d0d5dd;
+    color: #344054;
+  }
+  
+  .AddBtn {
+    background-color: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  .AddBtn:hover {
+    background-color: #026799;
   }

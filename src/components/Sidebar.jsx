@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 // Import SVG icons
 import LogoIcon from "../assets/EasyPFE-icon.svg";
-import SettingsIcon from "../assets/SettingIcon.svg";
 import NotificationsIcon from "../assets/Notifications.svg";
 import LoversIcon from "../assets/favorite_border_24px.svg";
 import ExportIcon from "../assets/ExportIcon.svg";
@@ -20,10 +19,9 @@ const Sidebar = () => {
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState("");
 
-  // Update activeMenu based on current path
   useEffect(() => {
     const path = location.pathname;
-    if (path.includes("/pfe")) {
+    if (path.includes("/pfe-student")) {
       setActiveMenu("pfe");
     } else if (path.includes("/teacher")) {
       setActiveMenu("mytopics");
@@ -42,7 +40,6 @@ const Sidebar = () => {
     }
   }, [location.pathname]);
 
-  // The toggleMenu function now only navigates, while activeMenu is set by location
   const toggleMenu = (path) => {
     navigate(path);
   };
@@ -64,10 +61,8 @@ const Sidebar = () => {
         <li className={Module["menu-title"]}>Menu</li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "pfe" ? Module["active"] : ""
-            }`}
-            onClick={() => toggleMenu("/pfe")}
+            className={`${Module["menu-btn"]} ${activeMenu === "pfe" ? Module["active"] : ""}`}
+            onClick={() => toggleMenu("/pfe-student")}
           >
             <img src={PFEIcon} alt="PFE Topics" className={Module["icon"]} />
             PFE Topics

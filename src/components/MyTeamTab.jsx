@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
-const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites }) => {
+const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites ,session}) => {
   const navigate = useNavigate();
   const [showSetRoleModal, setShowSetRoleModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -63,7 +63,7 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
     console.log(`Cancelled invite with ID: ${inviteId}`);
   };
 
-  if (!myTeamNumber) {
+  if (!myTeamNumber && session ==="Group formation session") {
     return (
       <div className={Module["my-team-container"]}>
         <div className={Module["my-team-header"]}>
@@ -145,6 +145,7 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
             <tr>
               <th>Full Name</th>
               <th>Email-address</th>
+              
               <th>Role</th>
             </tr>
           </thead>
@@ -153,14 +154,19 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
               <tr key={index}>
                 <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"}</td>
                 <td>{member.user?.email || "N/A"}</td>
-                <td>{member.role || "Member"}</td>
+                <td>{member.role || "-- - - - - - - - - - - - "}</td>
+                <td></td>
+                <td></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className={Module["pending-invites"]}>
+     {session === "Group formation session"  && (
+        <>
+             
+       <div className={Module["pending-invites"]}>
         <div className={Module["my-team-header"]} id="pending">
           <h2>Pending Invites</h2>
           <div className={Module["my-team-actions"]}>
@@ -247,6 +253,12 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
 
 
       </div>
+        
+        
+        </>
+
+     )} 
+
       {/* Render the SetRoleModal, passing the state and onClose function */}
       <SetRoleModal
         show={showSetRoleModal}
