@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"; 
 import { Eye, EyeOff } from "lucide-react"; // Using Lucide to import the eye /eye off icons
 import classes from "../../styles/UserFormModal.module.css"; // Import the separate CSS file
+import axios from 'axios';
 
-const UserFormModal = ({ isOpen, onClose ,userObject ,operation}) => {
+const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementActiveTab}) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,12 +48,41 @@ const UserFormModal = ({ isOpen, onClose ,userObject ,operation}) => {
   onClose(); // Call parent’s close handler after cleanup
 };
 
+
+  // Tabs for different user types
+/*   const tabs = ["Students", "Supervisors", "Enterprises", "Admins"]; */
+//these tabs are used to set the role accroding to the currently selected tab
+useEffect(() => {
+  switch (userManagementActiveTab) {
+    case "Students":
+      setRole("student");
+      break;
+    case "Supervisors":
+      setRole("teacher");
+      break;
+    case "Enterprises":
+      setRole("company");
+      break;
+    case "Admins":
+      setRole("admin");
+      break;
+    default:
+      setRole(""); // or keep previous role
+  }
+}, [userManagementActiveTab]);
+
+
+
 useEffect(() => {
   //if a user object is passed, populate the form with its data else clear the form again
   //equivalent to passing an operation prop but better for reducing type errors when calling the model
-  if (userObject && isOpen) {
-    setFirstName(userObject.firstName || "");
-    setLastName(userObject.lastName || "");
+  if (operation ==="editUser" && isOpen) {
+   /*  setFirstName(userObject.firstName || "");
+    setLastName(userObject.lastName || ""); */
+    //the user object does not have first name and last name only user name cause it is fetched from the users table which only has username
+    const [firstName, lastName] = userObject.username.split(' ');
+    setFirstName(firstName || "");
+    setLastName(lastName || "");
     setEmail(userObject.email || "");
     setRole(userObject.role || "");
     setPassword(""); // Password should be left blank for security
@@ -64,6 +94,25 @@ useEffect(() => {
     setWebsite(userObject.website || "");
     setAdminLevel(userObject.admin_level || "");
     setPermissions(userObject.permissions || "all");
+  }else if (operation ==="createUser" && isOpen) {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    /* setRole(""); */
+    //now the role is set according to the selected tab 
+    setPassword("");
+    setYear("1CS");
+    setSpecialite("");
+    setCompanyName("");
+    setPhone("");
+
+    setAddress("");
+    setWebsite("");
+    setAdminLevel("");
+    setPermissions("all");
+    setErrors({});
+    setShowPassword(false);
+    
   }
 }, [userObject, isOpen]);
 
@@ -90,7 +139,7 @@ useEffect(() => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      alert(
+     /*  alert(
         "💡 Form state:\n" +
           JSON.stringify(
             {
@@ -111,7 +160,7 @@ useEffect(() => {
             null,
             2
           )
-      );
+      ); */
       const userData = {
         username: firstName + " " + lastName,
         firstName,
@@ -173,7 +222,7 @@ useEffect(() => {
         payload.specialite = userData.specialite;
       }
     } else if (userData.role === "company") {
-      payload.companyName = userData.companyName;
+      payload.companyName = userData.firstName;
       payload.phone = userData.phone;
       payload.address = userData.address;
       payload.website = userData.website;
@@ -206,50 +255,58 @@ useEffect(() => {
     }
   };
 
-  const handleUpdateUser = async (formData) => {
-    console.log("Updating user with ID:", formData.id);
-    const payload = {
-      email:userObject.email,//this is the old email that the backed checks for the user by
-      newEmail: formData.email,//this is the new email to set if it's provided
-      id: formData.id,
-      firstname: formData.firstName,
-      lastname: formData.lastName,
-      email: formData.email,
-      password: formData.password,
-      role: formData.role,
-    };
-    if (formData.role === "student") {
-      payload.year = formData.year;
-      if (["2CS", "3CS"].includes(formData.year?.toUpperCase())) {
-        payload.specialite = formData.specialite;
-      }
-    } else if (formData.role === "company") {
-      payload.companyName = formData.companyName;
-      payload.phone = formData.phone;
-      payload.address = formData.address;
-      payload.website = formData.website;
-    } else if (formData.role === "admin") {
-      payload.admin_level = formData.admin_level;
-      payload.permissions = formData.permissions;
-    }
   
-    try {
-      const res = await fetch("/users/update", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || "Something went wrong");
-      console.log("✅ User Updated:", result);
-      alert("User updated successfully!");
-      handleClose();
-    } catch (err) {
-      console.error("❌ Error updating user:", err.message);
-      alert("Error updating the user: " + err.message);
-      handleClose();
-    }
+const handleUpdateUser = async (formData) => {
+  console.log("Updating user with ID:", formData.id);
+  alert("updating user that has the email : " + userObject.email);
+  const payload = {
+    email: userObject.email, // old email
+    newEmail: formData.email, // new email to set that is being set by the text field input (state variable)
+    id: formData.id,
+    firstname: formData.firstName,
+    lastname: formData.lastName,
+    username: formData.firstName + " " + formData.lastName,
+    
+    password: formData.password,
+    role: formData.role,
   };
+
+  if (formData.role === "student") {
+    payload.year = formData.year;
+    if (["2CS", "3CS"].includes(formData.year?.toUpperCase())) {
+      payload.specialite = formData.specialite;
+    }
+  } else if (formData.role === "company") {
+    /* payload.companyName = formData.companyName; */
+    //i am using the same form for both the firstname and company name just changing the name of the form not the entire form therefore no i used the firstname
+    payload.companyName = formData.firstName;
+    payload.phone = formData.phone;
+    payload.address = formData.address;
+  
+    payload.website = formData.website;
+  } else if (formData.role === "admin") {
+    payload.admin_level = formData.admin_level;
+    payload.permissions = formData.permissions;
+  }
+
+  try {
+    const res = await axios.patch('/users/update', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log("✅ User Updated:", res.data);
+    alert("User updated successfully!");
+    handleClose();
+  } catch (err) {
+    const message = err.response?.data?.message || err.message || "Something went wrong";
+    console.error("❌ Error updating user:", message);
+    alert("Error updating the user: " + message);
+    handleClose();
+  }
+};
+
   
 
   return (
@@ -317,7 +374,7 @@ useEffect(() => {
               <option value="">Select a role</option>
               <option value="admin">Admin</option>
               <option value="student">Student</option>
-              <option value="supervisor">Supervisor</option>
+              <option value="teacher">Supervisor</option>
               {/* <option value="jury">Jury</option> */}
               <option value="company">Company</option>
             </select>

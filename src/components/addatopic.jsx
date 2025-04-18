@@ -34,11 +34,14 @@ const Addatopic = () => {
           setsupervisorsList(response.data);
         }
       } catch (err) {
+        console.error(
+          "Error fetching supervisors:",
+          err.response?.data || err.message
+        );
         if (err.response?.status === 404) {
-          // Backend is saying no PFEs exist — that's okay
-          setsupervisorsList([]); // Set an empty list
+          setsupervisorsList([]);
         } else {
-          throw err; // Other errors still need to be caught
+          throw err;
         }
       }
     };
@@ -81,8 +84,10 @@ const Addatopic = () => {
 
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("specialization", speciality);
-    formData.append("supervisor", selectedSupervisors.join(", "));
+    formData.append("specialization", speciality.join(","));
+    selectedSupervisors.forEach((sup, index) => {
+      formData.append(`supervisors[${index}]`, sup); // makes an array
+    });
     formData.append("description", description);
     formData.append("year", grade);
     formData.append("photo", presentationFile); // image file
@@ -319,19 +324,24 @@ const Addatopic = () => {
                   </div>
                   <div className="sv-list">
                     {supervisorsList
-                      .filter((name) =>
-                        name.toLowerCase().includes(searchTerm.toLowerCase())
+                      .filter((teacher) =>
+                        `${teacher.firstname} ${teacher.lastname}`
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                       )
-                      .map((name) => (
-                        <label key={name} className="sv-item">
-                          <input
-                            type="checkbox"
-                            checked={selectedSupervisors.includes(name)}
-                            onChange={() => handleSupervisorToggle(name)}
-                          />
-                          {name}
-                        </label>
-                      ))}
+                      .map((teacher) => {
+                        const fullName = `${teacher.firstname} ${teacher.lastname}`;
+                        return (
+                          <label key={teacher._id} className="sv-item">
+                            <input
+                              type="checkbox"
+                              checked={selectedSupervisors.includes(fullName)}
+                              onChange={() => handleSupervisorToggle(fullName)}
+                            />
+                            {fullName}
+                          </label>
+                        );
+                      })}
                   </div>
                 </div>
               )}

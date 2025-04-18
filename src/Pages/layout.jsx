@@ -19,9 +19,6 @@ const Layout = () => {
       try {
         const response = await axios.get("/pfe/my-pfes", {
           withCredentials: true,
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
         });
 
         if (response.data && response.data.data) {
