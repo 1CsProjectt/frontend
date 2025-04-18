@@ -69,7 +69,7 @@ const Login = () => {
       } else if (user.role === "student") {
         navigate("/pfe-student");
       } else {
-        navigate("/pfe");
+        navigate("/pfe-student");
       }
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
