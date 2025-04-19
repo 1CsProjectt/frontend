@@ -11,7 +11,6 @@ import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
 import Infoicon from "../assets/info_24px.svg";
-import { API_URL } from "../config";
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
@@ -60,7 +59,7 @@ function TeamFormationPage() {
     sessionTitle = "Unknown session";
   }
   const fetchexistedTeamData = async () => {
-    const { data } = await axios.get(`${API_URL}/teams/allgroups`, { withCredentials: true });
+    const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
     console.log("API Response (Listed Teams):", data);
     const teamsWithStatus = data.teams.map(team => ({
       ...team,
@@ -75,7 +74,7 @@ function TeamFormationPage() {
     setExistedTeams(teamsWithStatus);
   };
   const fetchStudentData = async () => {
-    const { data } = await axios.get(`${API_URL}/student/liststudents`, { withCredentials: true });
+    const { data } = await axios.get("/student/liststudents", { withCredentials: true });
     console.log("API Response (Students List):", data);
     if (data && Array.isArray(data.students)) {
       setStudents(data.students);
@@ -86,17 +85,17 @@ function TeamFormationPage() {
 
   const fetchMyTeamData = async () => {
     try {
-      const { data: teamData } = await axios.get(`${API_URL}/teams/myteam`, { withCredentials: true });
+      const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
       setMyTeam(teamData.team);
       if (sessionTitle === "Group formation session") {
         if (teamData?.team?.id) {
-          const { data: pendingInvites } = await axios.get(`${API_URL}/invitation/getallmyinvitations`, { withCredentials: true });
+          const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
           setMyTeamPendingInvites(pendingInvites);
 console.log(pendingInvites);
-          const { data: teamReq } = await axios.get(`${API_URL}/jointeam//getalljoinmyteamrequests`, { withCredentials: true });
+          const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
           setMyTeamteamReq(teamReq);
         } else {
-          const { data: collabInvites } = await axios.get(`${API_URL}/invitation/getallmyrecievedinvitations`, { withCredentials: true });
+          const { data: collabInvites } = await axios.get("/invitation/getallmyrecievedinvitations", { withCredentials: true });
           setCollaborationInvites(collabInvites);
         }
       }
