@@ -28,7 +28,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
       />
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
-        <div className={Style["card-categories"]}>
+        <div className={Style["card-categories"]}>z
           {Array.isArray(card.specialization)
             ? card.specialization.map((spec, i) => (
               <span key={i} className={Style.category}>

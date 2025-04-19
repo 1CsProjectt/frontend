@@ -1,5 +1,3 @@
-//the nagrok image problem
-
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +5,56 @@ import Navbar from "../components/NavBar";
 import Sidebar from "../components/Sidebar";
 import PFECard from "../components/CardComponent";
 import Style from "../styles/PFEPage.module.css";
+import StudentPreferencesTab from "../components/StudentPreferencesTab";
+import { Sun } from "lucide-react";
+const session = {
+  title: "TOPIC_SELECTION",
+  targetDate: {
+    start: new Date("2025-03-29T00:00:00"),
+    end: new Date("2025-04-29T23:59:59"),
+  },
+};
+const submit = false;
+let sessionTitle;
 
+if (session.title === "TEAM_CREATION") {
+  sessionTitle = "Group formation session";
+} else if (session.title === "TOPIC_SELECTION") {
+  sessionTitle = "Select topics session";
+} else {
+  sessionTitle = "Unknown session";
+}
+//dummy PreferenecesList
+let PreferenecesList = [
+  {
+    order: "01",
+    topic_title:
+      "Academic document checker using Academic document checker using",
+    main_supervisor: "Prof. Leila Kherbache",
+    status: "rejected",
+  },
+  {
+    order: "02",
+    topic_title:
+      "Academic document checker using Academic document checker using",
+    main_supervisor: "Prof. Leila Kherbache",
+    status: "rejected",
+  },
+  {
+    order: "03",
+    topic_title:
+      "Career advisor app for students Academic document checker using",
+    main_supervisor: "Dr. Yacine Merabet",
+    status: "accepted",
+  },
+  {
+    order: "04",
+    topic_title:
+      "Real-time task manager for rese Academic document checker using",
+    main_supervisor: "Prof. Nadia Touati",
+    status: "pending",
+  },
+];
 const PFEPage = () => {
   const [cards, setCards] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -23,31 +70,32 @@ const PFEPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // build params object dynamically
+        const params = {};
+        if (selectedFilters.length > 0) {
+          // you can pass an array; Axios will serialize as
+          // ?specialization=foo&specialization=bar
+          params.specialization = selectedFilters;
+        }
+
         const response = await axios.get(endpoint, {
+          params,
           withCredentials: true,
         });
 
         if (response.data && response.data.pfeList) {
           setCards(response.data.pfeList);
         }
-        console.log("Fetched card data:", response.data);
       } catch (err) {
-        console.error("Error fetching card data", err);
-        if (err.response?.status === 401) {
-          alert("Session expired. Please log in again.");
-          navigate("/login");
-        } else {
-          setError("Failed to fetch PFE projects. Please try again later.");
-        }
+        // …error handling…
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [navigate]);
+  }, [endpoint, selectedFilters, navigate]);
 
-  // Build a suggestion list from card attributes
   const suggestionList = Array.from(
     new Set(
       cards.flatMap((card) => [
@@ -122,15 +170,11 @@ const PFEPage = () => {
           className={Style["preferences-container"]}
           style={{ marginTop: "1rem", padding: "1rem" }}
         >
-          {/*  
-              Replace the content below with the actual component or content for your Preferences List.
-              You might want to fetch the user's preferred PFEs or any other relevant data here.
-          */}
-          <h2>My Preferences List</h2>
-          <p>
-            This is where your preferred PFE projects or other user-specific
-            content will be displayed.
-          </p>
+          <StudentPreferencesTab
+            PreferenecesList={PreferenecesList}
+            session={sessionTitle}
+            submit={submit}
+          />
         </div>
       );
     }
@@ -142,41 +186,59 @@ const PFEPage = () => {
       <div
         style={{
           marginLeft: "16vw",
-          height: "100vh",
+
           display: "flex",
           flexDirection: "column",
         }}
       >
         <Navbar
-          title={"Normal Session"}
+          title={sessionTitle}
           selectedFilters={selectedFilters}
           onFilterApply={handleFilterApply}
           onSearchChange={handleSearchChange}
           suggestions={suggestionList}
+          targetDate={session.targetDate}
         />
 
-        <div style={{ flexGrow: 1, overflowY: "auto" }}>
-          {loading ? (
-            <p className={Style["loading-text"]}>Loading projects...</p>
-          ) : error ? (
-            <p className={Style["error-text"]}>{error}</p>
-          ) : (
-            <div className={Style["cards-container"]}>
-              {filteredCards.length > 0 ? (
-                filteredCards.map((card, index) => (
-                  <PFECard
-                    key={card.id || index}
-                    card={card}
-                    isSelected={null}
-                    toggleSelect={() => {}}
-                  />
-                ))
-              ) : (
-                <p className={Style["no-results-text"]}>No projects found.</p>
+        {sessionTitle === "Select topics session" && (
+          <div>
+            <div className={Style["header-row"]}>
+              <h1>Explore PFE Topics</h1>
+
+              {activeTab === "My Preferences List" && submit === false && (
+                <>
+                  <button
+                    className={Style["addtopic-button"]}
+                    onClick={() => setActiveTab("PFE Topics")}
+                  >
+                    Add a topic
+                  </button>
+                </>
               )}
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Tabs header similar to TeamFormationPage's approach */}
+        <div className={Style["tabs"]}>
+          {["PFE Topics", "My Preferences List"].map((tab) => (
+            <div
+              key={tab}
+              className={`${Style["tab-item"]} ${
+                activeTab === tab ? Style.active : ""
+              }`}
+              onClick={() => {
+                setActiveTab(tab);
+                setSearchQuery("");
+              }}
+            >
+              {tab}
+            </div>
+          ))}
         </div>
+
+        {/* Render the content for the currently active tab */}
+        {renderTabContent()}
       </div>
     </div>
   );

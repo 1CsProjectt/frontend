@@ -21,7 +21,7 @@ const InviteModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) => {
     try {
       const response = await axios.post(
         "/invitation/sendinvitation",
-        { receiver_email },
+        {  receiver_emails: [receiver_email]  },
         { withCredentials: true }
       );
 
@@ -93,9 +93,10 @@ const InviteModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) => {
           <button className={Style["cancel-button"]} onClick={onClose}>
             Cancel
           </button>
-          <button className={Style["create-button"]} onClick={() => {
-            members.forEach(member => handleInviteClick(member.email));
-          }}>
+          <button className={Style["create-button"]}   onClick={() => {
+    const emailList = members.map(member => member.email);
+    handleInviteClick(emailList); 
+  }}>
             Add
           </button>
         </div>

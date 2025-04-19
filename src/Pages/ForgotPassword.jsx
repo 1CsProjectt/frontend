@@ -15,7 +15,8 @@ const ForgotPassword = () => {
 
   // Validate email format
   const validateEmail = (email) => {
-    const emailPattern = /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
+    const emailPattern =
+      /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
     return emailPattern.test(email);
   };
 
