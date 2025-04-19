@@ -49,7 +49,7 @@ const Login = () => {
     try {
       // Make the POST request to the login endpoint
       const response = await axios.post(
-        `/auth/login`,
+        `${API_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );
