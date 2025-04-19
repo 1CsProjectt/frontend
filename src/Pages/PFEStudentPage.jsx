@@ -8,8 +8,6 @@ import PFECard from "../components/CardComponent";
 import Style from "../styles/PFEPage.module.css";
 import StudentPreferencesTab from "../components/StudentPreferencesTab";
 import { Sun } from "lucide-react";
-import { API_URL } from "../config";
-
 const session = {
   title: "TOPIC_SELECTION",
   targetDate: {
@@ -65,7 +63,7 @@ const PFEPage = () => {
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-/*   const endpoint = user?.role === "student" ? "" : "/pfe"; */
+  const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -78,7 +76,7 @@ const PFEPage = () => {
          params.specialization = selectedFilters;
      }
  
-       const response = await axios.get(`${API_URL}/pfe/for-students`, {
+       const response = await axios.get(endpoint, {
         params,
          withCredentials: true,
        });
@@ -95,7 +93,7 @@ const PFEPage = () => {
  
 
    fetchData();
- }, [ selectedFilters, navigate]);
+ }, [endpoint, selectedFilters, navigate]);
  
 
   const suggestionList = Array.from(

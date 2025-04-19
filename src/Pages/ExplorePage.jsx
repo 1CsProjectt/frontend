@@ -31,7 +31,7 @@ export default function ExplorePage() {
 
     <div style={{ 
      
-    height:"90vh",
+    height:"9z0vh",
     
       overflowY: "auto" 
     }}>
