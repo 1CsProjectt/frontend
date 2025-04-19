@@ -118,13 +118,19 @@ const PFEPage = () => {
       );
     } else if (activeTab === "My Preferences List") {
       return (
-        <div className={Style["preferences-container"]} style={{ marginTop: "1rem", padding: "1rem" }}>
+        <div
+          className={Style["preferences-container"]}
+          style={{ marginTop: "1rem", padding: "1rem" }}
+        >
           {/*  
               Replace the content below with the actual component or content for your Preferences List.
               You might want to fetch the user's preferred PFEs or any other relevant data here.
           */}
           <h2>My Preferences List</h2>
-          <p>This is where your preferred PFE projects or other user-specific content will be displayed.</p>
+          <p>
+            This is where your preferred PFE projects or other user-specific
+            content will be displayed.
+          </p>
         </div>
       );
     }

@@ -286,7 +286,10 @@ const Addatopic = () => {
           </div>
 
           {/* Supervisors */}
-          <div className="topic-form-1 more-space">
+          <div
+            className="topic-form-1 
+          "
+          >
             <div className="info-section">
               <p className="ttl-at">Other supervisors</p>
               <p className="infos-at">
@@ -346,6 +349,15 @@ const Addatopic = () => {
                 </div>
               )}
             </div>
+          </div>
+          <div className="onleft">
+            {" "}
+            <button className="btnc-giant" onClick={() => navigate(-1)}>
+              <p className="managebtns-text-at-c">Cancel</p>
+            </button>
+            <button className="btns-giant" onClick={handleSubmit}>
+              <p className="managebtns-text-at-s">Save</p>
+            </button>
           </div>
         </div>
       </div>

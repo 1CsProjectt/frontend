@@ -6,10 +6,9 @@ import filterIconup from "../assets/arrow-up.svg";
 import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
-import{io } from "socket.io-client"; // Import Socket.IO client
+import { io } from "socket.io-client"; // Import Socket.IO client
 import axios from "axios";
 // Dummy notification data
-
 
 let notificationCount = 0;
 
@@ -300,26 +299,29 @@ const FilterMenu = ({
         >
           <div className={Module["filter-content"]}>
             <div className={Module["filter-options"]}>
-              <p
-                className={
-                  activeTab === "Speciality"
-                    ? Module["tab-active"]
-                    : Module["tab-inactive"]
-                }
-                onClick={() => handleTabChange("Speciality")}
-              >
-                Speciality
-              </p>
-              <p
-                className={
-                  activeTab === "Other"
-                    ? Module["tab-active"]
-                    : Module["tab-inactive"]
-                }
-                onClick={() => handleTabChange("Other")}
-              >
-                Other
-              </p>
+              <div className={Module["filter-navside"]}>
+                <p className={Module["filter-header"]}>Filter type</p>{" "}
+                <p
+                  className={
+                    activeTab === "Speciality"
+                      ? Module["tab-active"]
+                      : Module["tab-inactive"]
+                  }
+                  onClick={() => handleTabChange("Speciality")}
+                >
+                  Speciality
+                </p>
+                <p
+                  className={
+                    activeTab === "Other"
+                      ? Module["tab-active"]
+                      : Module["tab-inactive"]
+                  }
+                  onClick={() => handleTabChange("Other")}
+                >
+                  Other
+                </p>
+              </div>
             </div>
             <div className={Module["filter-categories"]}>
               <p className={Module["filter-header"]}>
@@ -427,7 +429,7 @@ const NotificationsContainer = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const socket = io("http://localhost:3000"); 
+    const socket = io("http://localhost:3000");
 
     socket.on("receive-notification", (data) => {
       setNotifications((prevNotifications) => [data, ...prevNotifications]);
@@ -441,7 +443,9 @@ const NotificationsContainer = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/notifications");
+        const response = await axios.get(
+          "http://localhost:5000/api/notifications"
+        );
         setNotifications(response.data);
       } catch (err) {
         setError(err.message);

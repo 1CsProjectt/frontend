@@ -15,6 +15,9 @@
 .maincontent {
   margin-left: 310px; /* To accommodate sidebar width */
   width: calc(100% - 290px);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .leftside {
@@ -23,14 +26,6 @@
   position: fixed;
   left: 0;
   top: 0;
-  height: 100vh;
-}
-.navbar-wrapper {
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: white; /* Make sure it's visible */
 }
 
 .outlet-scroll {

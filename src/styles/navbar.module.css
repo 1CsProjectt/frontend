@@ -16,10 +16,8 @@ p {
 .container {
   flex-direction: column;
   display: flex;
-  z-index: 999;
   background-color: #f5f7fa;
-  height: 125px;
-
+  height: 26vh;
   flex: auto;
   position: relative;
 }
@@ -220,8 +218,8 @@ p {
 
 /* Popup for Filter Menu */
 .filter-popup {
-  position: absolute;
-  top: 95%;
+  position: fixed;
+  top: 12%;
 
   background: #ffffff;
   border: 1px solid #dde2e4;
@@ -229,8 +227,8 @@ p {
   height: auto;
   width: 25vw;
   border-radius: 8px;
-  overflow: hidden;
-  z-index: 999;
+
+  z-index: 1000;
 }
 
 .filter-content {
@@ -240,7 +238,6 @@ p {
 }
 
 .filter-categories {
-  padding-top: 24px;
   height: 100%;
   width: 50%;
 
@@ -257,7 +254,7 @@ p {
 
 .filter-categories .active {
   padding-left: 8px;
-  padding-top: 4px;
+
   height: 20px;
   width: 151px;
   border-radius: 4px;
@@ -269,27 +266,26 @@ p {
 .filter-categories .notactive {
   height: 20px;
   padding-left: 8px;
-  padding-top: 4px;
+
   color: #313638cc;
   font-size: 14px;
 }
 
 .filter-options {
   border-right: 1px solid #dde2e4;
-  padding-top: 24px;
+  justify-content: center;
   height: 100%;
-  padding-left: 24px;
+
   width: 50%;
   cursor: default;
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
 }
-
-.optionstext {
-  font-size: 16px;
-  color: #313638;
-  margin-left: 8px;
+.filter-navside {
+  flex-direction: column;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .filter-buttons {
@@ -335,13 +331,11 @@ p {
 }
 
 .tab-active {
-  padding: 8px;
-  color: #3c4143;
-  font-weight: bold;
+  color: #313638;
+
   background-color: #ececec;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0 20px;
+  flex-shrink: 0;
   border-radius: 6px;
 }
 
@@ -350,11 +344,9 @@ p {
 }
 
 .tab-inactive {
-  padding: 8px;
-  color: #3c4143;
+  font-size: 16px;
+  color: #313638;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0 20px;
 }
 
 .tab-inactive:hover {

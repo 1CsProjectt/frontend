@@ -79,15 +79,14 @@ const Layout = () => {
     <div className="layout">
       <Sidebar />
       <div className="maincontent">
-        <div className="navbar-wrapper">
-          <Navbar
-            title={"Normal Session"}
-            selectedFilters={selectedFilters}
-            onFilterApply={handleFilterApply}
-            onSearchChange={handleSearchChange}
-            suggestions={suggestionList}
-          />
-        </div>
+        <Navbar
+          title={"Normal Session"}
+          selectedFilters={selectedFilters}
+          onFilterApply={handleFilterApply}
+          onSearchChange={handleSearchChange}
+          suggestions={suggestionList}
+        />
+
         <div className="outlet-scroll">
           <Outlet context={{ cards, setCards }} />
         </div>
