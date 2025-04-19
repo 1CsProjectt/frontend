@@ -100,7 +100,7 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
 
   const handleCloseSuccess = () => {
     setShowSuccessModal(false);
-  
+
   };
 
   // Local state to manage reordering
@@ -126,17 +126,23 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  // Handler for drag end
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
       setItems((prev) => {
-        const oldIndex = prev.findIndex((i) => i.id === active.id);
-        const newIndex = prev.findIndex((i) => i.id === over.id);
-        return arrayMove(prev, oldIndex, newIndex);
+        const moved = arrayMove(prev,
+          prev.findIndex(i => i.id === active.id),
+          prev.findIndex(i => i.id === over.id)
+        );
+
+        return moved.map((item, idx) => ({
+          ...item,
+          order: String(idx + 1).padStart(2, "0")   // make "1" → "01"
+        }));
       });
     }
   };
+
 
   return (
     <div className={Style["pagecontainer"]}>
@@ -210,13 +216,13 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
           </>
         )}
 
-<SubmitModal
+        <SubmitModal
           show={showSubmitModal}
           onCancel={() => setShowSubmitModal(false)}
           onConfirm={handleConfirmSubmit}
         />
 
-{showSuccessModal && <SuccessConfirmationModal
+        {showSuccessModal && <SuccessConfirmationModal
           message="Your list has been successfully submitted! You won't be able to undo this action.."
           onClose={handleCloseSuccess}
           show={showSuccessModal}

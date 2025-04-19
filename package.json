@@ -24,7 +24,6 @@
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
-  "proxy": "https://backend-pfe-1.onrender.com/api/v1",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

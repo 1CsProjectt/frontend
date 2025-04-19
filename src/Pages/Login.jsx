@@ -13,7 +13,6 @@ mohamed, [3/30/25 2:47 PM]
 12345678 pass */
 
 axios.defaults.withCredentials = true;
-axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -49,7 +48,7 @@ const Login = () => {
     try {
       // Make the POST request to the login endpoint
       const response = await axios.post(
-        `/auth/login`,
+        `${API_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );

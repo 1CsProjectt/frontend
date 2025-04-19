@@ -8,6 +8,8 @@ import PFECard from "../components/CardComponent";
 import Style from "../styles/PFEPage.module.css";
 import StudentPreferencesTab from "../components/StudentPreferencesTab";
 import { Sun } from "lucide-react";
+import { API_URL } from "../config";
+
 const session = {
   title: "TOPIC_SELECTION",
   targetDate: {
@@ -26,7 +28,7 @@ if (session.title === "TEAM_CREATION") {
   sessionTitle = "Unknown session";
 }
 //dummy PreferenecesList
-const PreferenecesList = [
+let PreferenecesList = [
   {
     "order": "01",
     "topic_title": "Academic document checker using Academic document checker using",
@@ -50,12 +52,6 @@ const PreferenecesList = [
     "topic_title": "Real-time task manager for rese Academic document checker using",
     "main_supervisor": "Prof. Nadia Touati",
     "status": "pending"
-  },
-  {
-    "order": "05",
-    "topic_title": "not selected yet",
-    "main_supervisor": null,
-    "status": "pending"
   }
 ]
 const PFEPage = () => {
@@ -69,7 +65,7 @@ const PFEPage = () => {
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-  const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
+/*   const endpoint = user?.role === "student" ? "" : "/pfe"; */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -82,7 +78,7 @@ const PFEPage = () => {
          params.specialization = selectedFilters;
      }
  
-       const response = await axios.get(endpoint, {
+       const response = await axios.get(`${API_URL}/pfe/for-students`, {
         params,
          withCredentials: true,
        });
@@ -99,7 +95,7 @@ const PFEPage = () => {
  
 
    fetchData();
- }, [endpoint, selectedFilters, navigate]);
+ }, [ selectedFilters, navigate]);
  
 
   const suggestionList = Array.from(
