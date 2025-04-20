@@ -186,57 +186,58 @@ const PFEPage = () => {
       <div
         style={{
           marginLeft: "16vw",
-
+          height: "100vh",
           display: "flex",
           flexDirection: "column",
         }}
       >
-        <Navbar
-          title={sessionTitle}
-          selectedFilters={selectedFilters}
-          onFilterApply={handleFilterApply}
-          onSearchChange={handleSearchChange}
-          suggestions={suggestionList}
-          targetDate={session.targetDate}
-        />
+        <div style={{ flexShrink: 0 }}>
+          <Navbar
+            title={sessionTitle}
+            selectedFilters={selectedFilters}
+            onFilterApply={handleFilterApply}
+            onSearchChange={handleSearchChange}
+            suggestions={suggestionList}
+            targetDate={session.targetDate}
+          />
 
-        {sessionTitle === "Select topics session" && (
-          <div>
-            <div className={Style["header-row"]}>
-              <h1>Explore PFE Topics</h1>
+          {sessionTitle === "Select topics session" && (
+            <div>
+              <div className={Style["header-row"]}>
+                <h1>Explore PFE Topics</h1>
 
-              {activeTab === "My Preferences List" && submit === false && (
-                <>
-                  <button
-                    className={Style["addtopic-button"]}
-                    onClick={() => setActiveTab("PFE Topics")}
-                  >
-                    Add a topic
-                  </button>
-                </>
-              )}
+                {activeTab === "My Preferences List" && submit === false && (
+                  <>
+                    <button
+                      className={Style["addtopic-button"]}
+                      onClick={() => setActiveTab("PFE Topics")}
+                    >
+                      Add a topic
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
+          )}
+
+          {/* Tabs header similar to TeamFormationPage's approach */}
+          <div className={Style["tabs"]}>
+            {["PFE Topics", "My Preferences List"].map((tab) => (
+              <div
+                key={tab}
+                className={`${Style["tab-item"]} ${
+                  activeTab === tab ? Style.active : ""
+                }`}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setSearchQuery("");
+                }}
+              >
+                {tab}
+              </div>
+            ))}
           </div>
-        )}
-
-        {/* Tabs header similar to TeamFormationPage's approach */}
-        <div className={Style["tabs"]}>
-          {["PFE Topics", "My Preferences List"].map((tab) => (
-            <div
-              key={tab}
-              className={`${Style["tab-item"]} ${
-                activeTab === tab ? Style.active : ""
-              }`}
-              onClick={() => {
-                setActiveTab(tab);
-                setSearchQuery("");
-              }}
-            >
-              {tab}
-            </div>
-          ))}
         </div>
-
         {/* Render the content for the currently active tab */}
         {renderTabContent()}
       </div>

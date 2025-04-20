@@ -301,26 +301,31 @@ const FilterMenu = ({
             <div className={Module["filter-options"]}>
               <div className={Module["filter-navside"]}>
                 <p className={Module["filter-header"]}>Filter type</p>{" "}
-                <p
-                  className={
-                    activeTab === "Speciality"
-                      ? Module["tab-active"]
-                      : Module["tab-inactive"]
-                  }
-                  onClick={() => handleTabChange("Speciality")}
-                >
-                  Speciality
-                </p>
-                <p
-                  className={
-                    activeTab === "Other"
-                      ? Module["tab-active"]
-                      : Module["tab-inactive"]
-                  }
-                  onClick={() => handleTabChange("Other")}
-                >
-                  Other
-                </p>
+                <div className={Module["options-container-filter"]}>
+                  {" "}
+                  <p
+                    className={
+                      activeTab === "Speciality"
+                        ? Module["tab-active"]
+                        : Module["tab-inactive"]
+                    }
+                    onClick={() => handleTabChange("Speciality")}
+                  >
+                    Speciality
+                  </p>
+                </div>
+                <div className={Module["options-container-filter"]}>
+                  <p
+                    className={
+                      activeTab === "Other"
+                        ? Module["tab-active"]
+                        : Module["tab-inactive"]
+                    }
+                    onClick={() => handleTabChange("Other")}
+                  >
+                    Other
+                  </p>
+                </div>
               </div>
             </div>
             <div className={Module["filter-categories"]}>
@@ -329,20 +334,23 @@ const FilterMenu = ({
                   ? "show only"
                   : "Select Other Options"}
               </p>
-              {(activeTab === "Specialitys"
-                ? specialityOptions
-                : otherOptions
-              ).map((option) => (
-                <label key={option} className={Module["option-label"]}>
-                  <input
-                    type="checkbox"
-                    value={option}
-                    checked={localFilters[activeTab].includes(option)}
-                    onChange={(e) => handleCheckboxChange(e, activeTab)}
-                  />
-                  <span className={Module["optionstext"]}>{option}</span>
-                </label>
-              ))}
+              <div className={Module["labels-container"]}>
+                {(activeTab === "Speciality"
+                  ? specialityOptions
+                  : otherOptions
+                ).map((option) => (
+                  <label key={option} className={Module["option-label"]}>
+                    <input
+                      className={Module["filter-input "]}
+                      type="checkbox"
+                      value={option}
+                      checked={localFilters[activeTab].includes(option)}
+                      onChange={(e) => handleCheckboxChange(e, activeTab)}
+                    />
+                    <span className={Module["optionstext"]}>{option}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
           <div className={Module["filter-buttons"]}>

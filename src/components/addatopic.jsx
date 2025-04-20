@@ -84,6 +84,7 @@ const Addatopic = () => {
 
     const formData = new FormData();
     formData.append("title", title);
+
     formData.append("specialization", speciality.join(","));
     selectedSupervisors.forEach((sup, index) => {
       formData.append(`supervisors[${index}]`, sup); // makes an array
