@@ -341,7 +341,7 @@ const FilterMenu = ({
                 ).map((option) => (
                   <label key={option} className={Module["option-label"]}>
                     <input
-                      className={Module["filter-input "]}
+                      className={Module["filter-input"]}
                       type="checkbox"
                       value={option}
                       checked={localFilters[activeTab].includes(option)}

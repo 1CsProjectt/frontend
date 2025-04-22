@@ -2,12 +2,8 @@ import React from "react";
 
 import "./styles/App.css";
 
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
-import { SharedStateProvider } from "./contexts/SharedStateContext"; 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { SharedStateProvider } from "./contexts/SharedStateContext";
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
@@ -30,6 +26,8 @@ import ExplorePage from "./Pages/ExplorePage";
 
 import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 import TeamFormationPage from "./Pages/TeamformationPage";
+import TeacherPfePage from "./components/teacherpfepage";
+import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 
 function App() {
   return (
@@ -40,7 +38,7 @@ function App() {
         <Routes>
           {
             //<Route path="/" element={<Navigate to="/admin" replace />} />
-          }   
+          }
 
           <Route path="/" element={<Login />} />
 
@@ -49,8 +47,10 @@ function App() {
           <Route path="/CheckEmail" element={<CheckEmail />} />
 
           <Route path="/teacher" element={<Layout />}>
-            <Route index element={<TeacherTopics />} />
+            <Route index element={<TeacherPfePage />} />
+            <Route path="mytopics" element={<TeacherTopics />} />
             <Route path="Addatopic" element={<Addatopic />} />
+            <Route path="teamselection" element={<TeamSelectionTeacher />} />
           </Route>
 
           {/* Route with dynamic token */}
@@ -73,7 +73,6 @@ function App() {
           <Route path="/lovers" element={<LoversPage />} />
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
-    
 
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"

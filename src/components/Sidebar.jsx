@@ -15,16 +15,24 @@ import CheckCircleIcon from "../assets/check_circle_outline_24px.svg";
 import TeamformationIcon from "../assets/Teamformation.svg";
 const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user"));
+  console.log(user.role);
+  const role =
+    user.role === "company" || user.role === "teacher" ? true : false;
   const navigate = useNavigate();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState("");
 
   useEffect(() => {
     const path = location.pathname;
+
     if (path.includes("/pfe-student")) {
       setActiveMenu("pfe");
+    } else if (path.includes("mytopics") || path.includes("Addatopic")) {
+      setActiveMenu("mytopics"); // ✅ Match this to the comparison
+    } else if (path.includes("teamselection")) {
+      setActiveMenu("teamselection");
     } else if (path.includes("/teacher")) {
-      setActiveMenu("mytopics");
+      setActiveMenu("pfe");
     } else if (path.includes("/TeamFormationPage")) {
       setActiveMenu("TeamFormationPage");
     } else if (path.includes("/notifications")) {
@@ -61,8 +69,10 @@ const Sidebar = () => {
         <li className={Module["menu-title"]}>Menu</li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "pfe" ? Module["active"] : ""}`}
-            onClick={() => toggleMenu("/pfe-student")}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "pfe" ? Module["active"] : ""
+            }`}
+            onClick={() => toggleMenu(role ? "/teacher" : "/pfe-student")}
           >
             <img src={PFEIcon} alt="PFE Topics" className={Module["icon"]} />
             PFE Topics
@@ -74,14 +84,14 @@ const Sidebar = () => {
           </button>
         </li>
 
-        {user?.role === "teacher" && (
+        {role && (
           <>
             <li className={Module["menu-item"]}>
               <button
                 className={`${Module["menu-btn"]} ${
                   activeMenu === "mytopics" ? Module["active"] : ""
                 }`}
-                onClick={() => toggleMenu("/teacher")}
+                onClick={() => toggleMenu("/teacher/mytopics")}
               >
                 <img src={PFEIcon} alt="My Topics" className={Module["icon"]} />
                 My Topics
@@ -97,7 +107,7 @@ const Sidebar = () => {
                 className={`${Module["menu-btn"]} ${
                   activeMenu === "teamselection" ? Module["active"] : ""
                 }`}
-                onClick={() => toggleMenu("/teamselection")}
+                onClick={() => toggleMenu("/teacher/teamselection")}
               >
                 <img
                   src={TeamformationIcon}
@@ -114,7 +124,7 @@ const Sidebar = () => {
             </li>
           </>
         )}
-        {user?.role !== "teacher" && (
+        {!role && (
           <li className={Module["menu-item"]}>
             <button
               className={`${Module["menu-btn"]} ${

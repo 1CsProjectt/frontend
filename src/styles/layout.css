@@ -13,9 +13,3 @@
   flex-direction: column;
   overflow: hidden;
 }
-
-.outlet-scroll {
-  flex-grow: 1;
-  overflow-y: auto;
-  height: 100%;
-}

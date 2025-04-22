@@ -236,8 +236,8 @@
 
 .filter-categories {
   height: 100%;
-  width: 50%;
 
+  border-left: 1px solid #dde2e4;
   cursor: default;
 }
 
@@ -263,8 +263,6 @@
 }
 
 .filter-options {
-  border-right: 1px solid #dde2e4;
-
   height: 100%;
 
   width: 50%;
@@ -274,18 +272,48 @@
 }
 .option-label {
   display: flex;
-  align-items: center;
-  gap: 0; /* This removes space between checkbox and span */
 }
 .optionstext {
+  flex-shrink: 0;
+  padding-left: 8px;
   font-size: 14px;
   color: #313638;
 }
 .filter-input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
   margin: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
+  appearance: none; /* Remove default checkbox style */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  border: 2px solid #999;
+  border-radius: 10px; /* Customize this value */
+  background-color: white;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.filter-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.filter-input:checked::after {
+  content: "✓"; /* optional checkmark */
+  color: white;
+  font-size: 12px;
 }
 .labels-container {
-  width: 60px;
+  margin-left: 24px;
+
+  width: 80%;
+  height: 100%;
 }
 .filter-navside {
   flex-direction: column;

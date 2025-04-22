@@ -8,6 +8,7 @@ import searchicon from "../assets/Search.svg";
 import axios from "axios";
 
 const Addatopic = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [grade, setGrade] = useState("2CS");
@@ -22,7 +23,7 @@ const Addatopic = () => {
   const presentationRef = useRef(null);
   const techSheetRef = useRef(null);
 
-  const specialityList = ["ISI", "SIW", "7Arag"];
+  const specialityList = ["ISI", "SIW", "IASD"];
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,7 +88,7 @@ const Addatopic = () => {
 
     formData.append("specialization", speciality.join(","));
     selectedSupervisors.forEach((sup, index) => {
-      formData.append(`supervisors[${index}]`, sup); // makes an array
+      formData.append(`supervisors[${index}]`, sup); // makes an arrayP
     });
     formData.append("description", description);
     formData.append("year", grade);
@@ -209,47 +210,51 @@ const Addatopic = () => {
                 </select>
                 {isspec && <div className="space-year"></div>}{" "}
               </div>
-              <div className="form-section">
-                <label className="ttl-fs-at">Speciality</label>
+              {user.role === "teacher" && (
+                <div className="form-section">
+                  <label className="ttl-fs-at">Speciality</label>
 
-                <div className="select-sv-at">
-                  <button
-                    className="sv-button-at"
-                    onClick={() => toggleMenu("static")}
-                  >
-                    <p className="ttl-fs-at">
-                      {speciality.length === 0
-                        ? "Select speciality"
-                        : `${speciality.length} specialities selected`}
-                    </p>
-                    <img
-                      src={isOpen ? Iconup : Icondown}
-                      alt="Toggle"
-                      className="arrow-icon"
-                    />
-                  </button>
-                </div>
-                {isspec && (
-                  <div className="border-form-at">
-                    <div className="sv-list">
-                      {specialityList
-                        .filter((name) =>
-                          name.toLowerCase().includes(searchTerm.toLowerCase())
-                        )
-                        .map((name) => (
-                          <label key={name} className="sv-item">
-                            <input
-                              type="checkbox"
-                              checked={speciality.includes(name)}
-                              onChange={() => handleSpecialityToggle(name)}
-                            />
-                            {name}
-                          </label>
-                        ))}
-                    </div>
+                  <div className="select-sv-at">
+                    <button
+                      className="sv-button-at"
+                      onClick={() => toggleMenu("static")}
+                    >
+                      <p className="ttl-fs-at">
+                        {speciality.length === 0
+                          ? "Select speciality"
+                          : `${speciality.length} specialities selected`}
+                      </p>
+                      <img
+                        src={isOpen ? Iconup : Icondown}
+                        alt="Toggle"
+                        className="arrow-icon"
+                      />
+                    </button>
                   </div>
-                )}
-              </div>
+                  {isspec && (
+                    <div className="border-form-at">
+                      <div className="sv-list">
+                        {specialityList
+                          .filter((name) =>
+                            name
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((name) => (
+                            <label key={name} className="sv-item">
+                              <input
+                                type="checkbox"
+                                checked={speciality.includes(name)}
+                                onChange={() => handleSpecialityToggle(name)}
+                              />
+                              {name}
+                            </label>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
