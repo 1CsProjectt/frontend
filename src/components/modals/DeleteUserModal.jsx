@@ -4,7 +4,7 @@ import classes from "../../styles/DeleteUserModal.module.css";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
 import axios from "axios";
 
-const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userToDelete,teamIDtoDelete}) => {// the entity type is a string for now just to change the display of the message upon deletion
+const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userToDelete,teamIDtoDelete,sessionIDtoDelete}) => {// the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(true);
 
@@ -56,6 +56,24 @@ const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userToDelete,t
         
       } catch (err) {
         console.error("Error deleting team:", err);
+      }
+    }else if (entityType.toLowerCase() === "session" || entityType.toLowerCase() === "event") {
+      try {
+       
+  
+        await axios.delete(`/session/${sessionIDtoDelete}`, {
+          withCredentials: true,
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
+  
+        console.log(`session deleted successfully`);
+        setShowDeleteModal(false);
+        setSuccessConfirmationModal(true);
+        
+      } catch (err) {
+        console.error("Error deleting the session:", err);
       }
     }
   };

@@ -12,6 +12,7 @@ import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
 import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
+import AutoOrganizeTeamsModal from "../components/modals/AutoOrganizeTeamsModal";
 
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
@@ -34,6 +35,8 @@ function TeamFormationPage() {
   const user = JSON.parse(localStorage.getItem("user"));
   const targetDate = new Date("2025-04-29T23:59:59");
   const { sessionsPageActiveTab, setSessionsPageActiveTab } = useSharedState();
+  const [teamFormationSessionEnded,setTeamFormationSessionEnded] = useState(true);//temporarelly set to true (to implement later)
+  const [showAutoOrganizeModal,setShowAutoOrganizeModal] = useState(false);
 
   const handleJoinClick = () => {
     setShowLeaveTeamPopup(true);
@@ -166,14 +169,27 @@ function TeamFormationPage() {
               >
                 go Back
               </button>
+              {activeTab === "Existed Teams" && teamFormationSessionEnded && (
+                <button
+                  className={Style["admin-auto-organize-button"]}
+                  onClick={() => setShowAutoOrganizeModal(true)}
+                >
+                  auto-organize
+                </button>
+              )}
               {activeTab === "Existed Teams" && (
+         
+               
+
                 <button
                   className={Style["create-team-button"]}
                   onClick={() => setShowCreateTeamModal(true)}
                 >
                   Create a team
                 </button>
+             
               )}
+            
             </div>
           </div>
 
@@ -207,6 +223,11 @@ function TeamFormationPage() {
           onInviteSent={() => setToastMessage("Invite sent successfully.")}
           students={formattedStudents}
         />
+        <AutoOrganizeTeamsModal 
+          show={showAutoOrganizeModal}
+          onClose={() => setShowAutoOrganizeModal(false)}
+        />
+        
         <LeaveTeamPopup
           show={showLeaveTeamPopup}
           onCancel={handleCancel}

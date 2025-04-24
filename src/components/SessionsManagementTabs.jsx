@@ -10,6 +10,8 @@ import EditExistingSessionModal from "./modals/EditExistingSessionModal.jsx";
 import { PulseLoader } from "react-spinners"; 
 import alertIcon from "../assets/alert-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
+import DeleteUserModal from "./modals/DeleteUserModal.jsx";
+
 const SessionsManagementTabs = () => {
   const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState("Topic Submission Session");
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ const SessionsManagementTabs = () => {
   const [sessionToUpdate,setSessionToUpdate] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isDeleteUserModalOpen,setDeleteUserModalOpen] = useState(false);
+  const [sessionIDtoDelete,setSessionIDtoDelete] = useState(null);
 
   const tabs = [
     "Topic Submission Session",
@@ -248,9 +252,13 @@ const SessionsManagementTabs = () => {
                         <td>
                           <button className={classes["edit-btn"]} onClick={() => {console.log(session);
                           setSessionToUpdate(session);
+                        
                             setIsEditModalOpen(true);}}
                             >Edit</button>
-                          <button className={classes["cancel-btn"]}>Cancel</button>
+                          <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
+                          setSessionIDtoDelete(session.id);
+                        
+                            setDeleteUserModalOpen(true);}}>Cancel</button>
                         </td>
                       </tr>
                   ))}
@@ -315,6 +323,7 @@ const SessionsManagementTabs = () => {
                         <button className={classes["edit-btn"]} onClick={() => {
                 console.log(session);
                 setSessionToUpdate(session);
+                
                 setIsEditModalOpen(true);
               }}>Edit</button>
                         <button className={classes["cancel-btn"]}>Cancel</button>
@@ -351,6 +360,7 @@ const SessionsManagementTabs = () => {
           )}
         </div>
       </div>
+      <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose ={() => {setDeleteUserModalOpen(false)}} entityType={"session"} sessionIDtoDelete={sessionIDtoDelete} />
       <EditExistingSessionModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} sessionToUpdate={sessionToUpdate}/>
     </div>
   );
