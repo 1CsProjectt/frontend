@@ -408,7 +408,7 @@ th {
 }
 
 .member-email {
-  flex: 0.4;
+  flex: 2;
   font-size: 0.95rem;
   color: #333;
 }
@@ -553,4 +553,25 @@ font-size: 1.4rem;
 .my-team-table-Pending {
   overflow-y: auto;
   max-height: 20vh;
+}
+
+.suggestions-list {
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  z-index: 1000;
+  width: 37.2vh;
+  border-radius: 4px;
+  margin-top: 40px;
+   }
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f2f2f2;
 }

@@ -15,7 +15,19 @@ body p {
   width: 100%;
   padding: 1px;
 }
+.table-container table tr {
+  height: 40px;
+}
 
+.table-container table td,
+.table-container table th {
+  height: 40px;
+  max-height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2; /* Helps keep the content compact */
+}
 
 
   .h1{
@@ -125,7 +137,10 @@ body p {
   .table-container table td button{
     margin-left: 5px;
   }
-  
+  .table-container table tr {
+    height: 20px;
+    max-height: 30px;
+  }
   th, td {
     padding: 10px;
     border: 1px solid #ddd;

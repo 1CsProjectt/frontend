@@ -36,7 +36,7 @@ export default function PublishedTopicsExplorePage() {
             <div className={Module["buttons-container"]}>
               <button
                 className={Module["decline-button"]}
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/admin/sessions/topic-validation")}
               >
                 Decline
               </button>

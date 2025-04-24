@@ -46,7 +46,7 @@ function App() {
           }
 
           <Route path="/" element={<Login />} />
-
+        
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/CheckEmail" element={<CheckEmail />} />
@@ -81,6 +81,10 @@ function App() {
 
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"
+            element={<SubmittedTopicsExplorePage />}
+          />
+          <Route
+            path="/admin/sessions/topic-validation/published-topic-explore"
             element={<SubmittedTopicsExplorePage />}
           />
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />

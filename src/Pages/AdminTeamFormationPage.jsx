@@ -6,7 +6,7 @@ import Navbar from "../components/NavBar";
 import AdminStudentsListTab from "../components/AdminStudentsListTab";
 import AdminExistedTeamsTab from "../components/AdminExistedTeamsTab";
 import MyTeamTab from "../components/MyTeamTab";
-import CreateTeamModal from "../components/modals/CreateTeamModal";
+import AdminCreateTeamModal from "../components/modals/AdminCreateTeamModal";
 import Toast from "../components/modals/Toast";
 
 import Style from "../styles/TeamFormationPage.module.css";
@@ -81,7 +81,7 @@ function TeamFormationPage() {
             status:
               team.members &&
               team.maxNumber &&
-              team.members.length === team.maxNumber
+              team.members.length >= team.maxNumber
                 ? "full"
                 : "open",
           }));
@@ -100,9 +100,10 @@ function TeamFormationPage() {
 
   // Format the students for display
   const formattedStudents = students.map((student) => ({
+    id : student.id,
     fullName: `${student.firstname || ""} ${student.lastname || ""}`.trim(),
     email: student.user?.email || "No Email",
-
+    year: student.year || "N/A",
     status: student.status || "No Status",
   }));
 
@@ -135,6 +136,8 @@ function TeamFormationPage() {
           user={user}
           existedTeams={existedTeams}
           navigate={navigate}
+          students={formattedStudents}
+          
         />
       );
     }
@@ -197,11 +200,12 @@ function TeamFormationPage() {
           )}
         </div>
 
-        <CreateTeamModal
+        <AdminCreateTeamModal
           show={showCreateTeamModal}
           onClose={() => setShowCreateTeamModal(false)}
           onTeamCreated={() => setToastMessage("Team created successfully.")}
           onInviteSent={() => setToastMessage("Invite sent successfully.")}
+          students={formattedStudents}
         />
         <LeaveTeamPopup
           show={showLeaveTeamPopup}

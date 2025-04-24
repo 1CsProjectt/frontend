@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import axios from 'axios';
 import Style from '../../styles/TeamFormationPage.module.css';
 import Toast from './Toast';
@@ -74,6 +74,7 @@ const CreateTeamModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) =
 
     }
   };
+
 
   if (!show) return null;
 

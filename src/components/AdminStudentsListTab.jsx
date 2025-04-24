@@ -3,7 +3,10 @@ import Module from "../styles/TeamFormationPage.module.css";
 import CreateTeamAlert from "./modals/CreateTeamAlert";
 import Toast from "./modals/Toast";
 import axios from "axios";
+import MoveTeamMemberModal from './modals/MoveTeamMemberModal';
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
+
+
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 const StudentsListTab = ({ user, students, myTeamNumber }) => {
@@ -12,7 +15,8 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
   const [showToast, setShowToast] = useState(false);
   const containerRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
-
+  const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
+  const [memberIdToMove,setMemberIdToMove] = useState(null);//entire student object is set 
   useEffect(() => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
@@ -27,6 +31,10 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
     window.addEventListener("resize", updateStudentsPerPage);
     return () => window.removeEventListener("resize", updateStudentsPerPage);
   }, []);
+  
+  const handleMoveTeamMember = () => {
+    
+  };
 
   // Use the pagination utility functions to compute data for the current page
   const { currentItems: currentStudents, totalPages } = getPaginatedData(
@@ -80,7 +88,9 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
             <tr>
               <th>Full-name</th>
               <th>Email-address</th>
+              <th>Grade</th>
               <th>Group</th>
+              
               <th>Status</th>
               <th></th>
             </tr>
@@ -90,6 +100,7 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
               <tr key={index}>
                 <td>{student.fullName}</td>
                 <td>{student.email}</td>
+                <td>{student.year}</td>
                 <td>G5</td>
                 <td>
                   {student.status === "available" ? (
@@ -99,15 +110,23 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
                   )}
                 </td>
                 <td>
-                  {student.status === "available" ? (
+                  {/* {student.status === "available" ? (
                     <button className={Module["invite-button"]} onClick={() => console.log("Invite clicked")}>
                       Move
                     </button>
                   ) : (
                     <button className={Module["disable-button"]} disabled>
-                      Invite
+                      Move
                     </button>
-                  )}
+                  )} */}
+                  {/* //the admin can move a member whatever he is already in a team or not */}
+                              <button className={Module["invite-button"]} onClick={() => {
+                                console.log("selected student is : " + student.id);
+                setMemberIdToMove(student.id);
+                setIsMoveTeamMemberModalOpen(true);
+              }}>
+                      Move
+                    </button>
                 </td>
               </tr>
             ))}
@@ -161,8 +180,15 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
       {showToast && (
         <Toast message="Invite sent successfully." onClose={() => setShowToast(false)} />
       )}
-
+      
       <CreateTeamAlert show={showAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
+
+      <MoveTeamMemberModal 
+        isOpen={isMoveTeamMemberModalOpen}
+        
+        onClose={() => setIsMoveTeamMemberModalOpen(false)}
+    
+        memberIdToMove={memberIdToMove}      />
     </div>
   );
 };

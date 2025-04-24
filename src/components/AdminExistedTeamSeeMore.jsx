@@ -1,16 +1,20 @@
 //add that if you are alredt in a team you can not click the join button(i can write in the button that you are alredy in a team)
 
-import React, { useState } from "react";
+import React, { useState ,navigate, useEffect} from "react";
 import Module from "../styles/TeamFormationPage.module.css";
 import axios from "axios";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
-
-const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
+import MoveTeamMemberModal from "./modals/MoveTeamMemberModal";
+import AddMembersModal from "./modals/AddMembersModal";
+const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
+  const [showAddMembersModal, setShowAddMembersModal] = useState(false);
+  const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
 
+  const [memberIdToMove,setMemberIdToMove] = useState(null);
   const handleJoinClick = () => {
     setShowJoinAlert(true);
   };
@@ -30,6 +34,13 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
     }, 3000);
   };
 
+
+useEffect(() => {
+  console.log("My team members : " , myTeamMembers);
+
+
+}, []);
+
  
 
   // If team members are not provided via props, fall back to static data.
@@ -40,7 +51,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
 
   // Use passed team members if available; otherwise, static data.
   const membersToDisplay = myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
-
+  
   return (
     <div>
       <div className={Module["my-team-header"]}>
@@ -70,6 +81,15 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
                 <td>{member.email}</td>
               
                 <td>{member.role}</td>
+                <td>
+                   <button className={Module["invite-button"]} onClick={() => {
+                                                  console.log("selected student is : " + member.id);
+                                  setMemberIdToMove(member.id);
+                                  setIsMoveTeamMemberModalOpen(true);
+                                }}>
+                                        Move
+                                        </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -79,12 +99,37 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
         <button className={Module["BackSeeMoreBtn"]} onClick={() => onBack()}>
           Back
         </button>
-        <button className={Module["JoinSeeMoreBtn"]} onClick={handleJoinClick}>
-          Join
+        <button
+          className={Module["JoinSeeMoreBtn"]}
+          onClick={() => setShowAddMembersModal(true)}
+        >
+          Add Members
         </button>
       </div>
-      <JoinTeamAlert show={showJoinAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
-      {showToast && <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />}
+      <JoinTeamAlert
+        show={showJoinAlert}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
+      <AddMembersModal
+        show={showAddMembersModal}
+        onClose={() => setShowAddMembersModal(false)}
+        students={students}
+        selectedTeamID={myTeamNumber}
+      />
+      {showToast && (
+        <Toast
+          message={toastMessage || "Test Toast"}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+<MoveTeamMemberModal 
+        isOpen={isMoveTeamMemberModalOpen}
+        
+        onClose={() => setIsMoveTeamMemberModalOpen(false)}
+    
+        memberIdToMove={memberIdToMove}      />
     </div>
   );
 };
