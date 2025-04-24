@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.0c5d76fa.css",
-    "main.js": "/static/js/main.a62b08e9.js",
+    "main.css": "/static/css/main.c70b7e04.css",
+    "main.js": "/static/js/main.3cbdff57.js",
     "static/media/profile.svg": "/static/media/profile.b0cd140a5286989fb32b7056637117d0.svg",
     "static/media/school-icon.svg": "/static/media/school-icon.985669431e74a5f471b7b3101fa46e3c.svg",
     "static/media/manrope-latin-400-normal.woff": "/static/media/manrope-latin-400-normal.82cf2a7ba70209a07253.woff",
@@ -17,7 +17,6 @@
     "static/media/manrope-greek-400-normal.woff2": "/static/media/manrope-greek-400-normal.f1ac6072d210cbdb9a47.woff2",
     "static/media/manrope-vietnamese-400-normal.woff2": "/static/media/manrope-vietnamese-400-normal.9221e5e7b086d4b2bac8.woff2",
     "static/media/success-icon.svg": "/static/media/success-icon.a7f82877496365ae3ce35af872e57035.svg",
-    "static/media/SettingIcon.svg": "/static/media/SettingIcon.d1c0a09bcff80f2e7b8cb4688ab004af.svg",
     "static/media/settings-icon.svg": "/static/media/settings-icon.18a0c53a88022779ee64ee924cd385a6.svg",
     "static/media/loversr-icon.svg": "/static/media/loversr-icon.ce736c826d7976fae2c5b8f4195eff60.svg",
     "static/media/sessions-icon.svg": "/static/media/sessions-icon.ce736c826d7976fae2c5b8f4195eff60.svg",
@@ -28,6 +27,7 @@
     "static/media/help_outline_24px.svg": "/static/media/help_outline_24px.883e26d780210a647ef69ba06ee84a20.svg",
     "static/media/help-icon.svg": "/static/media/help-icon.b8b0fe474fc53aeb5d93d03b180aeaa4.svg",
     "static/media/Search.svg": "/static/media/Search.0d9362f0cbe922b9414eaf4e6c503d71.svg",
+    "static/media/upload.svg": "/static/media/upload.e3830591e298bf761ee07e40313bc090.svg",
     "static/media/Filter.svg": "/static/media/Filter.62ebda5b92f1f11b771d061355633215.svg",
     "static/media/users-icon.svg": "/static/media/users-icon.d4a44b5adde25773facff30753af5520.svg",
     "static/media/Teamformation.svg": "/static/media/Teamformation.e4b01726c78c78cb4852c05e53306ae1.svg",
@@ -35,6 +35,7 @@
     "static/media/favorite_border_24px.svg": "/static/media/favorite_border_24px.60745eb5c86a7841c2049a931b0cc3d0.svg",
     "static/media/logo-icon.svg": "/static/media/logo-icon.ae9d1daae5087f100caa1b4f9cca275e.svg",
     "static/media/Notifications.svg": "/static/media/Notifications.66d584c09813ddaf227349040c73804c.svg",
+    "static/media/addUpload.svg": "/static/media/addUpload.711b7a3826a3a78f7f4fc9c5bf430cda.svg",
     "index.html": "/index.html",
     "static/media/logout.svg": "/static/media/logout.12b12ac5be8880eb01c1b8e7c0312982.svg",
     "static/media/logout-icon.svg": "/static/media/logout-icon.99f688f041e8acbc8f6b64fd9b18184a.svg",
@@ -46,13 +47,16 @@
     "static/media/arrow-down.svg": "/static/media/arrow-down.cc7d472a7670f0bf74c3ed1c33310bc4.svg",
     "static/media/expand_less_24px.svg": "/static/media/expand_less_24px.71d8cd2eba04d6b92f88a120b6d17a2c.svg",
     "static/media/expand_less_black.svg": "/static/media/expand_less_black.40a0c4cf60cd36e9238afc4552421638.svg",
+    "static/media/info_24px.svg": "/static/media/info_24px.5dd9ba308302421fa7642134a67bb43c.svg",
+    "static/media/blue-warning-icon.svg": "/static/media/blue-warning-icon.61e7ca155280e6ce148ba756b6e73029.svg",
     "static/media/alert-circleIcon.svg": "/static/media/alert-circleIcon.2e141670d719cb5a46bdec1fd87c224c.svg",
     "static/media/warning-icon.svg": "/static/media/warning-icon.8dcfa0bd2434fc9160dcb7fa17cfaf4d.svg",
-    "main.0c5d76fa.css.map": "/static/css/main.0c5d76fa.css.map",
-    "main.a62b08e9.js.map": "/static/js/main.a62b08e9.js.map"
+    "static/media/alert-circle.svg": "/static/media/alert-circle.ae48e2429ebdd3a3f3369dd7a0de3d18.svg",
+    "main.c70b7e04.css.map": "/static/css/main.c70b7e04.css.map",
+    "main.3cbdff57.js.map": "/static/js/main.3cbdff57.js.map"
   },
   "entrypoints": [
-    "static/css/main.0c5d76fa.css",
-    "static/js/main.a62b08e9.js"
+    "static/css/main.c70b7e04.css",
+    "static/js/main.3cbdff57.js"
   ]
 }

@@ -1,39 +1,99 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useOutletContext } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
 import axios from "axios";
 import Alert from "../assets/alert-circle.svg";
 import SuccessIcon from "../assets/success-icon.svg";
 
+const SUBMITTED = "Submitted";
+const VALIDATED = "Validated";
+const DECLINED = "Declined";
+
 const TeacherTopics = () => {
-  const { cards, setCards } = useOutletContext();
-  const [Success, setSuccess] = useState(false);
+  const { Role } = useOutletContext();
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [onDelete, setOnDelete] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [selectedCount, setSelectedCount] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [activeTab, setActiveTab] = useState(SUBMITTED);
   const navigate = useNavigate();
-  console.log("TEACHE CARDS", cards);
-  const totalCount = cards.length; // Get total number of PFE topics
 
-  const handleButtons = () => {
-    // Do nothing if there are no topics
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/pfe/my-pfes", {
+          withCredentials: true,
+        });
 
-    if (onDelete) {
-      setShowConfirmation(true); // Show confirmation popup
-    } else {
-      setOnDelete(true);
+        if (response.data?.data) {
+          setCards(response.data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching card data", err);
+        if (err.response?.status === 401) {
+          alert("Session expired. Please log in again.");
+          navigate("/login");
+        } else {
+          setError("Failed to fetch PFE projects. Please try again later.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
+
+  // Filter cards based on status
+  const submittedCards = cards.filter(
+    (card) => card.status === "NOT_VALIDE" || !card.status
+  );
+  const validatedCards = cards.filter((card) => card.status === "VALIDE");
+  const declinedCards = cards.filter((card) => card.status === "REJECTED");
+
+  const getCurrentCards = () => {
+    switch (activeTab) {
+      case SUBMITTED:
+        return submittedCards;
+      case VALIDATED:
+        return validatedCards;
+      case DECLINED:
+        return declinedCards;
+      default:
+        return [];
     }
   };
+
+  const currentCards = getCurrentCards();
+  const totalCount = currentCards.length;
+
   const reset = () => {
     setSelectedIds([]);
     setShowConfirmation(false);
     setOnDelete(false);
     setSelectedCount(0);
     setIsChecked(false);
+  };
+
+  const cancelDelete = () => reset();
+  const onOkey = () => {
+    setSuccess(false);
+    reset();
+  };
+
+  const handleButtons = () => {
+    if (totalCount === 0) return;
+    if (onDelete) {
+      setShowConfirmation(true);
+    } else {
+      setOnDelete(true);
+    }
   };
 
   const confirmDelete = async () => {
@@ -54,26 +114,14 @@ const TeacherTopics = () => {
         )
       );
 
-      // Try to re-fetch the data
-      try {
-        const response = await axios.get("/pfe/my-pfes", {
-          withCredentials: true,
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-
-        if (response.data?.data) {
-          setCards(response.data.data);
-        }
-      } catch (err) {
-        if (err.response?.status === 404) {
-          // Backend is saying no PFEs exist — that's okay
-          setCards([]); // Set an empty list
-        } else {
-          throw err; // Other errors still need to be caught
-        }
-      }
+      // Refresh data after deletion
+      const response = await axios.get("/pfe/my-pfes", {
+        withCredentials: true,
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+      setCards(response.data?.data || []);
 
       reset();
       setSuccess(true);
@@ -83,34 +131,51 @@ const TeacherTopics = () => {
       reset();
     }
   };
-  const cancelDelete = () => {
-    reset();
-  };
-  const onOkey = () => {
-    setSuccess(false);
-    reset();
-  };
+
   const handleToggle = () => {
     if (isChecked) {
       setSelectedCount(0);
-      setSelectedIds([]); // If unchecked, reset count
+      setSelectedIds([]);
     } else {
       setSelectedCount(totalCount);
-      setSelectedIds(cards.map((card) => card.id));
+      setSelectedIds(currentCards.map((card) => card.id));
     }
-    setIsChecked(!isChecked); // Toggle state
+    setIsChecked(!isChecked);
   };
 
   return (
     <div className="containert">
+      {/* Tabs */}
+      <div className="tabs-container">
+        <div className="tabs">
+          <button
+            className={`tab-item ${activeTab === SUBMITTED ? "active" : ""}`}
+            onClick={() => setActiveTab(SUBMITTED)}
+          >
+            {SUBMITTED}
+          </button>
+          <button
+            className={`tab-item ${activeTab === VALIDATED ? "active" : ""}`}
+            onClick={() => setActiveTab(VALIDATED)}
+          >
+            {VALIDATED}
+          </button>
+          <button
+            className={`tab-item ${activeTab === DECLINED ? "active" : ""}`}
+            onClick={() => setActiveTab(DECLINED)}
+          >
+            {DECLINED}
+          </button>
+        </div>
+      </div>
+
       <div className="pageheader">
         <p className="pagetitle">MyTopics</p>
         {onDelete && (
           <div className="delete-popup">
-            {" "}
             <div className="selection-container" onClick={handleToggle}>
               <input
-                type="radio"
+                type="checkbox"
                 id="all"
                 name="selection"
                 className="radio-input"
@@ -127,41 +192,55 @@ const TeacherTopics = () => {
 
         <p className="spacing"></p>
         <button className="btnd" onClick={handleButtons}>
-          {" "}
           <p className="managebtns-text">Delete Topics</p>
         </button>
         <button
           className={` ${onDelete ? "btna-on-cancel" : "btna"}`}
-          onClick={onDelete ? cancelDelete : () => navigate("Addatopic")}
+          onClick={
+            onDelete ? cancelDelete : () => navigate("/teacher/Addatopic")
+          }
         >
           <p className={` ${onDelete ? "txt-on-cancel" : "managebtns-text"}`}>
             {onDelete ? "Cancel" : "Add a Topic"}
           </p>
         </button>
       </div>
+
       {showConfirmation && (
         <Popup onCancel={cancelDelete} onConfirm={confirmDelete} poproud={1} />
       )}
 
-      {Success && <Popup poproud={2} onOkey={onOkey} />}
-      <PFEList
-        filteredCards={cards}
-        onDelete={onDelete}
-        selectedIds={selectedIds}
-        setSelectedIds={setSelectedIds}
-        setSelectedCount={setSelectedCount}
-      />
+      {success && <Popup poproud={2} onOkey={onOkey} />}
+
+      <div className="content-area-mytopics">
+        {error && <div className="error-message">{error}</div>}
+
+        {loading ? (
+          <div className="loading-indicator">Loading...</div>
+        ) : (
+          <PFEList
+            filteredCards={currentCards}
+            onDelete={onDelete}
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
+            setSelectedCount={setSelectedCount}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
+// Popup Component
 const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
   const popupRef = useRef(null);
 
   useEffect(() => {
+    if (poproud !== 1) return;
+
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
-        onCancel(); // Close popup when clicking outside
+        onCancel();
       }
     };
 
@@ -169,14 +248,13 @@ const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [onCancel]);
+  }, [onCancel, poproud]);
 
   return (
     <div className="overlay">
       {poproud === 1 && (
         <div className="popup-cont" ref={popupRef}>
           <div className="conf-warn-cont">
-            {" "}
             <img src={Alert} alt="" className="conf-warn" />
           </div>
           <p className="conf-ttl">Delete PFE Topics</p>
@@ -187,7 +265,6 @@ const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
             <button className="cancel-button" onClick={onCancel}>
               Cancel
             </button>
-
             <button className="delete-button" onClick={onConfirm}>
               Delete
             </button>
@@ -197,7 +274,6 @@ const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
       {poproud === 2 && (
         <div className="popup-cont" ref={popupRef}>
           <div className="conf-warn-cont">
-            {" "}
             <img src={SuccessIcon} alt="" className="conf-warn" />
           </div>
           <p className="conf-ttl">Success!</p>
@@ -216,6 +292,7 @@ const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
   );
 };
 
+// PFEList Component
 const PFEList = ({
   filteredCards,
   onDelete,
@@ -223,28 +300,22 @@ const PFEList = ({
   setSelectedIds,
   setSelectedCount,
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const handleCardClick = (id) => {
     if (onDelete) {
       setSelectedIds((prevSelected) => {
         const isSelected = prevSelected.includes(id);
         const newSelected = isSelected
-          ? prevSelected.filter((selectedId) => selectedId !== id) // Remove if already selected
-          : [...prevSelected, id]; // Add if not selected
+          ? prevSelected.filter((selectedId) => selectedId !== id)
+          : [...prevSelected, id];
 
-        // Update the count based on selection change
         setSelectedCount(newSelected.length);
-
         return newSelected;
       });
     }
   };
 
   return (
-    <div className="cards-container">
-      {console.log("Filtered Cards: ", filteredCards)}{" "}
-      {/* Debugging filteredCards */}
+    <div className="cards-container" style={{ marginTop: "40px" }}>
       {filteredCards.length > 0 ? (
         filteredCards.map((card, index) => (
           <PFECard
@@ -260,4 +331,5 @@ const PFEList = ({
     </div>
   );
 };
+
 export default TeacherTopics;

@@ -38,11 +38,6 @@ const Login = () => {
       return;
     }
 
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
     setError("");
     setLoading(true);
 
@@ -67,7 +62,7 @@ const Login = () => {
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "student") {
-        navigate("/pfe");
+        navigate("/pfe-student");
       } else {
         navigate("/teacher");
       }

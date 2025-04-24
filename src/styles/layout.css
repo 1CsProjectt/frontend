@@ -1,41 +1,15 @@
-* {
-  margin: 0;
-  padding: 0;
-
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
 .layout {
+  height: 100vh; /* Full viewport height */
   display: flex;
-  height: 100vh;
   background-color: #f5f7fa;
+  overflow: hidden; /* Prevent double scrollbars */
 }
 
 .maincontent {
-  margin-left: 310px; /* To accommodate sidebar width */
-  width: calc(100% - 290px);
+  height: 100%;
+  margin-left: 310px; /* Adjust to your sidebar width */
+  width: calc(100% - 310px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
-
-.leftside {
-  background-color: #077ed4;
-  width: 290px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-}
-.navbar-wrapper {
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: white; /* Make sure it's visible */
-}
-
-.outlet-scroll {
-  flex-grow: 1;
-  overflow-y: auto;
-  /* Optional */
-}
-/* Resizable Handle */

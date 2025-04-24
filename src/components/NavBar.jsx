@@ -6,10 +6,9 @@ import filterIconup from "../assets/arrow-up.svg";
 import filterIcondown from "../assets/arrow-down.svg";
 import notfIcon from "../assets/Notifications.svg";
 import profilepic from "../assets/profile.svg";
-import{io } from "socket.io-client"; // Import Socket.IO client
+import { io } from "socket.io-client"; // Import Socket.IO client
 import axios from "axios";
 // Dummy notification data
-
 
 let notificationCount = 0;
 
@@ -300,26 +299,34 @@ const FilterMenu = ({
         >
           <div className={Module["filter-content"]}>
             <div className={Module["filter-options"]}>
-              <p
-                className={
-                  activeTab === "Speciality"
-                    ? Module["tab-active"]
-                    : Module["tab-inactive"]
-                }
-                onClick={() => handleTabChange("Speciality")}
-              >
-                Speciality
-              </p>
-              <p
-                className={
-                  activeTab === "Other"
-                    ? Module["tab-active"]
-                    : Module["tab-inactive"]
-                }
-                onClick={() => handleTabChange("Other")}
-              >
-                Other
-              </p>
+              <div className={Module["filter-navside"]}>
+                <p className={Module["filter-header"]}>Filter type</p>{" "}
+                <div className={Module["options-container-filter"]}>
+                  {" "}
+                  <p
+                    className={
+                      activeTab === "Speciality"
+                        ? Module["tab-active"]
+                        : Module["tab-inactive"]
+                    }
+                    onClick={() => handleTabChange("Speciality")}
+                  >
+                    Speciality
+                  </p>
+                </div>
+                <div className={Module["options-container-filter"]}>
+                  <p
+                    className={
+                      activeTab === "Other"
+                        ? Module["tab-active"]
+                        : Module["tab-inactive"]
+                    }
+                    onClick={() => handleTabChange("Other")}
+                  >
+                    Other
+                  </p>
+                </div>
+              </div>
             </div>
             <div className={Module["filter-categories"]}>
               <p className={Module["filter-header"]}>
@@ -327,20 +334,23 @@ const FilterMenu = ({
                   ? "show only"
                   : "Select Other Options"}
               </p>
-              {(activeTab === "Specialitys"
-                ? specialityOptions
-                : otherOptions
-              ).map((option) => (
-                <label key={option} className={Module["option-label"]}>
-                  <input
-                    type="checkbox"
-                    value={option}
-                    checked={localFilters[activeTab].includes(option)}
-                    onChange={(e) => handleCheckboxChange(e, activeTab)}
-                  />
-                  <span className={Module["optionstext"]}>{option}</span>
-                </label>
-              ))}
+              <div className={Module["labels-container"]}>
+                {(activeTab === "Speciality"
+                  ? specialityOptions
+                  : otherOptions
+                ).map((option) => (
+                  <label key={option} className={Module["option-label"]}>
+                    <input
+                      className={Module["filter-input"]}
+                      type="checkbox"
+                      value={option}
+                      checked={localFilters[activeTab].includes(option)}
+                      onChange={(e) => handleCheckboxChange(e, activeTab)}
+                    />
+                    <span className={Module["optionstext"]}>{option}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
           <div className={Module["filter-buttons"]}>
@@ -427,7 +437,7 @@ const NotificationsContainer = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const socket = io("http://localhost:3000"); 
+    const socket = io("http://localhost:3000");
 
     socket.on("receive-notification", (data) => {
       setNotifications((prevNotifications) => [data, ...prevNotifications]);
@@ -441,7 +451,9 @@ const NotificationsContainer = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/notifications");
+        const response = await axios.get(
+          "http://localhost:5000/api/notifications"
+        );
         setNotifications(response.data);
       } catch (err) {
         setError(err.message);

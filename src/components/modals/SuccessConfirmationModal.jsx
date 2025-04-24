@@ -5,7 +5,7 @@ import successIcon from "../../assets/success-icon.svg";
 
 const SuccessConfirmationModal = ({ message, onClose }) => {
   return (
-    <div className={classes["modal-overlay"]}>
+    <div className={classes["modal-overlay"]} style={{ transform: "scale(1.2)" }}>
       <div className={classes["modal-content"]}>
         <img src={successIcon} alt="Success" className={classes["success-icon"]} />
         <h2>Success</h2>

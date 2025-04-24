@@ -15,7 +15,7 @@ const SetRoleModal = ({ show, onClose }) => {
   const handleConfirm = async () => {
     try {
       
-     await axios.patch("/teams/setrole", { role }, { withCredentials: true });
+     await axios.patch("/students/set-role", { role }, { withCredentials: true });
       
       console.log("Role set to:", role);
       onClose(); 

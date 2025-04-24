@@ -6,7 +6,7 @@ import axios from "axios";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 
-const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
+const Seemorepage = ({ myTeamNumber, myTeamMembers = [], userRole }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
@@ -20,7 +20,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
   };
 
   const handleConfirm = () => {
-  setShowJoinAlert(false);
+    setShowJoinAlert(false);
 
     console.log("Join confirmed!");
     setToastMessage("Team joining was successful.");
@@ -30,16 +30,14 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
     }, 3000);
   };
 
- 
-
   // If team members are not provided via props, fall back to static data.
   const staticTeamMembers = [
     { fullName: "XX", email: "XX@example.com", group: "Group XX", role: "XX" },
-  
   ];
 
   // Use passed team members if available; otherwise, static data.
-  const membersToDisplay = myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
+  const membersToDisplay =
+    myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
 
   return (
     <div>
@@ -59,7 +57,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
             <tr>
               <th>Full Name</th>
               <th>Email Address</th>
-             
+
               <th>Role</th>
             </tr>
           </thead>
@@ -68,7 +66,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
               <tr key={index}>
                 <td>{member.fullName}</td>
                 <td>{member.email}</td>
-              
+
                 <td>{member.role}</td>
               </tr>
             ))}
@@ -76,15 +74,32 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,onBack }) => {
         </table>
       </div>
       <div className={Module["buttons-container-see-more"]}>
-        <button className={Module["BackSeeMoreBtn"]} onClick={() => onBack()}>
+        <button
+          className={Module["BackSeeMoreBtn"]}
+          onClick={() => window.history.back()}
+        >
           Back
         </button>
-        <button className={Module["JoinSeeMoreBtn"]} onClick={handleJoinClick}>
-          Join
-        </button>
+        {userRole !== "teacher" && (
+          <button
+            className={Module["JoinSeeMoreBtn"]}
+            onClick={handleJoinClick}
+          >
+            Join
+          </button>
+        )}
       </div>
-      <JoinTeamAlert show={showJoinAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
-      {showToast && <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />}
+      <JoinTeamAlert
+        show={showJoinAlert}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
+      {showToast && (
+        <Toast
+          message={toastMessage || "Test Toast"}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };
