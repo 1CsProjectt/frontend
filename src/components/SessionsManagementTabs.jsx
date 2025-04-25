@@ -11,7 +11,7 @@ import { PulseLoader } from "react-spinners";
 import alertIcon from "../assets/alert-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
 import DeleteUserModal from "./modals/DeleteUserModal.jsx";
-
+import { Outlet } from "react-router-dom";
 const SessionsManagementTabs = () => {
   const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState("Topic Submission Session");
   const navigate = useNavigate();
@@ -347,7 +347,7 @@ const SessionsManagementTabs = () => {
                 editing, or reordering items.
                 </p>
               </div>
-              <button className={classes["edit-teams-btn"]}   onClick={() =>  navigate("/admin/sessions/topic-validation")} >See topics</button>
+              <button className={classes["edit-teams-btn"]}   onClick={() =>  navigate("/admin/sessions/manage-preferences")} >Manage Preferences</button>
             </div>
           </div>
           )}
@@ -360,6 +360,7 @@ const SessionsManagementTabs = () => {
           )}
         </div>
       </div>
+      <Outlet />
       <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose ={() => {setDeleteUserModalOpen(false)}} entityType={"session"} sessionIDtoDelete={sessionIDtoDelete} />
       <EditExistingSessionModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} sessionToUpdate={sessionToUpdate}/>
     </div>

@@ -27,8 +27,8 @@ export default function PublishedTopicsExplorePage() {
 
   return (
     <div className={Module["explore-container"]}>
-      <AdminSidebar />
-      <div className={Module["explore-content"]} style={{ marginLeft: "17vw" }}>
+      
+      <div className={Module["explore-content"]} >
         <Navbar />
         <div className={Module["scroll-container"]}>
           <div className={Module["header"]}>

@@ -4,10 +4,13 @@
 
 .admin-dashboard {
     display: flex; /* Ensures sidebar and content are side-by-side */
+    height: 100vh;
 }
 
 .main-content {
     flex: 1; /* Takes remaining space */
+    min-height: 100vh;
+    height: 100vh;
     max-height: 100vh   ;
     padding: 0px;
     margin:0px; 
