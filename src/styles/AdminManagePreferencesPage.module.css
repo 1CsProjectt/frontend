@@ -762,3 +762,12 @@
   .lower-header h2{
     margin:0px;
   }
+
+  .cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 26vw);
+    gap: 20px;
+    padding:0px;
+    max-height: calc(100vh - 300px); /* Adjust height dynamically */
+    overflow-y: auto; /* Enables vertical scrolling */
+  }

@@ -1,6 +1,6 @@
 import React, { useState ,useEffect } from 'react';
 import axios from 'axios';
-import Style from '../../styles/TeamFormationPage.module.css';
+import Style from '../../styles/AdminManagePreferencesPage.module.css';
 import Toast from './Toast';
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";

@@ -39,9 +39,12 @@ const ExistedTeamsTab = ({ user, students }) => {
     };
     fetchAllTeams();
   }, []);
-
+  useEffect(() => {
+    console.log("Selected team changed:", selectedTeam !== null);
+  }, [selectedTeam]);
   useEffect(() => {
     console.log("teamsArray in the manage preferences page", teamsArray);
+    
   }, [teamsArray]);
 
   useEffect(() => {
@@ -95,9 +98,11 @@ const ExistedTeamsTab = ({ user, students }) => {
             >
               go Back
             </button>
+            
+            {selectedTeam === null &&  (
             <button className={Module["admin-auto-organize-button"]}>
-              auto-organize
-            </button>
+              auto-assign
+            </button>)}
           </div>
         </div>
 

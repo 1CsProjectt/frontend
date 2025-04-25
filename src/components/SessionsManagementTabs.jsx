@@ -185,7 +185,10 @@ const SessionsManagementTabs = () => {
             >
               Edit
             </button>
-            <button className={classes["cancel-btn"]}>Cancel</button>
+            <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
+                          setSessionIDtoDelete(session.id);
+                        
+                            setDeleteUserModalOpen(true);}}>Cancel</button>
           </td>
         </tr>
       ))
@@ -238,8 +241,37 @@ const SessionsManagementTabs = () => {
                     </tr>
                   </thead>
                   <tbody>
+                  {loading ? (
+                        <tr>
+                          <td colSpan={4}>
+                            <div className={classes.loaderContainer}>
+                              <div className={classes.loader}>
+                                <PulseLoader color="#07cad4" loading={loading} size={25} />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : error ? (
+                        <tr>
+                          <td colSpan={4}>
+                            <div className={classes.alertDiv}>
+                              <img src={errorIcon} alt="Error Icon" />
+                              <h3>Error connecting to the server</h3>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : sessionsArray.filter(session => session.name === tabToSessionType[sessionsPageActiveTab]).length === 0 ? (
+                        <tr>
+                          <td colSpan={4}>
+                            <div className={classes.alertDiv}>
+                              <img src={alertIcon} alt="Alert Icon" />
+                              <h3>No Sessions were founds</h3>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
                   
-                    {sessionsArray
+                    sessionsArray
                     .filter(session => session.name === tabToSessionType[sessionsPageActiveTab])
                     .map((session, index) => (
                       <tr key={index}>
@@ -261,7 +293,7 @@ const SessionsManagementTabs = () => {
                             setDeleteUserModalOpen(true);}}>Cancel</button>
                         </td>
                       </tr>
-                  ))}
+                  )))}
                   </tbody>
                 </table>
               </div>
@@ -308,8 +340,36 @@ const SessionsManagementTabs = () => {
                   </tr>
                 </thead>
                 <tbody>
-                
-                  {sessionsArray
+                {loading ? (
+                  <tr>
+                    <td colSpan={3}>
+                      <div className={classes.loaderContainer}>
+                        <div className={classes.loader}>
+                          <PulseLoader color="#07cad4" loading={loading} size={25} />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td colSpan={3}>
+                      <div className={classes.alertDiv}>
+                        <img src={errorIcon} alt="Error Icon" />
+                        <h3>Error connecting to the server</h3>
+                      </div>
+                    </td>
+                  </tr>
+                ) : sessionsArray.filter(session => session.name === tabToSessionType[sessionsPageActiveTab]).length === 0 ? (
+                  <tr>
+                    <td colSpan={3}>
+                      <div className={classes.alertDiv}>
+                        <img src={alertIcon} alt="Alert Icon" />
+                        <h3>No Sessions were founds</h3>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  sessionsArray
                   .filter(session => session.name === tabToSessionType[sessionsPageActiveTab])
                   .map((session, index) => (
                     <tr key={index}>
@@ -326,10 +386,13 @@ const SessionsManagementTabs = () => {
                 
                 setIsEditModalOpen(true);
               }}>Edit</button>
-                        <button className={classes["cancel-btn"]}>Cancel</button>
+                        <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
+                          setSessionIDtoDelete(session.id);
+                        
+                            setDeleteUserModalOpen(true);}}>Cancel</button>
                       </td>
                     </tr>
-                ))}
+                )))}
                 </tbody>
               </table>
             </div>

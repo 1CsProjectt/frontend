@@ -3,7 +3,7 @@
 import React, { useState ,navigate, useEffect} from "react";
 import Module from "../styles/AdminManagePreferencesPage.module.css";
 import axios from "axios";
-
+import PFECard from "../components/CardComponent";
 import Toast from "../components/modals/Toast";
 
 const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => {
@@ -14,6 +14,10 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => 
   const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
 
   const [memberIdToMove,setMemberIdToMove] = useState(null);
+  const [showAssignTopicPage,setShowAssignTopicPage] = useState(false);
+  const [cardsArray,setCardsArray] = useState([]);
+  const [loading,setLoading] = useState(false);
+  const [connectionError,setConnectionError] = useState(false);
   const handleJoinClick = () => {
     setShowJoinAlert(true);
   };
@@ -36,6 +40,27 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => 
 
 useEffect(() => {
   console.log("My team members : " , myTeamMembers);
+  const fetchPublishedCards = async () => {
+    if (loading) return; // Prevent multiple fetches when already loading
+    setLoading(true); // Start loading
+    try {
+      const response = await axios.get("/pfe/validpfe");
+      if (response.data && response.data.pfeList) {
+        setCardsArray(response.data.pfeList);
+        console.log(response);
+      }
+      /* setPublishedCardsArray(data); // Save data in state */
+    } catch (error) {
+      console.error("Error fetching the submitted cards data:", error);
+
+      setConnectionError(true); // Set connection error state
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  fetchPublishedCards();
+  console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
 
 
 }, []);
@@ -50,7 +75,21 @@ useEffect(() => {
 
   // Use passed team members if available; otherwise, static data.
   const membersToDisplay = myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
-  
+  if (showAssignTopicPage){
+    return(
+    <div className={Module["cards-container"]}>
+      {cardsArray.map((card) => (
+        <PFECard
+          key={card.id}
+          card={card}
+          onExplore={(e) => {
+            e.stopPropagation();
+          }}
+          buttonText={"Assign"}
+        />
+      ))}
+    </div>);
+  }
   return (
     <div className={Module["admin-see-more-container"]}>
       <div className={Module["my-team-header"]}>
@@ -131,7 +170,7 @@ useEffect(() => {
               >
                 auto-assign
               </button>
-              <button className={Module["admin-assign-topic-button"]} onClick={() => onBack()}>
+              <button className={Module["admin-assign-topic-button"]} onClick={() => {setShowAssignTopicPage(true)}}>
                 Assign a topic
               </button>
       </div>
@@ -147,8 +186,8 @@ useEffect(() => {
           <tbody>
             
               <tr >
-                <td>{}</td>
-                <td>{}</td>
+                <td>{"No supervisor yet"}</td>
+                <td>{"No topic yet"}</td>
               </tr>
             
           </tbody>

@@ -223,3 +223,10 @@
   }
 
 
+  .max-cell-height {
+    max-height: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  

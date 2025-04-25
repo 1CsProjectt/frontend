@@ -123,8 +123,9 @@
   .table-container table tbody {
     min-height: 150px;
     height: 180px;
+
    overflow-x: hidden;
-   overflow-y: auto;
+   overflow-y: scroll;
   }
 
   .table-container table td button{

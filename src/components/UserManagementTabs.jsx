@@ -193,19 +193,19 @@ useEffect(() => {
                   </tr>
                 ) : displayedUsers.map((user, index) => ( 
                   <tr key={index}>
-                    <td>{user.username || "No Username"}</td>
-                    <td>{user.email || "No Email"}</td>
-                    <td>{user.createdAt || "Unknown Date"}</td>
-                    <td
-                      className={
+                    <td className={classes["max-cell-height"]}> {user.username || "No Username"}</td>
+                    <td className={classes["max-cell-height"]}>{user.email || "No Email"}</td>
+                    <td className={classes["max-cell-height"]}>{user.createdAt || "Unknown Date"}</td>
+                    <td className={classes["max-cell-height"]}
+                      /* className={
                         user.status === "active"
                           ? classes["status-active"]
                           : classes["status-inactive"]
-                      }
+                      } */
                     >
                       {user.status || "Inactive"}
                     </td>
-                    <td>
+                    <td className={classes["max-cell-height"]}>
                       <button
                         onClick={() => {
                           setUserToEdit(user);
