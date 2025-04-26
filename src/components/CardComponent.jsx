@@ -10,7 +10,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-    navigate("/pfe-student/explore", { state: { card } });
+    navigate("/pfe-student/explore", { state: { card }  });
   };
 
   // If onExplore prop is not passed, fallback to defaultHandleExplore
@@ -28,7 +28,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
       />
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
-        <div className={Style["card-categories"]}>z
+        <div className={Style["card-categories"]}>
           {Array.isArray(card.specialization)
             ? card.specialization.map((spec, i) => (
               <span key={i} className={Style.category}>
@@ -42,7 +42,8 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
 
         </div>
         <p className={Style["card-description"]}>{card.description}</p>
-        <p className={Style["card-author"]}>By {card.creator?.username}</p>
+        <p className={Style["card-author"]}>By {card.createdBy?.username}</p>
+        
         <button
           className={Style["card-button"]}
           onClick={(e) => handleExplore(e, card)} // Use handleExplore here

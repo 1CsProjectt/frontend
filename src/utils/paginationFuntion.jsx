@@ -1,7 +1,7 @@
 // paginationUtils.js
 
 /**
- * 🧮 getPaginatedData
+ *  getPaginatedData
  * Returns the current items for the page, total number of pages, and start/end indices.
  *
  * @param {Array} items - The complete dataset (e.g., list of teams).
@@ -19,7 +19,7 @@ export const getPaginatedData = (items, currentPage, itemsPerPage) => {
 };
 
 /**
- * 🔢 getPageNumbers
+ *  getPageNumbers
  * Generates a smart array of page numbers with ellipses ("...") if needed.
  *
  * @param {number} totalPages - Total number of pages.
@@ -29,7 +29,7 @@ export const getPaginatedData = (items, currentPage, itemsPerPage) => {
 export const getPageNumbers = (totalPages, currentPage) => {
   const pageNumbers = [];
 
-  if (totalPages <= 7) {
+  if (totalPages <= 6) {
     // Show all pages
     for (let i = 1; i <= totalPages; i++) {
       pageNumbers.push(i);

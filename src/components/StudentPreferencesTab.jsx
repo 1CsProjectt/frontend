@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Toast from "./modals/Toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   DndContext,
   closestCenter,
@@ -22,35 +22,35 @@ import Module from "../styles/TeamFormationPage.module.css";
 import MotivationCard from "./MotivationCard";
 import SubmitModal from "./modals/submitModal";
 import SuccessConfirmationModal from "./modals/SuccessConfirmationModal";
+
 axios.defaults.withCredentials = true;
 
 // A single sortable row component
-const SortableRow = ({ item, submit }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({
+const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
+  const navigate = useNavigate();
+
+  const handleRemoveClick = () => {
+    onRemove(item.topic_title);
+  };
+
+  const handleReadClick = (e, card) => {
+    e.stopPropagation();
+    navigate("/pfe-student/explore", { state: { card, } });
+  };
+
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item.id,
     disabled: submit,
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
     <tr ref={setNodeRef} style={style} className={Module["sortable-row"]}>
       <td
         {...attributes}
         {...listeners}
-        style={{
-          cursor: submit ? "default" : "grab",
-          pointerEvents: submit ? "none" : "auto",
-        }}
+        style={{ cursor: submit ? "default" : "grab", pointerEvents: submit ? "none" : "auto" }}
       >
         <span className={Module["drag-handle"]}>⋮⋮</span>
       </td>
@@ -73,10 +73,18 @@ const SortableRow = ({ item, submit }) => {
           </span>
         ) : (
           <>
-            <button className={Style["Read-button"]} style={{ margin: "0 10px" }}>
+            <button
+              className={Style["Read-button"]}
+              style={{ margin: "0 10px" }}
+              onClick={(e) => handleReadClick(e, item.card_info)}
+            >
               Read
             </button>
-            <button className={Style["Remove-button"]} style={{ margin: "0 10px" }}>
+            <button
+              className={Style["Remove-button"]}
+              style={{ margin: "0 10px" }}
+              onClick={handleRemoveClick}
+            >
               Remove
             </button>
           </>
@@ -86,8 +94,73 @@ const SortableRow = ({ item, submit }) => {
   );
 };
 
-const StudentPreferences = ({ PreferenecesList = [], submit }) => {
-  const navigate = useNavigate();
+const StudentPreferences = ({ submit }) => {
+  const location = useLocation();
+  const { addedTopic, removedTopic } = location.state || {};
+  const [motivationFile, setMotivationFile] = useState(null);
+  // Manage preferences locally
+  const [preferencesList, setPreferencesList] = useState(() => {
+    const stored = JSON.parse(localStorage.getItem("preferencesList")) || [];
+    return stored;
+  });
+
+  // Handle add/remove from ExplorePage
+  useEffect(() => {
+    if (addedTopic) {
+      setPreferencesList((prev) => {
+        // Avoid duplicate adds
+        if (prev.some((p) => p.id === addedTopic.id)) return prev;
+        // Transform card into list entry
+        const newItem = {
+          id: addedTopic.id,
+          topic_title: addedTopic.title || "",
+          main_supervisor:
+            addedTopic.supervisors && addedTopic.supervisors.length > 0
+              ? `${addedTopic.supervisors[0].firstname} ${addedTopic.supervisors[0].lastname}`
+              : "",
+          status: "",
+          card_info: addedTopic,
+          order: String(prev.length + 1).padStart(2, "0"),
+        };
+        const next = [...prev, newItem];
+        localStorage.setItem("preferencesList", JSON.stringify(next));
+        window.history.replaceState({}, document.title);
+        return next;
+      });
+    }
+    if (removedTopic) {
+      setPreferencesList((prev) => {
+        const next = prev
+          .filter((p) => p.id !== removedTopic.id)
+          .map((p, idx) => ({
+            ...p,
+            order: String(idx + 1).padStart(2, "0"),
+          }));
+        localStorage.setItem("preferencesList", JSON.stringify(next));
+        window.history.replaceState({}, document.title);
+        return next;
+      });
+    }
+  }, [addedTopic, removedTopic]);
+
+  // Sync items state for drag-and-drop
+  const [items, setItems] = useState(
+    preferencesList.map((item, idx) => ({
+      ...item,
+      id: `${idx}-${item.order}`,
+    }))
+  );
+
+  useEffect(() => {
+    setItems(
+      preferencesList.map((item, idx) => ({
+        ...item,
+        id: `${idx}-${item.order}`,
+      }))
+    );
+  }, [preferencesList]);
+
+  // Toast & Modals
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -95,54 +168,73 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
 
   const handleConfirmSubmit = () => {
     setShowSubmitModal(false);
-    setShowSuccessModal(true); // Show success modal
+    (async () => {
+      if (!motivationFile) {
+        return setToastMessage("Please upload your motivation letter first.");
+      }
+
+      // 1) Build a FormData (container for fields + files) :contentReference[oaicite:0]{index=0}
+      const formData = new FormData();
+      const pfeIdsArray = items.map((item) => item.card_info.id);
+
+      // 2) Append fields: pfeIds as a comma-separated string, stringML as the binary file :contentReference[oaicite:1]{index=1}
+      formData.append("pfeIds", pfeIdsArray.join(","));
+      formData.append("stringML", motivationFile);
+
+      try {
+        const resp = await axios.post(
+          "/api/v1/preflist/create",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data" // tells the server it’s a file upload
+            },
+            withCredentials: true
+          }
+        );
+        console.log("Server response:", resp.data);
+        setShowSuccessModal(true);
+        setToastMessage("The list submitted successfully.");
+        setShowToast(true);
+      } catch (err) {
+        console.error("Upload error:", err);
+        setToastMessage("Submission failed. Please try again.");
+        setShowToast(true);
+      }
+    })();
   };
+  const handleCloseSuccess = () => setShowSuccessModal(false);
+  // DnD setup
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
-  const handleCloseSuccess = () => {
-    setShowSuccessModal(false);
-
-  };
-
-  // Local state to manage reordering
-  const [items, setItems] = useState(
-    PreferenecesList.map((item, idx) => ({
-      ...item,
-      id: `${idx}-${item.order}`,
-    }))
-  );
-
-  // Update if props change
-  useEffect(() => {
-    setItems(
-      PreferenecesList.map((item, idx) => ({
-        ...item,
-        id: `${idx}-${item.order}`,
-      }))
-    );
-  }, [PreferenecesList]);
-
-  // Sensors for drag events
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
-
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
+  const handleDragEnd = ({ active, over }) => {
     if (active.id !== over.id) {
       setItems((prev) => {
-        const moved = arrayMove(prev,
-          prev.findIndex(i => i.id === active.id),
-          prev.findIndex(i => i.id === over.id)
+        const moved = arrayMove(
+          prev,
+          prev.findIndex((i) => i.id === active.id),
+          prev.findIndex((i) => i.id === over.id)
         );
-
         return moved.map((item, idx) => ({
           ...item,
-          order: String(idx + 1).padStart(2, "0")   // make "1" → "01"
+          order: String(idx + 1).padStart(2, "0"),
         }));
       });
     }
   };
 
+  const handleRemove = (topicTitle) => {
+    setPreferencesList((prev) => {
+      const next = prev
+        .filter((p) => p.topic_title !== topicTitle)
+        .map((p, idx) => ({
+          ...p,
+          order: String(idx + 1).padStart(2, "0"),
+        }));
+      localStorage.setItem("preferencesList", JSON.stringify(next));
+      return next;
+    });
+  };
 
   return (
     <div className={Style["pagecontainer"]}>
@@ -172,11 +264,7 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
 
       <div style={{ marginTop: "20px" }}>
         <div className={Module["table-wrapper"]}>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={items} strategy={verticalListSortingStrategy}>
               <table id="StudentPreferencesTable">
                 <thead>
@@ -194,6 +282,8 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
                       key={item.id}
                       item={item}
                       submit={submit}
+                      onRemove={handleRemove}
+                      preferencesList={preferencesList}
                     />
                   ))}
                 </tbody>
@@ -202,36 +292,47 @@ const StudentPreferences = ({ PreferenecesList = [], submit }) => {
           </DndContext>
         </div>
 
-        {/* Motivation Letter Card */}
         {!submit && (
           <>
-            <MotivationCard />
-            <div
-              style={{ display: "flex", justifyContent: "flex-end", marginTop: "-40px" }}
-            >
-              <button className={Style["submit-button"]} onClick={() => setShowSubmitModal(true)} >
+            <MotivationCard onFileSelect={setMotivationFile} />
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-40px" }}>
+              <button
+                className={Style["save-button"]}
+                onClick={() => {
+
+                  setToastMessage("your list has been saved successfully");
+                  setShowToast(true);
+
+                }}
+              >
+                Save the list
+              </button>
+              <button
+                className={Style["submit-button"]}
+                onClick={() => {
+                  if (items.length === 5) setShowSubmitModal(true);
+                  else {
+                    setToastMessage("You must select exactly 5 topics before submitting.");
+                    setShowToast(true);
+                  }
+                }}
+              >
                 Submit the list
               </button>
+
             </div>
           </>
         )}
 
-        <SubmitModal
-          show={showSubmitModal}
-          onCancel={() => setShowSubmitModal(false)}
-          onConfirm={handleConfirmSubmit}
-        />
-
-        {showSuccessModal && <SuccessConfirmationModal
-          message="Your list has been successfully submitted! You won't be able to undo this action.."
-          onClose={handleCloseSuccess}
-          show={showSuccessModal}
-        />}
-
-
-        {showToast && (
-          <Toast message={toastMessage} onClose={() => setShowToast(false)} />
+        <SubmitModal show={showSubmitModal} onCancel={() => setShowSubmitModal(false)} onConfirm={handleConfirmSubmit} />
+        {showSuccessModal && (
+          <SuccessConfirmationModal
+            message="Your list has been successfully submitted! You able to modify the pending ones."
+            onClose={handleCloseSuccess}
+            show={showSuccessModal}
+          />
         )}
+        {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
       </div>
     </div>
   );

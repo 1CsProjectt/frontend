@@ -8,6 +8,9 @@ import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
 const ExistedTeamsTab = ({ user, existedTeams, session }) => {
+
+  console.log("👀 [ExistedTeamsTab] session prop:", JSON.stringify(session));
+
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -128,9 +131,9 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                   <td>{teamCreator}</td>
 
                   <td style={{ marginLeft: "200px" }}>
-                    {session === "select topics session" ? (
+                    {session === "TOPIC_SELECTION" ? (
                       <span className={Module["status-in-team"]}>
-                        {team.status}
+                           {team.status}
                       </span>
                     ) : team.status === "Open" ? (
                       <span className={Module["status-available"]}>
@@ -146,8 +149,10 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                   <td></td>
                   <td></td>
                   <td className={Module["button-container"]}>
-                    {session === "select topics session" ? (
-                      <div></div>
+                    {session === "TOPIC_SELECTION" ? (
+                      <div>
+
+                      </div>
                     ) : team.status === "Open" ? (
                       <button
                         className={Module["invite-button"]}
@@ -159,7 +164,7 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                     ) : (
                       <span
                         className={Module["disable-button"]}
-                        style={{ display: "inline-block", width: "90px", marginRight: "15px" }}
+                        style={{ width: "90px", marginRight: "15px" }}
                       >
                         Join
                       </span>

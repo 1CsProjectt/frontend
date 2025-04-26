@@ -7,7 +7,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import { SharedStateProvider } from "./contexts/SharedStateContext"; 
+import { SharedStateProvider } from "./contexts/SharedStateContext";
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
@@ -24,13 +24,12 @@ import HelpPage from "./Pages/HelpPage";
 import PFEStudentPage from "./Pages/PFEStudentPage";
 import SettingsPage from "./Pages/SettingsPage";
 import NotificationsPage from "./Pages/NotificationsPage";
-import LoversPage from "./Pages/LoversPage";
 import Layout from "./Pages/layout";
 import ExplorePage from "./Pages/ExplorePage";
-
+import StudentMeetingsPage from "./Pages/StudentMeetingsPage";
 import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 import TeamFormationPage from "./Pages/TeamformationPage";
-
+import SeeMoreMetting from "./components/SeeMoreMettingHistory";
 function App() {
   return (
     <Router>
@@ -40,7 +39,7 @@ function App() {
         <Routes>
           {
             //<Route path="/" element={<Navigate to="/admin" replace />} />
-          }   
+          }
 
           <Route path="/" element={<Login />} />
 
@@ -70,11 +69,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/lovers" element={<LoversPage />} />
+          <Route path="/StudentMeetingsPage" element={<StudentMeetingsPage />} />
+          <Route path="/StudentMeetingsPage/SeeMore" element={<SeeMoreMetting/>} />
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
-    
 
+        
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"
             element={<SubmittedTopicsExplorePage />}

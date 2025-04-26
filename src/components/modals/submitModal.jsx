@@ -1,7 +1,7 @@
 import React from "react";
 import Icon from "../../assets/alert-circleIcon.svg";
 
-const SubmitModal = ({ show, onCancel, onConfirm }) => {
+const SubmitModal = ({ show, onCancel, onConfirm,PreferenecesList }) => {
   const styles = {
     overlay: {
       position: "fixed",

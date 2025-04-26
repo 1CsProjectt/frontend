@@ -64,9 +64,11 @@ th {
   text-transform: none;
 
 }
-
+.W250 {
+  width: 250px;
+}
 .table-wrapper td {
-  max-width: 200px;        
+ 
   white-space: nowrap;     
   overflow: hidden;       
   text-overflow: ellipsis; 
