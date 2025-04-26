@@ -5,11 +5,13 @@ import { useState } from "react";
 import classes from "../styles/TopicsValidationPage.module.css";
 import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
 import axios from "axios";
-
+import alertIcon from "../assets/alert-icon.svg";
+import errorIcon from "../assets/error-icon.svg";
 import { useNavigate } from "react-router-dom";
 
 import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 
+<<<<<<< HEAD
 /* 
   // Example data to pass to the PFECard
   const cardsArray = [
@@ -116,6 +118,8 @@ import { PulseLoader } from "react-spinners"; // Import the spinner you want to 
     },
   ];
  */
+=======
+>>>>>>> 943101464b6bffed58bab3243f0feadb759f7e10
 const TopicsValidationPage = () => {
   const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
   const [isChecked, setIsChecked] = useState(false); // for the select all checkbox
@@ -125,10 +129,11 @@ const TopicsValidationPage = () => {
   const [publishedCardsArray, setPublishedCardsArray] = useState([]); // State to hold the published cards
   const [cardsArray, setCardsArray] = useState([]); // State to hold the cards array
   const [loading, setLoading] = useState(false);
+  const [noTopicsFound, setNoTopicsFound] = useState(false); // State to handle no topics found
+  const [connectionError, setConnectionError] = useState(false); // State to handle connection error
   //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
-
   //the selectedCards array holds the ids of the currently selected cards
-
+  const [deleteBtnActive,setDeleteBtnActive] = useState(false)
   const navigate = useNavigate();
 
   const HandleBackButton = () => {
@@ -171,7 +176,8 @@ const TopicsValidationPage = () => {
           /* setPublishedCardsArray(data); // Save data in state */
         } catch (error) {
           console.error("Error fetching the submitted cards data:", error);
-          alert("An error occurred while fetching the published cards data.");
+
+          setConnectionError(true); // Set connection error state
         } finally {
           setLoading(false); // Stop loading
         }
@@ -196,7 +202,7 @@ const TopicsValidationPage = () => {
           /*  setSubmittedCardsArray(data); // Save data in state */
         } catch (error) {
           console.error("Error fetching the submitted cards data:", error);
-          alert("An error occurred while fetching the submitted cards data.");
+          setConnectionError(true);
         } finally {
           setLoading(false); // Stop loading
         }
@@ -216,18 +222,24 @@ const TopicsValidationPage = () => {
       <div className={classes.header}>
         <div className={classes["left-side-container"]}>
           <h1>Validate and Control Topics</h1>
+          {selectedCards.length !== 0 && (
+            
           <label>
             <input
               type="checkbox"
               checked={isChecked}
               onChange={handleCheckboxChange}
-            />{" "}
+            />
             All
-          </label>
+          </label> )}
+          {selectedCards.length !== 0 && (
           <p>{selectedCards.length} Selected</p>
+          )}
+    
+          
         </div>
         <div className={classes["buttons-container"]}>
-          <button className={classes["back-btn"]} onClick={() => navigate(-1)}>
+          <button className={classes["back-btn"]} onClick={() => navigate("/admin/sessions")}>
             Back
           </button>
           <button
@@ -261,11 +273,30 @@ const TopicsValidationPage = () => {
           Submitted Topics
         </button>
       </div>
-
+      
       <div key={activeTab} className={classes["tab-content"]}>
         {loading ? (
+          <div className={classes.loaderContainer}>
           <div className={classes.loader}>
-            <PulseLoader color="#36d7b7" loading={loading} size={15} />
+            <PulseLoader color="#07cad4" loading={loading} size={25} />
+          </div>
+          </div>
+          
+
+        ) 
+        : connectionError ? (
+          <div className={classes.alertDiv}>
+            <img src={errorIcon} alt="Error Icon" />
+            <h3>
+            Error connecting to the server
+            </h3>         
+          </div>
+        ) : cardsArray.length === 0 ? (
+          <div className={classes.alertDiv}>
+            <img src={alertIcon} alt="Alert Icon" />
+            <h3>
+            No topics were found . check again later to see if new Topics are added
+            </h3>         
           </div>
         ) : (
           <div className={classes["cards-container"]}>

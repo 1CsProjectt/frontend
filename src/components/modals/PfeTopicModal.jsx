@@ -128,7 +128,6 @@ const PfeTopicModal = ({
             onClose={() => {
               setSuccessConfirmationModal(false);
               onClose();
-              navigate(-1);
             }}
           />
         )}
@@ -210,7 +209,7 @@ const PfeTopicModal = ({
             onClose={() => {
               setSuccessConfirmationModal(false);
               onClose();
-              navigate(-1);
+              navigate("/admin/sessions/topic-validation");
             }}
           />
         )}

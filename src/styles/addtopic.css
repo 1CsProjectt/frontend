@@ -8,22 +8,19 @@
 .containert-at {
   background-color: #f5f7fa;
 
-  width: 100%;
+  overflow-y: auto;
 
+  width: 100%;
+  height: 100vh;
   flex-direction: column;
   z-index: 999;
 }
 .pageheader-at {
-  margin-left: 308px;
-  padding-left: 16px; /* To accommodate sidebar width */
-  width: calc(100% - 306px);
-  position: fixed; /* Keeps it at the top */
-  /* Sticks to the top of the page */
-  left: 0;
-  right: 0;
-  height: 55px;
+  padding-left: 16px;
 
-  padding-right: 4px;
+  justify-content: space-between;
+  height: 50px;
+
   gap: 16px;
   background-color: #f5f7fa;
 
@@ -34,14 +31,13 @@
   color: #313638;
   font-size: 24px;
   font-weight: 600;
+  margin: 0;
 }
 .spacing {
   display: flex;
   flex: auto;
 }
 .content {
-  padding-top: 31px;
-
   width: 100%;
   display: flex;
   align-items: center;
@@ -345,13 +341,49 @@ textarea {
 .sv-item input[type="checkbox"]:checked::before {
   display: block;
 }
-.more-space {
-  height: 320px;
-}
+
 .space-year {
   background-color: transparent;
   display: flex;
   margin-top: 15px;
 
   height: 178px;
+}
+.onleft {
+  padding-right: 5px;
+  flex: auto;
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  height: 127px;
+  justify-content: right;
+}
+.btnc-giant {
+  width: 239px;
+  height: 55px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border: 1px solid #d0d5dd;
+  transition: all 0.3s ease-in-out;
+}
+.btnc-giant:hover {
+  background: #f8f9fa;
+  border-color: #c4cacf;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.btns-giant {
+  width: 239px;
+  height: 55px;
+  background: #077ed4;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 7px;
+  transition: all 0.3s ease-in-out;
+}
+.btns-giant:hover {
+  background: #056bb7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(7, 126, 212, 0.3);
 }

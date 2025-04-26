@@ -6,21 +6,23 @@
    
   }
   .scroll-container{
-    overflow-y: scroll;    
+    overflow-y: scroll;  
+    height: calc(100vh - 64px); /* subtract height of navbar if needed */
+  
   }
   
   /* General container layout */
   .explore-container {
     
       display: flex;
-      overflow: hidden;
+      overflow-x: hidden;
      
     }
     
     .explore-content {
       
       margin-left: 0px;
-      width: 88%;
+      width: 100%;
     }
    
     /* Banner image */
@@ -45,7 +47,7 @@
       margin: 0 auto;
       font-size: 1.4rem;
       color: #313638;
-      
+      margin-bottom: 50px;
       
     }
     

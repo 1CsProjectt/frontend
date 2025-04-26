@@ -5,18 +5,39 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
   
 
   // State for form fields
-  const [grade, setGrade] = useState("1CS");
+  const [grade, setGrade] = useState("");
   const [maxMembers, setMaxMembers] = useState(5);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-
+  const [sessionName, setSessionName] = useState("");
+  
   if (!isOpen) return null;
 
+/*  
+
+  switch (sessionsPageActiveTab) {
+    case "Topic Submission Session": 
+  setSessionName("PFE_SUBMISSION") ;
+  break;
+  case "Team Formation Session":
+  setSessionName("TEAM_CREATION") ;
+  break;
+  case "Select Topics Session":
+  setSessionName("TOPIC_SELECTION") ;
+  break;
+  case "Project Realization Session":
+  setSessionName("PROJECT_REALIZATION") ;
+  break;
+  default:
+    setSessionName("no session type set");
+  }
+ */
 //later add the check for the session name (type) based on the current tab
   const handleCreateTopicSubmissionSession = async () => {
+  
     const payload = {
-      name: "PFE_SUBMISSION", // fixed to topic submission session
+      
+      name : "PFE_SUBMISSION",
       startTime: startDate,
       endTime: endDate,
       year: grade,
@@ -40,6 +61,7 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
   };
 
   const handleCreateTeamFormationSession = async () => {
+    
     const payload = {
       name: "TEAM_CREATION", // or change this dynamically later
       startTime: startDate,
@@ -56,15 +78,41 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // in case cookies/token needed
       });
   
-      alert("✅ Session created: " + res.data.message);
-      onClose(); // close modal after success
+      alert("Team Formation Session created: " + res.data.message);
+      onClose(); // close modal after successcreate
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
       console.error("❌ Error creating session:", msg);
       alert("❌ Error: " + msg);
     }
   };
+  
+  const handleCreateTopicSelectionSession = async () => {
+   
+    const payload = {
+      
+      name : "PFE_ASSIGNMENT",
+      startTime: startDate,
+      endTime: endDate,
+      year: grade,
+    };
 
+    try {
+      const res = await axios.post("/session/setsessoin", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // include credentials if required
+      });
+
+      alert(" Submission session created: " + res.data.message);
+      onClose();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      console.error(" Error creating session:", msg);
+      alert(" Error: " + msg);
+    }
+  };
 
   return (
     <div className={classes["modal-overlay"]}>
@@ -79,23 +127,26 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         <div className={classes["form-group"]}>
           <label>Grade</label>
           <select value={grade} onChange={(e) => setGrade(e.target.value)}>
-            <option>2CPI</option>
-            <option>1CS</option>
+            <option value="">Select a grade</option>
+            <option value={"2CP"}>2CP</option>
+            <option >1CS</option>
             <option>2CS</option>
             <option>3CS</option>
           </select>
         </div>
 
         {/* Max Members Input */}
-        <div className={classes["form-group"]}>
-          <label>Max members</label>
-          <input
-            type="number"
-            placeholder="Enter max members"
-            value={maxMembers}
-            onChange={(e) => setMaxMembers(e.target.value)}
-          />
-        </div>
+        {sessionsPageActiveTab === "Team Formation Session" ? (
+          <div className={classes["form-group"]}>
+            <label>Max members</label>
+            <input
+              type="number"
+              placeholder="Enter max members"
+              value={maxMembers}
+              onChange={(e) => setMaxMembers(e.target.value)}
+            />
+          </div>
+        ) : null}
 
         {/* Date Inputs */}
         <div className={classes["date-container"]}>
@@ -125,12 +176,17 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
           </button>
           <button
             className={classes["create-btn"]}
-            onClick={() => { console.log({ grade, maxMembers, startDate, endDate }); if (sessionsPageActiveTab === "Topic Submission Session"){handleCreateTopicSubmissionSession(); 
+            onClick={() => { console.log({ grade, maxMembers, startDate, endDate }); 
+            if (sessionsPageActiveTab === "Topic Submission Session"){
+              handleCreateTopicSubmissionSession(); 
 
             }else if(sessionsPageActiveTab === "Team Formation Session"){
               handleCreateTeamFormationSession();
+            }else if (sessionsPageActiveTab === "Select Topics Session"){
+              handleCreateTopicSelectionSession();
+            
           }else{
-            alert("Please select a valid session type.");
+            alert("please select a valid operation");
           }
         }
           

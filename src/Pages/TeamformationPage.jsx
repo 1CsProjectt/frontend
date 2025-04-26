@@ -88,7 +88,7 @@ function TeamFormationPage() {
       const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
       setMyTeam(teamData.team);
       if (sessionTitle === "Group formation session") {
-        if (teamData?.team?.id) {
+        if (teamData?.team?.id) {supervisor
           const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
           setMyTeamPendingInvites(pendingInvites);
 console.log(pendingInvites);

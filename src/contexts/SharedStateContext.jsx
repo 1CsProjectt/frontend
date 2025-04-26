@@ -13,7 +13,7 @@ export const SharedStateProvider = ({ children }) => {
   // Define your global states here
   const [sharedState, setSharedState] = useState(null);
   const [sessionsPageActiveTab, setSessionsPageActiveTab] = useState("Topic Submission Session");
- 
+  const [isAdminSeeMoreActive,setAdminSeemMoreActive] =useState(true);
 
   return (
     <SharedStateContext.Provider 
@@ -22,6 +22,8 @@ export const SharedStateProvider = ({ children }) => {
         setSharedState,
         sessionsPageActiveTab, 
         setSessionsPageActiveTab,
+        isAdminSeeMoreActive,
+        setAdminSeemMoreActive
       }}>
       {children}
     </SharedStateContext.Provider>

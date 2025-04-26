@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Module from "../styles/TeamFormationPage.module.css";
-import Seemorepage from "./ExistedTeamSeemore";
+import Seemorepage from "./AdminExistedTeamSeeMore";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
+import DeleteUserModal from "./modals/DeleteUserModal";
 
-const ExistedTeamsTab = ({ user, existedTeams }) => {
+const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [teamsPerPage, setTeamsPerPage] = useState(10);
@@ -15,8 +16,12 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
+   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+   const [teamIDtoDelete, setTeamIDtoDelete] = useState(null);
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
 
-  const handledeleteteam = async (teamId) => {
+
+  /* const handledeleteteam = async (teamId) => {
     if (!teamId) {
       console.log("No team ID provided");
       return;
@@ -44,7 +49,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
     } catch (err) {
       console.error("Error deleting team:", err);
     }
-  };
+  }; */
 
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
@@ -69,6 +74,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   };
 
   useEffect(() => {
+ 
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
@@ -96,6 +102,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
   // If a team is selected, show its detailed view
   if (selectedTeam) {
     const mappedMembers = selectedTeam.members.map((member) => ({
+      id: member.id,
       fullName: `${member.firstname} ${member.lastname}`,
       email: member.user?.email || "N/A",
       role: member.role || "Member", // Default to "Member" if role isn't provided
@@ -106,6 +113,8 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
         <Seemorepage
           myTeamNumber={selectedTeam.id}
           myTeamMembers={mappedMembers}
+          students={students}
+          onBack={() => setSelectedTeam(null)}
         />
       </div>
     );
@@ -151,7 +160,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                     )}
                   </td>
                   <td className={Module["button-container"]}>
-                    {team.status === "open" ? (
+                  {/*   {team.status === "open" ? (
                       <button
                         className={Module["invite-button"]}
                         style={{ width: "90px", marginRight: "15px" }}
@@ -170,11 +179,19 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
                       >
                         Edit
                       </span>
-                    )}
+                    )} */}
+                    <button
+                        className={Module["invite-button"]}
+                        style={{ width: "90px", marginRight: "15px" }}
+                        onClick={() => setSelectedTeam(team)}
+                      >
+                        Edit
+                      </button>
+
                     <button
                       className={Module["invite-button"]}
                       style={{ width: "90px", backgroundColor: "white" }}
-                      onClick={() => handledeleteteam(team?.id)}
+                      onClick={() => { setTeamIDtoDelete(team.id); setDeleteUserModalOpen(true); }}
                     >
                       Delete
                     </button>
@@ -235,6 +252,7 @@ const ExistedTeamsTab = ({ user, existedTeams }) => {
           onClose={() => setShowToast(false)}
         />
       )}
+       <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="Team" teamIDtoDelete={teamIDtoDelete} /> 
     </div>
   );
 };

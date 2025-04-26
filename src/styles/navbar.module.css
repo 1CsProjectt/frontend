@@ -16,14 +16,10 @@
 .container {
   flex-direction: column;
   display: flex;
-  z-index: 999;
   background-color: #f5f7fa;
-  height: 125px;
-
+  height: 135px;
   flex: auto;
-  position: relative;
 }
-
 .session {
   background-color: white;
   border-bottom-width: 1px;
@@ -220,8 +216,8 @@
 
 /* Popup for Filter Menu */
 .filter-popup {
-  position: absolute;
-  top: 95%;
+  position: fixed;
+  top: 12%;
 
   background: #ffffff;
   border: 1px solid #dde2e4;
@@ -229,37 +225,32 @@
   height: auto;
   width: 25vw;
   border-radius: 8px;
-  overflow: hidden;
-  z-index: 999;
+
+  z-index: 1000;
 }
 
 .filter-content {
   display: flex;
   border-bottom: 1px solid #dde2e4;
-  align-items: center;
 }
 
 .filter-categories {
-  padding-top: 24px;
   height: 100%;
-  width: 50%;
 
-  padding-left: 24px;
+  border-left: 1px solid #dde2e4;
   cursor: default;
 }
 
 .filter-header {
+  margin-top: 24px;
+  font-size: 12px;
   color: #313638cc;
-  font-size: 1rem;
+  padding-left: 32px;
   font-weight: 500;
   margin-bottom: 8px;
 }
 
 .filter-categories .active {
-  padding-left: 8px;
-  padding-top: 4px;
-  height: 20px;
-  width: 151px;
   border-radius: 4px;
   background: #d9d9d980;
   color: #313638;
@@ -267,29 +258,67 @@
 }
 
 .filter-categories .notactive {
-  height: 20px;
-  padding-left: 8px;
-  padding-top: 4px;
   color: #313638cc;
   font-size: 14px;
 }
 
 .filter-options {
-  border-right: 1px solid #dde2e4;
-  padding-top: 24px;
   height: 100%;
-  padding-left: 24px;
+
   width: 50%;
   cursor: default;
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+}
+.option-label {
+  display: flex;
+}
+.optionstext {
+  flex-shrink: 0;
+  padding-left: 8px;
+  font-size: 14px;
+  color: #313638;
+}
+.filter-input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
+  appearance: none; /* Remove default checkbox style */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  border: 2px solid #999;
+  border-radius: 10px; /* Customize this value */
+  background-color: white;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.filter-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
-.optionstext {
-  font-size: 16px;
-  color: #313638;
-  margin-left: 8px;
+.filter-input:checked::after {
+  content: "✓"; /* optional checkmark */
+  color: white;
+  font-size: 12px;
+}
+.labels-container {
+  margin-left: 24px;
+
+  width: 80%;
+  height: 100%;
+}
+.filter-navside {
+  flex-direction: column;
+  display: flex;
+  gap: 8px;
 }
 
 .filter-buttons {
@@ -333,28 +362,26 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(7, 126, 212, 0.3);
 }
-
-.tab-active {
-  padding: 8px;
-  color: #3c4143;
-  font-weight: bold;
-  background-color: #ececec;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0 20px;
-  border-radius: 6px;
+.options-container-filter {
+  margin-left: 24px;
+  border-radius: 2px;
+  width: 151px;
+  height: 21px;
 }
-
-.tab-active:hover {
-  background-color: #d8e9f9;
+.tab-active {
+  padding-left: 8px;
+  color: #313638;
+  font-size: 14px;
+  background-color: #d9d9d980;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .tab-inactive {
-  padding: 8px;
-  color: #3c4143;
+  padding-left: 8px;
+  font-size: 14px;
+  color: #313638;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0 20px;
 }
 
 .tab-inactive:hover {
@@ -471,7 +498,7 @@
   color: #333;
   font-weight: 600;
 }
-/* Time text on the right side */
+/* Time text on the right filter */
 .notification-time {
   font-size: 0.9rem;
   color: #888;

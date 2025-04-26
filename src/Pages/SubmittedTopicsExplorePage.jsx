@@ -27,8 +27,8 @@ export default function PublishedTopicsExplorePage() {
 
   return (
     <div className={Module["explore-container"]}>
-      <AdminSidebar />
-      <div className={Module["explore-content"]} style={{ marginLeft: "17vw" }}>
+      
+      <div className={Module["explore-content"]} >
         <Navbar />
         <div className={Module["scroll-container"]}>
           <div className={Module["header"]}>
@@ -36,7 +36,7 @@ export default function PublishedTopicsExplorePage() {
             <div className={Module["buttons-container"]}>
               <button
                 className={Module["decline-button"]}
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/admin/sessions/topic-validation")}
               >
                 Decline
               </button>

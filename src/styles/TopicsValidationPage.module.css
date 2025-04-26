@@ -147,10 +147,10 @@
 
   .spinner {
     border: 8px solid #f3f3f3; /* Light gray */
-    border-top: 8px solid #3498db; /* Blue */
+    border-top: 8px solid rgb(7,126,212); /* Blue */
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     animation: spin 1s linear infinite;
     margin: auto;
   }
@@ -159,3 +159,33 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+  .loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 65vh; /* Full viewport height */
+  }
+
+  .alertDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   
+    height: 65vh; /* Full viewport height */
+  }
+
+  .alertDiv h3 {
+    margin-top: 20px;
+    color: rgb(131, 134, 136);
+    size: 2rem;
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* or a fixed height like 100px if needed */
+  }
+
+  

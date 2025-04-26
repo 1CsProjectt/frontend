@@ -95,6 +95,7 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
         <Seemorepage
           myTeamNumber={selectedTeam.id}
           myTeamMembers={mappedMembers}
+          onBack={() => setSelectedTeam(null)}
         />
       </div>
     );

@@ -5,6 +5,11 @@ import UserFormModal from "./modals/UserFormModal.jsx";
 import DeleteUserModal from "./modals/DeleteUserModal.jsx";
 import NavBar from "./NavBar.jsx";
 import axios from "axios";
+import alertIcon from "../assets/alert-icon.svg";
+import errorIcon from "../assets/error-icon.svg";
+import { useNavigate } from "react-router-dom";
+
+import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 // A modal blocks interactions with the webpage unless specified otherwise.
 // It usually appears in the middle of the screen to show a message or request input.
 const UserManagementTabs = () => {
@@ -18,6 +23,8 @@ const UserManagementTabs = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const [userToEdit, setUserToEdit] = useState(null);
   const [operation, setOperation] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [connectionError, setConnectionError] = useState(false); // State to handle connection error
   const usersPerPage = 7;
 
 
@@ -34,6 +41,7 @@ useEffect(() => {
  
     const fetchUsers = async () => {
         try {
+          setLoading(true);
             const response = await axios.get('/users/get-all'); // Adjust baseURL in Axios config if needed
 
             const usersArray = response.data.map(user => ({
@@ -51,8 +59,11 @@ useEffect(() => {
 
             setFetchedUsers(usersArray);
             console.log(usersArray);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching users:', error);
+            setConnectionError(true);
+            setLoading(false);
         }
     };
 
@@ -139,46 +150,88 @@ useEffect(() => {
       </div>
         <div className={classes["table-container"]}>     
            <table className={classes["main-table"]}>
-  <thead>
-    <tr>
-      <th>Full Name</th>
-      <th>Email Address</th>
-      <th>Date Added</th>
-      <th>Status</th>
-      <th className={classes["last-column"]}></th>
-    </tr>
-  </thead>
-  <tbody>
-    {displayedUsers.map((user, index) => (
-      <tr key={index}>
-        <td>{user.username || "No Username"}</td> {/* Changed from name to username */}
-        <td>{user.email || "No Email"}</td>
-        <td>{user.createdAt || "Unknown Date"}</td> {/* Ensure date exists in your fetched data */}
-        <td className={user.status === "active" ? classes["status-active"] : classes["status-inactive"]}>
-          {user.status || "Inactive"} {/* Ensure status exists or default to "Inactive" */}
-        </td>
-        <td>
-          <button onClick={() => {setUserToEdit(user);
-          setOperation("editUser");
-          setUserFormModalOpen(true);}} 
-            className={classes["edit-btn"]}>Edit
-            </button>
-          
-          <button className={classes["delete-btn"]}  onClick={() => {
-    setUserToDelete(user); // this sets the current user (we want the full info therefore we pass the whole object to get the name)
-    setDeleteUserModalOpen(true); // then open the modal c
- 
-    }}
-  >
-    Delete
-  </button>
-         
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-</div>
+                <thead>
+                  <tr>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Date Added</th>
+                    <th>Status</th>
+                    <th className={classes["last-column"]}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5">
+                      <div className={classes.loaderContainer}>
+                        <div className={classes.loader}>
+                          <PulseLoader color="#07cad4" loading={loading} size={25} />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : connectionError ? (
+                  <tr>
+                    <td colSpan="5">
+                      <div className={classes.alertDiv}>
+                        <img src={errorIcon} alt="Error Icon" />
+                        <h3>Error connecting to the server</h3>
+                      </div>
+                    </td>
+                  </tr>
+                ) : displayedUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="5">
+                      <div className={classes.alertDiv}>
+                        <img src={alertIcon} alt="Alert Icon" />
+                        <h3>
+                          No users were found, please create new ones or check again to see
+                          if new users are added
+                        </h3>
+                      </div>
+                    </td>
+                  </tr>
+                ) : displayedUsers.map((user, index) => ( 
+                  <tr key={index}>
+                    <td className={classes["max-cell-height"]}> {user.username || "No Username"}</td>
+                    <td className={classes["max-cell-height"]}>{user.email || "No Email"}</td>
+                    <td className={classes["max-cell-height"]}>{user.createdAt || "Unknown Date"}</td>
+                    <td className={classes["max-cell-height"]}
+                      /* className={
+                        user.status === "active"
+                          ? classes["status-active"]
+                          : classes["status-inactive"]
+                      } */
+                    >
+                      {user.status || "Inactive"}
+                    </td>
+                    <td className={classes["max-cell-height"]}>
+                      <button
+                        onClick={() => {
+                          setUserToEdit(user);
+                          setOperation("editUser");
+                          setUserFormModalOpen(true);
+                        }}
+                        className={classes["edit-btn"]}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className={classes["delete-btn"]}
+                        onClick={() => {
+                          setUserToDelete(user);
+                          setDeleteUserModalOpen(true);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+              </table>
+              </div>
 
       <div className={classes["pagination-container"]}>
       <div className={classes["pagination"]}>
