@@ -92,16 +92,10 @@ const Sidebar = () => {
           <>
             <li className={Module["menu-item"]}>
               <button
-<<<<<<< HEAD
-                className={`${Module["menu-btn"]} ${activeMenu === "mytopics" ? Module["active"] : ""
-                  }`}
-                onClick={() => toggleMenu("/teacher")}
-=======
                 className={`${Module["menu-btn"]} ${
                   activeMenu === "mytopics" ? Module["active"] : ""
                 }`}
                 onClick={() => toggleMenu("/teacher/mytopics")}
->>>>>>> 943101464b6bffed58bab3243f0feadb759f7e10
               >
                 <img src={PFEIcon} alt="My Topics" className={Module["icon"]} />
                 My Topics
@@ -114,16 +108,10 @@ const Sidebar = () => {
             </li>
             <li className={Module["menu-item"]}>
               <button
-<<<<<<< HEAD
-                className={`${Module["menu-btn"]} ${activeMenu === "teamselection" ? Module["active"] : ""
-                  }`}
-                onClick={() => toggleMenu("/teamselection")}
-=======
                 className={`${Module["menu-btn"]} ${
                   activeMenu === "teamselection" ? Module["active"] : ""
                 }`}
                 onClick={() => toggleMenu("/teacher/teamselection")}
->>>>>>> 943101464b6bffed58bab3243f0feadb759f7e10
               >
                 <img
                   src={TeamformationIcon}

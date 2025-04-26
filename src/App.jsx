@@ -2,15 +2,7 @@ import React from "react";
 
 import "./styles/App.css";
 
-<<<<<<< HEAD
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
-=======
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
->>>>>>> 943101464b6bffed58bab3243f0feadb759f7e10
 import { SharedStateProvider } from "./contexts/SharedStateContext";
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
@@ -33,13 +25,10 @@ import ExplorePage from "./Pages/ExplorePage";
 import StudentMeetingsPage from "./Pages/StudentMeetingsPage";
 import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 import TeamFormationPage from "./Pages/TeamformationPage";
-<<<<<<< HEAD
 import SeeMoreMetting from "./components/SeeMoreMettingHistory";
-=======
 import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage"
->>>>>>> 943101464b6bffed58bab3243f0feadb759f7e10
 function App() {
   return (
     <Router>
@@ -82,14 +71,11 @@ function App() {
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
 
-<<<<<<< HEAD
         
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"
             element={<SubmittedTopicsExplorePage />}
           />
-=======
->>>>>>> 943101464b6bffed58bab3243f0feadb759f7e10
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<UserManagementTabs />} />
