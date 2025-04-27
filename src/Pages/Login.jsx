@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import Module from "../styles/authentication.module.css";
 import logo from "../assets/logo.svg";
 import schoolIcon from "../assets/school-icon.svg";
@@ -47,27 +47,22 @@ const Login = () => {
         { email, password },
         { withCredentials: true }
       );
-      
-      const { user, currentSessions } = response.data;
-      
-      // 1. Transform into your desired form:
-      const sessions = currentSessions.map(item => ({
-        title: item.name,
-        targetDate: {
-          start: new Date(item.startTime),
-          end:   new Date(item.endTime),
-        }
-      }));
-  
-      // 2. Save to localStorage:
+
+      const { user } = response.data;
+
+   
+
+ 
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("sessions", JSON.stringify(sessions));
-  
+
       console.log("Login successful:", response.data);
-    
-    
+
+
       if (user.role === "admin") {
         navigate("/admin");
+      } else if (user.role === "student") {
+        navigate("/pfe-student");
+        console.log(user.role)
       } else {
         navigate("/teacher");
       }
@@ -78,7 +73,7 @@ const Login = () => {
       );
       alert("Login failed !");
     }
-     finally {
+    finally {
       setLoading(false);
     }
   };

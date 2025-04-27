@@ -148,7 +148,7 @@ function StudentMeetingPage() {
                         <StudentMeetingHistory MeetingHistoryList={MeetingHistoryList} />
 
                     </div>
-                    {showToast && (
+                    {showToast && ( 
                         <Toast
                             message={toastMessage}
                             onClose={() => setShowToast(false)}

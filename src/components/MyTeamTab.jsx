@@ -176,7 +176,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
               <tr key={index}>
                 <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"}</td>
                 <td>{member.user?.email || "N/A"}</td>
-                <td>{member.role || "member"}</td>
+                <td>{member.roleINproject|| "N/A"}  </td>
                 <td></td>
                 <td></td>
               </tr>

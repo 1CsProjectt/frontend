@@ -22,13 +22,11 @@ const SetRoleModal = ({ show, onClose, currentRole }) => {
 
   const handleConfirm = async () => {
     try {
-      const endpoint =
-        currentRole === ("member")
-          ? "/api/v1/students/set-role"
-          : "/api/v1/students/edit-role";
+    
 
-      await axios.patch(endpoint, { role }, { withCredentials: true });
-      onClose(`Role successfully set to \"${role}\".`);
+      await axios.patch("/student/edit-role", { role }, { withCredentials: true });
+      onClose(`Role successfully set to "${role}".`);
+      console.log(`Role successfully set to "${role}".`);
     } catch (error) {
       console.error("Error setting role:", error);
       onClose("Failed to update role. Please try again.");

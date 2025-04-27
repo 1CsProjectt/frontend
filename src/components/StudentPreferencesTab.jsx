@@ -52,7 +52,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
         {...listeners}
         style={{ cursor: submit ? "default" : "grab", pointerEvents: submit ? "none" : "auto" }}
       >
-        <span className={Module["drag-handle"]}>⋮⋮</span>
+        {!submit &&   <span className={Module["drag-handle"]}>⋮⋮</span>}
       </td>
       <td>{item.order}</td>
       <td>{item.topic_title}</td>
@@ -69,7 +69,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
                     : "inherit",
             }}
           >
-            {item.status}
+            {item.status || "Pending..."} 
           </span>
         ) : (
           <>
@@ -183,7 +183,7 @@ const StudentPreferences = ({ submit }) => {
 
       try {
         const resp = await axios.post(
-          "/api/v1/preflist/create",
+          "/preflist/approve",
           formData,
           {
             headers: {
@@ -203,6 +203,52 @@ const StudentPreferences = ({ submit }) => {
       }
     })();
   };
+
+ const handleSaveSubmit = () => {
+  // 1) Vérifier la présence du fichier de motivation (motivationFile)
+  if (!motivationFile) {
+    return setToastMessage("Please upload your motivation letter first.");
+  }
+
+  (async () => {
+    const formData = new FormData();
+
+    // 2) Construire la chaîne CSV : "101,202,303"
+    const pfeIdsArray = items.map(item => item.card_info.id);
+    const pfeIdsCsv = pfeIdsArray.join(",");
+
+    // 3) Ajouter au FormData
+    formData.append("pfeIds", pfeIdsCsv);
+    formData.append("stringML", motivationFile);
+
+    try {
+      const resp = await axios.post(
+        "/preflist/create",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
+      console.log("Server Save response:", resp.data);
+      setToastMessage("Your list has been saved successfully.");
+      setShowToast(true);
+
+      // 4) Optionnel : persister localement dans localStorage (stockage local)
+      const storedPrefs = items.map((item, idx) => ({
+        ...item,
+        order: String(idx + 1).padStart(2, "0"),
+      }));
+      localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
+
+    } catch (err) {
+      console.error("Save error:", err);
+      setToastMessage("Save failed. Please try again.");
+      setShowToast(true);
+    }
+  })();
+};
+
   const handleCloseSuccess = () => setShowSuccessModal(false);
   // DnD setup
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -298,12 +344,7 @@ const StudentPreferences = ({ submit }) => {
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-40px" }}>
               <button
                 className={Style["save-button"]}
-                onClick={() => {
-
-                  setToastMessage("your list has been saved successfully");
-                  setShowToast(true);
-
-                }}
+                onClick={handleSaveSubmit}
               >
                 Save the list
               </button>
