@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Style from "../styles/CardComponent.module.css";
 
-const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
+const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
+  //the buttonText is an optional prop when wanting to override the default buttonText (Explore)
   const navigate = useNavigate();
   const location = useLocation();
   const username =
@@ -32,7 +33,6 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
-          z
           {Array.isArray(card.specialization) ? (
             card.specialization.map((spec, i) => (
               <span key={i} className={Style.category}>
@@ -49,7 +49,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore }) => {
           className={Style["card-button"]}
           onClick={(e) => handleExplore(e, card)} // Use handleExplore here
         >
-          Explore
+          {buttonText || "Explore"}
         </button>
       </div>
     </div>

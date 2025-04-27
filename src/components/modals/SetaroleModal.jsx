@@ -1,61 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Style from "../../styles/TeamFormationPage.module.css";
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const SetRoleModal = ({ show, onClose }) => {
-  // State for the role input
-  const [role, setRole] = useState("");
+/**
+ * Props:
+ *  - show: boolean
+ *  - onClose: function(message: string | null)
+ *  - currentRole: string
+ */
+const SetRoleModal = ({ show, onClose, currentRole }) => {
+  const [role, setRole] = useState(currentRole || "");
 
-  // If the modal should not be shown, return null
-  if (!show) return null;
+  // Reset role when modal visibility or currentRole changes
+  useEffect(() => {
+    if (show) {
+      setRole(currentRole || "");
+    }
+  }, [show, currentRole]);
 
-  // Confirm handler (ASYNC if you plan to do an API call)
   const handleConfirm = async () => {
     try {
-      
-     await axios.patch("/students/set-role", { role }, { withCredentials: true });
-      
-      console.log("Role set to:", role);
-      onClose(); 
+      const endpoint =
+        currentRole === ("member")
+          ? "/api/v1/students/set-role"
+          : "/api/v1/students/edit-role";
+
+      await axios.patch(endpoint, { role }, { withCredentials: true });
+      onClose(`Role successfully set to \"${role}\".`);
     } catch (error) {
-      onClose();
       console.error("Error setting role:", error);
+      onClose("Failed to update role. Please try again.");
     }
   };
+
+  const handleCancel = () => {
+    onClose(null);
+  };
+
+  if (!show) {
+    return null;
+  }
 
   return (
     <div className={Style["modal-overlay"]}>
       <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}>
-        {/* Title */}
         <h2>Set a role</h2>
-
-        {/* Subtitle / instructions */}
         <p className={Style["create-team-subtitle"]}>
-          Assign your role within the team to clarify responsibilities 
-          (e.g., Front-end Developer, Backend Developer, UI/UX Designer...)
+          Assign your role within the team to clarify responsibilities
+          (e.g., Front-end Developer, Back-end Developer, UI/UX Designer...)
         </p>
 
-        {/* Role Input Field */}
         <div className={Style["form-group"]}>
           <label htmlFor="role" style={{ fontWeight: "bold" }}>Role</label>
-          <input 
+          <select
             id="role"
-            type="text"
-            placeholder="Give a name for your role..."
-            className={Style["add-member-input"] }
             value={role}
             onChange={(e) => setRole(e.target.value)}
-          />
+            className={Style["add-member-input"]}
+          >
+            <option value="" disabled>
+              Select a role...
+            </option>
+            <option value="front_end">Front-end Developer</option>
+            <option value="back_end">Back-end Developer</option>
+            <option value="design">UI/UX Designer</option>
+            <option value="member">Member</option>
+          </select>
         </div>
 
-        {/* Action Buttons */}
         <div className={Style["modal-actions"]}>
-          <button className={Style["cancel-button"]} onClick={onClose}>
+          <button className={Style["cancel-button"]} onClick={handleCancel}>
             Cancel
           </button>
-          <button className={Style["create-button"]} onClick={handleConfirm}>
+          <button
+            className={Style["create-button"]}
+            onClick={handleConfirm}
+            disabled={!role || role === currentRole}
+          >
             Confirm
           </button>
         </div>

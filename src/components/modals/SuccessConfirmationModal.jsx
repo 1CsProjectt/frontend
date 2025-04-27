@@ -10,7 +10,7 @@ const SuccessConfirmationModal = ({ message, onClose }) => {
         <img src={successIcon} alt="Success" className={classes["success-icon"]} />
         <h2>Success</h2>
         <p>{message}</p>
-        <button className={classes["modal-button"]} onClick={onClose}>
+        <button className={classes["modal-button"]} onClick={() => { onClose(); window.location.reload(); }}>
           Okay
         </button>
       </div>

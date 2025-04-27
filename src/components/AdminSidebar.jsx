@@ -14,7 +14,9 @@ import logoutIcon from "../assets/logout-icon.svg";
 
 const AdminSidebar = () => {
   const location = useLocation(); // Get current URL
-
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+  };
   const menuItems = [
     {
       name: "Users",
@@ -83,7 +85,7 @@ const AdminSidebar = () => {
           <span className={classes["sidebar-text"]}>Help</span>
         </NavLink>
         <NavLink to="/" className={classes["sidebar-item"]}>
-          <span className={classes["sidebar-icon"]}>
+          <span className={classes["sidebar-icon"]} onClick={handleLogout}>
             <img src={logoutIcon} alt="Logout" />
           </span>
           <span className={classes["sidebar-text"]}>Logout</span>

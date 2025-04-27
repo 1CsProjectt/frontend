@@ -42,7 +42,7 @@ function TeamFormationPage() {
   }, [user]);
   // Use session date from real version
   const session = {
-    title: "TEAM_CREATION",
+    title: "TOPIC_SELECTION",
     targetDate: {
       start: new Date("2025-03-29T00:00:00"),
       end: new Date("2025-04-29T23:59:59")
@@ -66,7 +66,7 @@ function TeamFormationPage() {
       status:
         sessionTitle === "select topics session"
           ? "Full"
-          : team.members && team.maxNumber && team.members.length === team.maxNumber
+          : team.members && team.maxNumber && team.members.length >= team.maxNumber
             ? "Full"
             : "Open",
     }));
@@ -127,9 +127,7 @@ console.log(pendingInvites);
       fetchMyTeamData();
       setToastMessage("Team leaving was successful.");
       setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
+    
     } catch (error) {
       console.error("Error:", error);
     }
@@ -172,24 +170,52 @@ console.log(pendingInvites);
     }
     setSearchQuery(query);
   };
+// filter by student name/email…
+const filteredStudents = formattedStudents.filter(student =>
+  student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  student.email.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
-  const filteredStudents = formattedStudents.filter(student =>
-    student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+// now filter teams by their numeric ID, converted to string
+const filteredTeams = existedTeams.filter(team => {
+  const query = searchQuery.toLowerCase();
 
-  const filteredTeams = existedTeams.filter(team =>
-    team.groupName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // 1) match by ID
+  const idMatch = team.id
+    .toString()
+    .toLowerCase()
+    .includes(query);
 
-  let suggestionsList = [];
-  if (activeTab === "Students List") {
-    suggestionsList = formattedStudents.map(s => s.fullName);
-  } else if (activeTab === "Existed Teams") {
-    suggestionsList = existedTeams.map(team => team.groupName);
-  }
+  // 2) build the first‐member full name (or empty if none)
+  const firstMemberName = team.members && team.members.length > 0
+    ? `${team.members[0].firstname} ${team.members[0].lastname}`
+    : "";
 
+  // 3) match by that first‐member name
+  const memberMatch = firstMemberName.toLowerCase().includes(query);
+
+  return idMatch || memberMatch;
+});
+
+
+// build autocomplete suggestions
+let suggestionsList = [];
+if (activeTab === "Students List") {
+  suggestionsList = formattedStudents.map(s => s.fullName);
+} else if (activeTab === "Existed Teams") {
+  // pull IDs instead of names
+  const suggestionsList = existedTeams.map(team => {
+    const firstMemberName = team.members && team.members.length > 0
+      ? `${team.members[0].firstname} ${team.members[0].lastname}`
+      : "N/A";
+  
+    // return a single string containing both ID and name
+    return `${team.id.toString()} – ${firstMemberName}`;
+  });
+  
+}
   const renderTabContent = () => {
+
     if (activeTab === "Students List") {
       return (
         <>
@@ -218,7 +244,7 @@ console.log(pendingInvites);
           user={user}
           existedTeams={filteredTeams}
           navigate={navigate}
-          session={sessionTitle}
+          session={session.title}
         />
       );
     } else if (activeTab === "My Team") {
@@ -231,6 +257,7 @@ console.log(pendingInvites);
           reqInvites={MyTeamteamReq}
           session={sessionTitle}
           reloadMyTeam={fetchMyTeamData}
+          userRole = {user.role}
         />
       );
     }

@@ -21,15 +21,15 @@ import HelpPage from "./Pages/HelpPage";
 import PFEStudentPage from "./Pages/PFEStudentPage";
 import SettingsPage from "./Pages/SettingsPage";
 import NotificationsPage from "./Pages/NotificationsPage";
-import LoversPage from "./Pages/LoversPage";
 import Layout from "./Pages/layout";
 import ExplorePage from "./Pages/ExplorePage";
-
+import StudentMeetingsPage from "./Pages/StudentMeetingsPage";
 import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 import TeamFormationPage from "./Pages/TeamformationPage";
+import SeeMoreMetting from "./components/SeeMoreMettingHistory";
 import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
-
+import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage"
 function App() {
   return (
     <Router>
@@ -42,8 +42,8 @@ function App() {
           }
 
           <Route path="/" element={<Login />} />
-
-          <Route path="/admin" element={<AdminDashboard />} />
+        
+          
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/CheckEmail" element={<CheckEmail />} />
 
@@ -64,42 +64,37 @@ function App() {
           {/* Protected Routes (Inside AdminDashboard) */}
           {/* Admin Dashboard with Nested Routes */}
 
-          <Route
-            path="/auth/reset-password/:token"
-            element={<ResetPassword />}
-          />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/pfe-student" element={<PFEStudentPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/lovers" element={<LoversPage />} />
+          <Route path="/StudentMeetingsPage" element={<StudentMeetingsPage />} />
+          <Route path="/StudentMeetingsPage/SeeMore" element={<SeeMoreMetting/>} />
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
 
+        
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"
             element={<SubmittedTopicsExplorePage />}
           />
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
-          <Route path="/admin" element={<AdminDashboard />}>
-            <Route
-              path="/admin/sessions/admin-team-formation"
-              element={<AdminTeamFormationPage />}
-            />
-            <Route
-              path="/admin/sessions/topic-validation"
-              element={<TopicsValidationPage />}
-            />
-            <Route index element={<UserManagementTabs />} />
-            {/* Default child route (renders when at /admin) */}
-            <Route path="users" element={<UserManagementTabs />} />
-            <Route path="sessions" element={<SessionsManagementTabs />} />
-            <Route path="export" element={<div>Export Page</div>} />
-            <Route path="loversr" element={<div>Loversr Page</div>} />
-            <Route path="dashboard" element={<div>Dashboard Page</div>} />
-            <Route path="settings" element={<div>Settings Page</div>} />
-          </Route>
+        <Route path="/admin" element={<AdminDashboard />}>
+          <Route index element={<UserManagementTabs />} />
+          <Route path="users" element={<UserManagementTabs />} />
+          <Route path="sessions" element={<SessionsManagementTabs/>}/>
+          <Route path="sessions/manage-preferences" element={<AdminManagePreferencesPage/>}/>
+          <Route path="sessions/admin-team-formation" element={<AdminTeamFormationPage />} />
+          <Route path="sessions/topic-validation" element={<TopicsValidationPage />} />
+          <Route path="sessions/topic-validation/published-topic-explore" element={<SubmittedTopicsExplorePage />} />
+          <Route path="sessions/topic-validation/submitted-topic-explore" element={<SubmittedTopicsExplorePage />} />
+          <Route path="export" element={<div>Export Page</div>} />
+          <Route path="loversr" element={<div>Loversr Page</div>} />
+          <Route path="dashboard" element={<div>Dashboard Page</div>} />
+          <Route path="settings" element={<div>Settings Page</div>} />
+        </Route>
+
         </Routes>
       </SharedStateProvider>
     </Router>

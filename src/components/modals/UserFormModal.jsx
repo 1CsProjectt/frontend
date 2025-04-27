@@ -178,6 +178,7 @@ useEffect(() => {
         permissions,
       };
       if (operation === "editUser") {
+        console.log(email);
         handleUpdateUser({
           id: userObject.id,
           firstName,
@@ -207,6 +208,7 @@ useEffect(() => {
   }
 
   const handleCreateUser = async (userData) => {
+    console.log("handlecreateuser email :" ,userData.email)
     const payload = {
       username: userData.firstName + " " + userData.lastName,
       email: userData.email,

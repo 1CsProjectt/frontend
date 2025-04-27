@@ -1,9 +1,8 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const containerStyle = {
   marginLeft: "17vw",
-  marginBottom: "10vh",
+  marginBottom: "5vh",
   position: "fixed",
   bottom: "1rem",
   left: "1rem",
@@ -17,10 +16,7 @@ const containerStyle = {
   boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center",
-  opacity: 1, 
-  transform: "translateY(0)",
-  transition: "transform 0.3s ease, opacity 0.3s ease"
+  alignItems: "center"
 };
 
 const closeButtonStyle = {
@@ -33,9 +29,41 @@ const closeButtonStyle = {
   padding: 0
 };
 
-const Toast = ({ message, onClose }) => {
+/**
+ * Props:
+ * - message: string
+ * - onClose: () => void
+ * - duration?: number (ms visible before hiding)
+ * - animationDuration?: number (ms for show/hide transition)
+ */
+const Toast = ({ message, onClose, duration = 1500, animationDuration =500 }) => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger show animation
+    setVisible(true);
+
+    // Schedule hide animation
+    const hideTimer = setTimeout(() => setVisible(false), duration);
+
+    // After animation completes, call onClose
+    const closeTimer = setTimeout(() => onClose(), duration + animationDuration);
+
+    return () => {
+      clearTimeout(hideTimer);
+      clearTimeout(closeTimer);
+    };
+  }, [duration, animationDuration, onClose]);
+
+  const animatedStyle = {
+    ...containerStyle,
+    transition: `transform ${animationDuration}ms ease, opacity ${animationDuration}ms ease`,
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(100%)"
+  };
+
   return (
-    <div style={containerStyle}>
+    <div style={animatedStyle}>
       <span>{message}</span>
       <button style={closeButtonStyle} onClick={onClose}>
         &times;

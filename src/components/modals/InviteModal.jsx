@@ -21,7 +21,7 @@ const InviteModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) => {
     try {
       const response = await axios.post(
         "/invitation/sendinvitation",
-        {  receiver_emails: [receiver_email]  },
+        { receiver_emails: [receiver_email] },
         { withCredentials: true }
       );
 
@@ -50,14 +50,13 @@ const InviteModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) => {
       <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}>
         <h2>Adding members</h2>
         <p className={Style["create-team-subtitle"]}>
-          Add new members to any team, assign roles, and build a strong, collaborative workspace.
-        </p>
+        Invite new members to your team and build a strong, collaborative workspace.        </p>
 
         {/* Input for adding members */}
         <div className={Style["add-member-row"]}>
           <input
             type="text"
-            placeholder="add members by name or email"
+            placeholder="Invite members by name or email"
             className={Style["add-member-input"]}
             value={memberInput}
             onChange={(e) => setMemberInput(e.target.value)}
@@ -93,11 +92,11 @@ const InviteModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) => {
           <button className={Style["cancel-button"]} onClick={onClose}>
             Cancel
           </button>
-          <button className={Style["create-button"]}   onClick={() => {
-    const emailList = members.map(member => member.email);
-    handleInviteClick(emailList); 
-  }}>
-            Add
+          <button className={Style["create-button"]} onClick={() => {
+            const emailList = members.map(member => member.email);
+            handleInviteClick(emailList);
+          }}>
+            Invite
           </button>
         </div>
 

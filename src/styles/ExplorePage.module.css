@@ -170,3 +170,24 @@ flex-direction: row;
   .AddBtn:hover {
     background-color: #026799;
   }
+  .Remove-button {
+    background-color: #F76659;
+    border: 1px solid #d0d5dd;
+    color: #ffffff;
+  
+    font-weight: 600;
+  
+    letter-spacing: -0.6%;
+  
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 7vw;
+  }
+  
+  .Remove-button:hover {
+    background-color: #c23e32;
+  
+  }

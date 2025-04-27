@@ -8,7 +8,7 @@
 }  
 
 .pagecontainer{
-    height: 72vh;
+    height: 75vh;
     overflow: auto;
 }
 
@@ -70,7 +70,7 @@
     font-weight: 600;
     transition: background-color 0.2s ease;
     margin-right: 25PX;
-   margin:35px 25px 25px 0;
+   margin:35px 25px 45px 0;
   
   }
   
@@ -132,6 +132,7 @@
   }
   
   .upload-label {
+    margin-top: 5px;
     font-size: 1rem;
     color: #2d3748;
   }
@@ -143,4 +144,25 @@ width: 40%;
   .right-side{
     width: 50%;
    margin-left: auto;
+  }
+
+  .save-button {
+   
+    background-color: #f1f1f1;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    border-radius: 6px;
+    padding: 18px 120px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    margin-right: 25PX;
+   margin:35px 25px 45px 0;
+  
+  }
+  
+  .save-button:hover {
+    background-color: #adafb2;
+    color: #344054;
   }

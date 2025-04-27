@@ -42,27 +42,32 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Make the POST request to the login endpoint
       const response = await axios.post(
         `/auth/login`,
         { email, password },
         { withCredentials: true }
       );
-
-      // Destructure the response to get the user object
-      const { user } = response.data;
-
-      // Store the user object in localStorage (convert to JSON string)
+      
+      const { user, currentSessions } = response.data;
+      
+      // 1. Transform into your desired form:
+      const sessions = currentSessions.map(item => ({
+        title: item.name,
+        targetDate: {
+          start: new Date(item.startTime),
+          end:   new Date(item.endTime),
+        }
+      }));
+  
+      // 2. Save to localStorage:
       localStorage.setItem("user", JSON.stringify(user));
-
+      localStorage.setItem("sessions", JSON.stringify(sessions));
+  
       console.log("Login successful:", response.data);
-      alert("Login successful!");
-
-      // Redirect the user to the main page or dashboard
+    
+    
       if (user.role === "admin") {
         navigate("/admin");
-      } else if (user.role === "student") {
-        navigate("/pfe-student");
       } else {
         navigate("/teacher");
       }
@@ -71,7 +76,9 @@ const Login = () => {
       setError(
         err.response?.data?.message || "Login failed. Please try again."
       );
-    } finally {
+      alert("Login failed !");
+    }
+     finally {
       setLoading(false);
     }
   };
