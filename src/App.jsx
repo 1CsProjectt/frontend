@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./styles/App.css";
-
+import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SharedStateProvider } from "./contexts/SharedStateContext";
 import Login from "./Pages/Login";
@@ -13,6 +13,7 @@ import UserManagementTabs from "./components/UserManagementTabs";
 import SessionsManagementTabs from "./components/SessionsManagementTabs";
 import TeacherTopics from "./components/TeacherTopics";
 import Addatopic from "./components/addatopic";
+import TeacherTeam from "./components/teacherteam";
 import TopicsValidationPage from "./Pages/TopicsValidationPage";
 import SubmittedTopicsExplorePage from "./Pages/SubmittedTopicsExplorePage";
 import "./styles/App.css";
@@ -47,10 +48,12 @@ function App() {
           <Route path="/CheckEmail" element={<CheckEmail />} />
 
           <Route path="/teacher" element={<Layout />}>
-            <Route index element={<TeacherPfePage />} />
+            <Route index element={<Navigate to="home" replace />} />
+            <Route path="home" element={<TeacherPfePage />} />
             <Route path="mytopics" element={<TeacherTopics />} />
             <Route path="Addatopic" element={<Addatopic />} />
-            <Route path="teamselection" element={<TeamSelectionTeacher />} />
+            <Route path="requests" element={<TeamSelectionTeacher />} />
+            <Route path="myteam" element={<TeacherTeam />} />
           </Route>
 
           {/* Route with dynamic token */}

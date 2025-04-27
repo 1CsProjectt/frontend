@@ -85,11 +85,13 @@ const Addatopic = () => {
 
     const formData = new FormData();
     formData.append("title", title);
+    if (user?.role === "teacher") {
+      formData.append("specialization", speciality.join(","));
+      selectedSupervisors.forEach((sup, index) => {
+        formData.append(`supervisors[${index}]`, sup); // makes an arrayP
+      });
+    }
 
-    formData.append("specialization", speciality.join(","));
-    selectedSupervisors.forEach((sup, index) => {
-      formData.append(`supervisors[${index}]`, sup); // makes an arrayP
-    });
     formData.append("description", description);
     formData.append("year", grade);
     formData.append("photo", presentationFile); // image file
@@ -292,70 +294,75 @@ const Addatopic = () => {
           </div>
 
           {/* Supervisors */}
-          <div
-            className="topic-form-1 
+          {user.role === "teacher" && (
+            <div
+              className="topic-form-1 
           "
-          >
-            <div className="info-section">
-              <p className="ttl-at">Other supervisors</p>
-              <p className="infos-at">
-                Select an additional supervisor to assist.
-              </p>
-            </div>
-            <div className="form-section">
-              <div className="select-sv-at">
-                <button
-                  className="sv-button-at"
-                  onClick={() => toggleMenu("dynamic")}
-                >
-                  <p className="sv-msg-at"> Select supervisors</p>
-                  <img
-                    src={isOpen ? Iconup : Icondown}
-                    alt="Toggle"
-                    className="arrow-icon"
-                  />
-                </button>
+            >
+              <div className="info-section">
+                <p className="ttl-at">Other supervisors</p>
+                <p className="infos-at">
+                  Select an additional supervisor to assist.
+                </p>
               </div>
-
-              {isOpen && (
-                <div className="border-form-at">
-                  <div className="search-bar-container-t">
-                    <input
-                      type="text"
-                      className="input-at"
-                      placeholder="Search..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+              <div className="form-section">
+                <div className="select-sv-at">
+                  <button
+                    className="sv-button-at"
+                    onClick={() => toggleMenu("dynamic")}
+                  >
+                    <p className="sv-msg-at"> Select supervisors</p>
+                    <img
+                      src={isOpen ? Iconup : Icondown}
+                      alt="Toggle"
+                      className="arrow-icon"
                     />
-                    <div className="search-icon">
-                      <img src={searchicon} alt="search-icon" />
+                  </button>
+                </div>
+
+                {isOpen && (
+                  <div className="border-form-at">
+                    <div className="search-bar-container-t">
+                      <input
+                        type="text"
+                        className="input-at"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      <div className="search-icon">
+                        <img src={searchicon} alt="search-icon" />
+                      </div>
+                    </div>
+                    <div className="sv-list">
+                      {supervisorsList
+                        .filter((teacher) =>
+                          `${teacher.firstname} ${teacher.lastname}`
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        )
+                        .map((teacher) => {
+                          const fullName = `${teacher.firstname} ${teacher.lastname}`;
+                          return (
+                            <label key={teacher._id} className="sv-item">
+                              <input
+                                type="checkbox"
+                                checked={selectedSupervisors.includes(fullName)}
+                                onChange={() =>
+                                  handleSupervisorToggle(fullName)
+                                }
+                              />
+                              {fullName}
+                            </label>
+                          );
+                        })}
                     </div>
                   </div>
-                  <div className="sv-list">
-                    {supervisorsList
-                      .filter((teacher) =>
-                        `${teacher.firstname} ${teacher.lastname}`
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                      )
-                      .map((teacher) => {
-                        const fullName = `${teacher.firstname} ${teacher.lastname}`;
-                        return (
-                          <label key={teacher._id} className="sv-item">
-                            <input
-                              type="checkbox"
-                              checked={selectedSupervisors.includes(fullName)}
-                              onChange={() => handleSupervisorToggle(fullName)}
-                            />
-                            {fullName}
-                          </label>
-                        );
-                      })}
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
           <div className="onleft">
             {" "}
             <button className="btnc-giant" onClick={() => navigate(-1)}>

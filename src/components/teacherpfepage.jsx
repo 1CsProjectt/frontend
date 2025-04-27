@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
@@ -8,14 +8,24 @@ const TeacherPfePage = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("Submitted");
   const navigate = useNavigate();
+  const { selectedFilters } = useOutletContext();
+  const filteredCards = useMemo(() => {
+    if (!selectedFilters || selectedFilters.length === 0) return cards;
 
+    return cards.filter((card) =>
+      selectedFilters.includes(card.specialization)
+    );
+  }, [cards, selectedFilters]);
   useEffect(() => {
+    console.log("Selected Filters:", selectedFilters);
     const fetchData = async () => {
       try {
         const response = await axios.get("/pfe", {
           withCredentials: true,
+          params: {
+            specializations: selectedFilters?.join(",") || "",
+          },
         });
 
         if (response.data?.pfeList) {
@@ -35,87 +45,48 @@ const TeacherPfePage = () => {
     };
 
     fetchData();
-  }, [navigate]);
-
-  // Filter cards based on status
-  const submittedCards = cards.filter(
-    (card) => card.status === "NOT_VALIDE" || !card.status
-  );
-  const validatedCards = cards.filter((card) => card.status === "VALIDE");
-  const declinedCards = cards.filter((card) => card.status === "REJECTED");
-
-  const getCurrentCards = () => {
-    switch (activeTab) {
-      case "Submitted":
-        return submittedCards;
-      case "Validated":
-        return validatedCards;
-      case "Declined":
-        return declinedCards;
-      default:
-        return [];
-    }
-  };
+  }, [navigate, selectedFilters]); // Added selectedFilters to dependency array
 
   return (
     <div className="teacher-page-container">
-      <h1>Explore PFE Topics</h1>
-      <div className="tabs-container">
-        <div className="tabs">
-          <button
-            className={`tab-item ${activeTab === "Submitted" ? "active" : ""}`}
-            onClick={() => setActiveTab("Submitted")}
-          >
-            Submitted
-          </button>
-          <button
-            className={`tab-item ${activeTab === "Validated" ? "active" : ""}`}
-            onClick={() => setActiveTab("Validated")}
-          >
-            Validated
-          </button>
-          <button
-            className={`tab-item ${activeTab === "Declined" ? "active" : ""}`}
-            onClick={() => setActiveTab("Declined")}
-          >
-            Declined
-          </button>
-        </div>
-      </div>
-
+      <p
+        className="pagetitle"
+        style={{
+          paddingLeft: "10px",
+          paddingTop: "10px",
+        }}
+      >
+        Explore PFE Topics
+      </p>
       <div className="content-area">
         {error && <div className="error-message">{error}</div>}
 
         {loading ? (
-          <div className="loading-indicator">Loading...</div>
+          <div className="loading-indicator">Loading</div>
         ) : (
-          <PFEList filteredCards={getCurrentCards()} activeTab={activeTab} />
+          <PFEList filteredCards={filteredCards} />
         )}
       </div>
     </div>
   );
 };
 
-const PFEList = ({ filteredCards, activeTab }) => {
-  const getEmptyMessage = () => {
-    switch (activeTab) {
-      case "Submitted":
-        return "No submitted topics found.";
-      case "Validated":
-        return "No validated topics found.";
-      case "Declined":
-        return "No declined topics found.";
-      default:
-        return "No topics found.";
-    }
-  };
-
+const PFEList = ({ filteredCards }) => {
   return (
     <div className="cards-container">
       {filteredCards.length > 0 ? (
-        filteredCards.map((card) => <PFECard key={card.id} card={card} />)
+        filteredCards.map((card) => (
+          <PFECard
+            key={card.id}
+            card={card}
+            isSelected={null}
+            toggleSelect={() => {}}
+          />
+        ))
       ) : (
-        <p className="no-results-message">{getEmptyMessage()}</p>
+        <p className="no-results-message">
+          No topics found matching the selected filters.
+        </p>
       )}
     </div>
   );
