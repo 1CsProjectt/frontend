@@ -1,289 +1,225 @@
 import React, { useState, useEffect, useRef } from "react";
 import Module from "../styles/TeamSelectionTeacher.module.css";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 import Seemorepage from "../components/ExistedTeamSeemore";
-
+import Popup from "../components/modals/popup";
+import { useCallback } from "react";
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
+const PENDING = "PENDING";
+const ACCEPTED = "ACCEPTED";
+const REJECTED = "REJECTED";
+
 const TeamSelectionTeacher = () => {
-  const [activeTab, setActiveTab] = useState("FormedTeams");
-
-  return (
-    <div className={Module["team-formation-container"]}>
-      <div className={Module["header-container"]}>
-        <h1>Team Management</h1>
-        {activeTab === "ReceivedRequests" && (
-          <button
-            className={Module["refresh-button"]}
-            onClick={() => alert("Refresh requests logic here")}
-          >
-            Random-Acceptence
-          </button>
-        )}
-      </div>
-      {/* Tabs */}
-      <div className={Module["tabs"]}>
-        <button
-          className={`${Module["tab-item"]} ${
-            activeTab === "FormedTeams" ? Module["active"] : ""
-          }`}
-          onClick={() => setActiveTab("FormedTeams")}
-        >
-          Formed Teams
-        </button>
-        <button
-          className={`${Module["tab-item"]} ${
-            activeTab === "ReceivedRequests" ? Module["active"] : ""
-          }`}
-          onClick={() => setActiveTab("ReceivedRequests")}
-        >
-          Received Requests
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      <div className={Module["tab-content"]}>
-        {activeTab === "FormedTeams" ? (
-          <FormedTeamsTab />
-        ) : (
-          <ReceivedRequestsTab />
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Formed Teams Component
-const FormedTeamsTab = () => {
-  const [teams, setTeams] = useState([]);
+  const [requests, setRequests] = useState({
+    [PENDING]: [],
+    [ACCEPTED]: [],
+    [REJECTED]: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [teamsPerPage, setTeamsPerPage] = useState(10);
-  const containerRef = useRef(null);
-  const [selectedTeam, setSelectedTeam] = useState(null);
 
-  useEffect(() => {
-    const fetchFormedTeams = async () => {
+  const handleStatusUpdate = useCallback(
+    async (requestId, newStatus) => {
       try {
-        const response = await axios.get("/teams/all-teams", {
-          withCredentials: true,
-        });
-        if (!response.data || !response.data.teams) {
-          throw new Error("Invalid response structure");
-        }
+        await axios.patch(
+          `/preflist/supervision-request/${requestId}`,
+          { status: newStatus },
+          { headers: { "Content-Type": "application/json" } }
+        );
 
-        const formattedTeams = response.data.teams.map((team) => ({
-          id: team.id,
-          groupName: team.groupName,
-          members: team.members || [],
-          status: team.status || "Active",
-          leaderName:
-            team.members && team.members.length > 0
-              ? `${team.members[0].firstname} ${team.members[0].lastname}`
-              : "N/A",
+        setRequests((prev) => ({
+          ...prev,
+          [PENDING]: prev[PENDING].filter((r) => r.id !== requestId),
+          [newStatus]: [
+            ...prev[newStatus],
+            prev[PENDING].find((r) => r.id === requestId),
+          ],
         }));
-        setTeams(formattedTeams);
+
+        setShowConfirmation(false);
+        setSuccess(true);
       } catch (err) {
-        setError(err.message || "Failed to fetch formed teams");
-        console.error("Error fetching formed teams:", err);
-      } finally {
-        setLoading(false);
+        console.error(`Error ${newStatus.toLowerCase()} request:`, err);
+        setError(`Failed to ${newStatus.toLowerCase()} request`);
       }
-    };
-
-    fetchFormedTeams();
-  }, []);
-
-  useEffect(() => {
-    const updateTeamsPerPage = () => {
-      if (containerRef.current) {
-        const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 75;
-        const rowsPerPage = Math.floor(containerHeight / estimatedRowHeight);
-        setTeamsPerPage(Math.max(rowsPerPage, 1)); // Ensure at least 1 item per page
-      }
-    };
-
-    updateTeamsPerPage();
-    const resizeListener = window.addEventListener(
-      "resize",
-      updateTeamsPerPage
-    );
-    return () => window.removeEventListener("resize", resizeListener);
-  }, []);
-
-  const { currentItems: currentTeams, totalPages } = getPaginatedData(
-    teams,
-    currentPage,
-    teamsPerPage
+    },
+    [setRequests, setError]
   );
-
-  const pageNumbers = getPageNumbers(totalPages, currentPage);
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
-  const handleBackFromTeamDetails = () => {
-    setSelectedTeam(null);
-  };
-
-  if (loading)
-    return <div className={Module["loading-indicator"]}>Loading...</div>;
-  if (error) return <div className={Module["error-message"]}>{error}</div>;
-
-  if (selectedTeam) {
-    const mappedMembers = selectedTeam.members.map((member) => ({
-      fullName: `${member.firstname} ${member.lastname}`,
-      email: member.user?.email || "N/A",
-      role: member.role || "Member",
-    }));
-
-    return (
-      <div>
-        <Seemorepage
-          userRole="teacher"
-          myTeamNumber={selectedTeam.id}
-          myTeamMembers={mappedMembers}
-          onBack={handleBackFromTeamDetails}
-        />
-      </div>
-    );
-  }
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const navigate = useNavigate();
+  const randomSelection = () => {};
+  const [activeTab, setActiveTab] = useState(PENDING);
+  const [selectedRequest, setSelectedRequest] = useState(false);
+  const [selectedRequestid, setSelectedRequestid] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [confTitle, setConfTitle] = useState(""); // for confirmation popup title
+  const [confMsg, setConfMsg] = useState(""); // for confirmation popup message
+  const [confButtonText, setConfButtonText] = useState("");
+  const [status, setStatus] = useState("");
   return (
-    <div className={Module["page-container"]}>
-      <div className={Module["table-wrapper"]} ref={containerRef}>
-        <table>
-          <thead>
-            <tr>
-              <th>Team Number</th>
-              <th>Team Name</th>
-              <th>Team Leader</th>
-              <th>Members Count</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentTeams.length > 0 ? (
-              currentTeams.map((team) => (
-                <tr key={team.id}>
-                  <td>{team.id}</td>
-                  <td>{team.groupName}</td>
-                  <td>{team.leaderName}</td>
-                  <td>{team.members.length}</td>
-                  <td>
-                    <span
-                      className={
-                        team.status === "Active"
-                          ? Module["status-available"]
-                          : Module["status-in-team"]
-                      }
-                    >
-                      {team.status}
-                    </span>
-                  </td>
-                  <td className={Module["button-container"]}>
-                    <button
-                      className={Module["invite-button"]}
-                      onClick={() => setSelectedTeam(team)}
-                    >
-                      See More
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className={Module["no-data"]}>
-                  No teams found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className={Module["pagination"]}>
+    <div className={Module["team-formation-container"]}>
+      <div
+        className={Module["header-part"]}
+        style={selectedRequest ? { paddingBottom: "59px" } : {}}
+      >
+        <div className={Module["header-container"]}>
+          <p className="pagetitle">Received Requests</p>{" "}
           <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={currentPage === 1 ? Module["disabled"] : ""}
+            className={` ${
+              selectedRequest ? Module["back-btn"] : Module["refresh-button"]
+            }`}
+            onClick={
+              selectedRequest
+                ? () => setSelectedRequest(false)
+                : () => randomSelection()
+            }
           >
-            Previous
-          </button>
-
-          <div className={Module["page-numbers"]}>
-            {pageNumbers.map((page, idx) =>
-              page === "..." ? (
-                <span key={idx} className={Module["ellipsis"]}>
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={idx}
-                  onClick={() => handlePageChange(page)}
-                  className={page === currentPage ? Module["active"] : ""}
-                >
-                  {page}
-                </button>
-              )
-            )}
-          </div>
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={currentPage === totalPages ? Module["disabled"] : ""}
-          >
-            Next
+            {selectedRequest ? "Back" : "Random Selection"}
           </button>
         </div>
+        {!selectedRequest && (
+          <div className="tabs-container">
+            <div className="tabs">
+              <button
+                className={`tab-item ${activeTab === PENDING ? "active" : ""}`}
+                onClick={() => setActiveTab(PENDING)}
+              >
+                Pending
+              </button>
+              <button
+                className={`tab-item ${activeTab === ACCEPTED ? "active" : ""}`}
+                onClick={() => setActiveTab(ACCEPTED)}
+              >
+                Accepted
+              </button>
+              <button
+                className={`tab-item ${activeTab === REJECTED ? "active" : ""}`}
+                onClick={() => setActiveTab(REJECTED)}
+              >
+                Rejected
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+      <ReceivedRequestsTab
+        showConfirmation={showConfirmation}
+        setShowConfirmation={setShowConfirmation}
+        success={success}
+        setSuccess={setSuccess}
+        activeTab={activeTab}
+        selectedRequest={selectedRequest}
+        setSelectedRequest={setSelectedRequest}
+        setSelectedRequestid={setSelectedRequestid}
+        selectedRequestid={selectedRequestid}
+        handleactions={handleStatusUpdate}
+        setError={setError}
+        setLoading={setLoading}
+        error={error}
+        loading={loading}
+        status={status}
+        setStatus={setStatus}
+        requests={requests}
+        setRequests={setRequests}
+        confTitle={confTitle}
+        confMsg={confMsg}
+        confButtonText={confButtonText}
+        setConfTitle={setConfTitle}
+        setConfMsg={setConfMsg}
+        setConfButtonText={setConfButtonText}
+      />
+      {showConfirmation && (
+        <Popup
+          onConfirm={() => {
+            status === "blue"
+              ? handleStatusUpdate(selectedRequestid, ACCEPTED)
+              : handleStatusUpdate(selectedRequestid, REJECTED);
+          }}
+          confirmText={confButtonText}
+          poproud={1}
+          status={status}
+          confirmMessage={confMsg}
+          confirmTitle={confTitle}
+          onCancel={() => setShowConfirmation(false)}
+        />
+      )}
+
+      {success && (
+        <Popup
+          poproud={2}
+          onOkey={() => {
+            setSuccess(false);
+          }}
+        />
       )}
     </div>
   );
 };
 
-// Received Requests Component
-const ReceivedRequestsTab = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const ReceivedRequestsTab = ({
+  activeTab,
+  selectedRequest,
+  setSelectedRequest,
+  setSelectedRequestid,
+  selectedRequestid,
+  handleactions,
+  setError,
+  setLoading,
+  error,
+  loading,
+  setRequests,
+  setShowConfirmation,
+  requests,
+  setStatus,
+  setConfTitle,
+  setConfMsg,
+  success,
+  setSuccess,
+  setConfButtonText,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [requestsPerPage, setRequestsPerPage] = useState(10);
   const containerRef = useRef(null);
+  const [teamid, setTeamid] = useState(null);
+
+  const handleRowClick = (teamid, requestid) => {
+    console.log("requesssssssssssssssssssssssssst", requestid);
+    setSelectedRequest(true);
+    setTeamid(teamid);
+    setSelectedRequestid(requestid);
+  };
 
   useEffect(() => {
     const fetchReceivedRequests = async () => {
       try {
-        const response = await axios.get("/preflist/getAllrequests", {
-          withCredentials: true,
-        });
-        if (!response.data || !Array.isArray(response.data.data)) {
-          throw new Error("Invalid response structure");
-        }
+        const response = await axios.get("/preflist/getAllrequests");
+        if (!response.data?.data) throw new Error("Invalid response structure");
 
-        // Sort requests by sentAt (newest first) and add order number
-        const sortedRequests = [...response.data.data]
-          .sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt))
-          .map((request, index) => ({
-            ...request,
-            order: index + 1,
-            status: request.status || "PENDING",
-            topicTitle: request.topicTitle || "N/A",
-            teamId: request.teamId || "N/A",
-          }));
+        const sortedRequests = response.data.data.reduce(
+          (acc, request, index) => {
+            const status = request.status?.toUpperCase() || PENDING;
+            const processedRequest = {
+              ...request,
+              order: index + 1,
+              status,
+              topicTitle: request.pfe?.title || "N/A",
+              grade: request.pfe?.year || "N/A",
+              teamId: request.teamId || "N/A",
+            };
+
+            acc[status] = [...acc[status], processedRequest];
+            return acc;
+          },
+          { [PENDING]: [], [ACCEPTED]: [], [REJECTED]: [] }
+        );
 
         setRequests(sortedRequests);
       } catch (err) {
-        setError(err.message || "Failed to fetch received requests");
+        setError(err.message || "Failed to fetch requests");
         console.error("Error fetching requests:", err);
       } finally {
         setLoading(false);
@@ -304,187 +240,185 @@ const ReceivedRequestsTab = () => {
     };
 
     updateRequestsPerPage();
-    const resizeListener = () => updateRequestsPerPage();
-    window.addEventListener("resize", resizeListener);
-    return () => window.removeEventListener("resize", resizeListener);
+    window.addEventListener("resize", updateRequestsPerPage);
+    return () => window.removeEventListener("resize", updateRequestsPerPage);
   }, []);
 
-  // Added pagination calculations
-  const { currentItems: currentRequests, totalPages } = getPaginatedData(
-    requests,
+  const currentRequests = requests[activeTab];
+  const { currentItems: paginatedRequests, totalPages } = getPaginatedData(
+    currentRequests,
     currentPage,
     requestsPerPage
   );
 
-  // Added page numbers generation
   const pageNumbers = getPageNumbers(totalPages, currentPage);
 
-  // Added page change handler
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
-  // ... (keep the existing pageNumbers and handlePageChange functions)
-
-  const handleApprove = async (requestId) => {
-    try {
-      await axios.patch(
-        `/preflist/supervision-request/${requestId}`,
-        { status: "ACCEPTED" }, // Add status to request body
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
-      );
-    } catch (err) {
-      console.error("Error approving request:", err);
-      setError("Failed to approve request");
-    }
-  };
-
-  const handleReject = async (requestId) => {
-    try {
-      await axios.patch(
-        `/preflist/supervision-request/${requestId}`,
-        { status: "REJECTED" }, // Add status to request body
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
-      );
-    } catch (err) {
-      console.error("Error rejecting request:", err);
-      setError("Failed to reject request");
-    }
-  };
-
   if (loading)
-    return <div className={Module["loading-indicator"]}>Loading...</div>;
-  if (error) return <div className={Module["error-message"]}>{error}</div>;
+    return <div className={Module["loading-indicator"]}>Loading</div>;
 
   return (
     <div className={Module["page-container"]}>
-      <div className={Module["table-wrapper"]} ref={containerRef}>
-        <table>
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Team Number</th>
-              <th>Topic Title</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRequests.length > 0 ? (
-              currentRequests.map((request) => (
-                <tr key={request.id}>
-                  <td>{request.order}</td>
-                  <td>{request.teamId}</td>
-                  <td>{request.topicTitle}</td>
-                  <td>
-                    <span
-                      className={
-                        request.status === "APPROVED"
-                          ? Module["status-available"]
-                          : request.status === "REJECTED"
-                          ? Module["status-in-team"]
-                          : Module["status-pending"]
-                      }
-                    >
-                      {request.status}
-                    </span>
-                  </td>
-                  <td className={Module["button-container"]}>
-                    {request.status === "PENDING" && (
-                      <>
-                        <button
-                          className={Module["invite-button"]}
-                          onClick={() => handleApprove(request.id)}
-                          style={{
-                            backgroundColor: "#F1F1F1",
-                            color: "#344054",
-                            marginRight: "8px",
-                          }}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className={Module["invite-button"]}
-                          onClick={() => handleReject(request.id)}
-                          style={{
-                            backgroundColor: "white",
-                            color: "#344054",
-                          }}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                  </td>
+      {error && <div className={Module["error-message"]}>{error}</div>}
+      {selectedRequest ? (
+        <div style={{ padding: "10px" }}>
+          {" "}
+          <Seemorepage
+            userRole={activeTab === PENDING ? "teacher" : "teacher.teams"}
+            myTeamNumber={teamid}
+            handleactions={handleactions}
+            requestid={selectedRequestid}
+            setSelectedRequest={setSelectedRequest}
+            success={success}
+            setSuccess={setSuccess}
+          />
+        </div>
+      ) : (
+        <>
+          <div className={Module["table-wrapper"]} ref={containerRef}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Team Number</th>
+                  <th>Grade</th>
+                  <th>Topic Title</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className={Module["no-data"]}>
-                  No requests found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {paginatedRequests.length > 0 ? (
+                  paginatedRequests.map((request) => (
+                    <tr
+                      key={request.id}
+                      onClick={() => handleRowClick(request.teamId, request.id)}
+                      className={Module["clickable-row"]}
+                    >
+                      <td>{request.order}</td>
+                      <td>{request.teamId}</td>
+                      <td>{request.grade}</td>
+                      <td>{request.topicTitle}</td>
+                      <td>
+                        <span
+                          className={
+                            Module[`status-${request.status.toLowerCase()}`]
+                          }
+                        >
+                          {request.status}
+                        </span>
+                      </td>
+                      <td
+                        className={Module["button-container"]}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {activeTab === PENDING && (
+                          <>
+                            <button
+                              className={Module["invite-button"]}
+                              onClick={(e) => {
+                                setConfTitle("Accept the request");
+                                setConfMsg(
+                                  "Are you sure you want to accept this request? This action cannot be undone."
+                                );
+                                setConfButtonText("accept");
+                                setStatus("blue");
 
-      {totalPages > 1 && (
-        <div className={Module["pagination"]}>
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={currentPage === 1 ? Module["disabled"] : ""}
-          >
-            Previous
-          </button>
-
-          <div className={Module["page-numbers"]}>
-            {pageNumbers.map((page, idx) =>
-              page === "..." ? (
-                <span key={idx} className={Module["ellipsis"]}>
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={idx}
-                  onClick={() => handlePageChange(page)}
-                  className={page === currentPage ? Module["active"] : ""}
-                >
-                  {page}
-                </button>
-              )
-            )}
+                                setShowConfirmation(true);
+                                setSelectedRequestid(request.id);
+                                e.stopPropagation();
+                              }}
+                              style={buttonStyles.accept}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className={Module["invite-button"]}
+                              onClick={(e) => {
+                                setConfTitle("Refuse the request");
+                                setConfMsg(
+                                  "Are you sure you want to refuse this request? This action cannot be undone."
+                                );
+                                setConfButtonText("refuse");
+                                setStatus("red");
+                                setShowConfirmation(true);
+                                setSelectedRequestid(request.id);
+                                e.stopPropagation();
+                              }}
+                              style={buttonStyles.reject}
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className={Module["no-data"]}>
+                      No {activeTab.toLowerCase()} requests found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
 
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={currentPage === totalPages ? Module["disabled"] : ""}
-          >
-            Next
-          </button>
-        </div>
+          {totalPages > 1 && (
+            <div className={Module["pagination"]}>
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className={currentPage === 1 ? Module["disabled"] : ""}
+              >
+                Previous
+              </button>
+
+              <div className={Module["page-numbers"]}>
+                {pageNumbers.map((page, idx) =>
+                  page === "..." ? (
+                    <span key={idx} className={Module["ellipsis"]}>
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentPage(page)}
+                      className={page === currentPage ? Module["active"] : ""}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? Module["disabled"] : ""}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
+
+const buttonStyles = {
+  accept: {
+    backgroundColor: "#F1F1F1",
+    color: "#344054",
+    marginRight: "8px",
+  },
+  reject: {
+    backgroundColor: "white",
+    color: "#344054",
+  },
+};
+
 export default TeamSelectionTeacher;

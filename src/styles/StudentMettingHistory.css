@@ -1,0 +1,76 @@
+/* MeetingFilesLayout.css */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .section {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fafafa;
+  }
+  
+  .file-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .file-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    /* Replace background-image with your icon asset */
+
+    background-size: contain;
+  }
+  
+  .file-name {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .edit-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .edit-button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -29,26 +29,12 @@ const Layout = () => {
 
   const handleFilterApply = useCallback((newFilters) => {
     setSelectedFilters(newFilters);
+    console.log("Selected Filters:", selectedFilters);
   }, []);
 
   const handleSearchChange = useCallback((query) => {
     setSearchQuery(query);
   }, []);
-
-  const filteredCards = cards.filter((card) => {
-    const lowerQuery = searchQuery.toLowerCase();
-    return (
-      ((selectedFilters.length === 0 ||
-        selectedFilters.includes(card.specialization)) &&
-        card.title &&
-        card.title.toLowerCase().includes(lowerQuery)) ||
-      (card.specialization &&
-        card.specialization.toLowerCase().includes(lowerQuery)) ||
-      (card.creator?.username &&
-        card.creator.username.toLowerCase().includes(lowerQuery)) ||
-      (card.year && card.year.toLowerCase().includes(lowerQuery))
-    );
-  });
 
   return (
     <div className="layout">
@@ -62,7 +48,7 @@ const Layout = () => {
           suggestions={suggestionList}
         />
 
-        <Outlet context={{ cards, setCards, user }} />
+        <Outlet context={{ cards, setCards, user, selectedFilters }} />
       </div>
     </div>
   );

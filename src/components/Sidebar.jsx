@@ -29,8 +29,10 @@ const Sidebar = () => {
       setActiveMenu("pfe");
     } else if (path.includes("mytopics") || path.includes("Addatopic")) {
       setActiveMenu("mytopics"); // ✅ Match this to the comparison
-    } else if (path.includes("teamselection")) {
-      setActiveMenu("teamselection");
+    } else if (path.includes("requests")) {
+      setActiveMenu("requests");
+    } else if (path.includes("myteam")) {
+      setActiveMenu("myteam");
     } else if (path.includes("/teacher")) {
       setActiveMenu("pfe");
     } else if (path.includes("/TeamFormationPage")) {
@@ -53,7 +55,11 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    document.cookie = "authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+
+    localStorage.removeItem("preferencesList");
+    localStorage.removeItem("user");
+
     navigate("/");
   };
 
@@ -105,16 +111,36 @@ const Sidebar = () => {
             <li className={Module["menu-item"]}>
               <button
                 className={`${Module["menu-btn"]} ${
-                  activeMenu === "teamselection" ? Module["active"] : ""
+                  activeMenu === "requests" ? Module["active"] : ""
                 }`}
-                onClick={() => toggleMenu("/teacher/teamselection")}
+                onClick={() => toggleMenu("/teacher/requests")}
               >
                 <img
                   src={TeamformationIcon}
-                  alt="Team Selection"
+                  alt="Requests"
                   className={Module["icon"]}
                 />
-                Team Selection
+                Requests
+                <img
+                  src={ChevronRightIcon}
+                  alt="Arrow"
+                  className={Module["row-icon"]}
+                />
+              </button>
+            </li>
+            <li className={Module["menu-item"]}>
+              <button
+                className={`${Module["menu-btn"]} ${
+                  activeMenu === "myteam" ? Module["active"] : ""
+                }`}
+                onClick={() => toggleMenu("/teacher/myteam")}
+              >
+                <img
+                  src={TeamformationIcon}
+                  alt="Requests"
+                  className={Module["icon"]}
+                />
+                My Teams
                 <img
                   src={ChevronRightIcon}
                   alt="Arrow"
@@ -127,9 +153,8 @@ const Sidebar = () => {
         {!role && (
           <li className={Module["menu-item"]}>
             <button
-              className={`${Module["menu-btn"]} ${
-                activeMenu === "TeamFormationPage" ? Module["active"] : ""
-              }`}
+              className={`${Module["menu-btn"]} ${activeMenu === "TeamFormationPage" ? Module["active"] : ""
+                }`}
               onClick={() => toggleMenu("/TeamFormationPage")}
             >
               <img
@@ -146,13 +171,32 @@ const Sidebar = () => {
             </button>
           </li>
         )}
+
+        <li className={Module["menu-item"]}>
+          <button
+            className={`${Module["menu-btn"]} ${activeMenu === "loremres" ? Module["active"] : ""
+              }`}
+            onClick={() => toggleMenu("/StudentMeetingsPage")}
+          >
+            <img
+              src={CheckCircleIcon}
+              alt="Loremres"
+              className={Module["icon"]}
+            />
+            Meetings
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
+          </button>
+        </li>
         <li className={Module["menu-item"]}>
           <button
             /* className={Module[`menu-btn ${activeMenu === "notifications" ? "active" : ""}`]} */
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "notifications" ? Module["active"] : ""
-            }`}
-            onClick={() => toggleMenu("/notifications")}
+            className={`${Module["menu-btn"]} ${activeMenu === "notifications" ? Module["active"] : ""
+              }`}
+            onClick={() => toggleMenu("/meetings")}
           >
             <img
               src={NotificationsIcon}
@@ -170,29 +214,8 @@ const Sidebar = () => {
 
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "loremres" ? Module["active"] : ""
-            }`}
-            onClick={() => toggleMenu("/loremres")}
-          >
-            <img
-              src={CheckCircleIcon}
-              alt="Loremres"
-              className={Module["icon"]}
-            />
-            Loremres
-            <img
-              src={ChevronRightIcon}
-              alt="Arrow"
-              className={Module["row-icon"]}
-            />
-          </button>
-        </li>
-        <li className={Module["menu-item"]}>
-          <button
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "lovers" ? Module["active"] : ""
-            }`}
+            className={`${Module["menu-btn"]} ${activeMenu === "lovers" ? Module["active"] : ""
+              }`}
             onClick={() => toggleMenu("/lovers")}
           >
             <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
@@ -206,9 +229,8 @@ const Sidebar = () => {
         </li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "export" ? Module["active"] : ""
-            }`}
+            className={`${Module["menu-btn"]} ${activeMenu === "export" ? Module["active"] : ""
+              }`}
             onClick={() => toggleMenu("/export")}
           >
             <img src={ExportIcon} alt="Export" className={Module["icon"]} />

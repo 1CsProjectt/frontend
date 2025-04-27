@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./styles/App.css";
-
+import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SharedStateProvider } from "./contexts/SharedStateContext";
 import Login from "./Pages/Login";
@@ -13,6 +13,7 @@ import UserManagementTabs from "./components/UserManagementTabs";
 import SessionsManagementTabs from "./components/SessionsManagementTabs";
 import TeacherTopics from "./components/TeacherTopics";
 import Addatopic from "./components/addatopic";
+import TeacherTeam from "./components/teacherteam";
 import TopicsValidationPage from "./Pages/TopicsValidationPage";
 import SubmittedTopicsExplorePage from "./Pages/SubmittedTopicsExplorePage";
 import "./styles/App.css";
@@ -20,12 +21,12 @@ import HelpPage from "./Pages/HelpPage";
 import PFEStudentPage from "./Pages/PFEStudentPage";
 import SettingsPage from "./Pages/SettingsPage";
 import NotificationsPage from "./Pages/NotificationsPage";
-import LoversPage from "./Pages/LoversPage";
 import Layout from "./Pages/layout";
 import ExplorePage from "./Pages/ExplorePage";
-
+import StudentMeetingsPage from "./Pages/StudentMeetingsPage";
 import AdminTeamFormationPage from "./Pages/AdminTeamFormationPage";
 import TeamFormationPage from "./Pages/TeamformationPage";
+import SeeMoreMetting from "./components/SeeMoreMettingHistory";
 import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage"
@@ -47,10 +48,12 @@ function App() {
           <Route path="/CheckEmail" element={<CheckEmail />} />
 
           <Route path="/teacher" element={<Layout />}>
-            <Route index element={<TeacherPfePage />} />
+            <Route index element={<Navigate to="home" replace />} />
+            <Route path="home" element={<TeacherPfePage />} />
             <Route path="mytopics" element={<TeacherTopics />} />
             <Route path="Addatopic" element={<Addatopic />} />
-            <Route path="teamselection" element={<TeamSelectionTeacher />} />
+            <Route path="requests" element={<TeamSelectionTeacher />} />
+            <Route path="myteam" element={<TeacherTeam />} />
           </Route>
 
           {/* Route with dynamic token */}
@@ -66,10 +69,16 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/lovers" element={<LoversPage />} />
+          <Route path="/StudentMeetingsPage" element={<StudentMeetingsPage />} />
+          <Route path="/StudentMeetingsPage/SeeMore" element={<SeeMoreMetting/>} />
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
 
+        
+          <Route
+            path="/admin/sessions/topic-validation/submitted-topic-explore"
+            element={<SubmittedTopicsExplorePage />}
+          />
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<UserManagementTabs />} />

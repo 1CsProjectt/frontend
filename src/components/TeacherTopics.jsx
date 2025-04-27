@@ -1,17 +1,23 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
+import Popup from "../components/modals/popup";
 import axios from "axios";
-import Alert from "../assets/alert-circle.svg";
-import SuccessIcon from "../assets/success-icon.svg";
 
 const SUBMITTED = "Submitted";
 const VALIDATED = "Validated";
 const DECLINED = "Declined";
 
 const TeacherTopics = () => {
-  const { Role } = useOutletContext();
+  const { selectedFilters } = useOutletContext();
+  console.log("hahahaha", selectedFilters);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,6 +28,11 @@ const TeacherTopics = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [activeTab, setActiveTab] = useState(SUBMITTED);
+  const [status, setStatus] = useState("");
+
+  const [confTitle, setConfTitle] = useState(""); // for confirmation popup title
+  const [confMsg, setConfMsg] = useState(""); // for confirmation popup message
+  const [confButtonText, setConfButtonText] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +41,9 @@ const TeacherTopics = () => {
         const response = await axios.get("/pfe/my-pfes", {
           withCredentials: true,
         });
-
+        const currentSessions = response.data.currentSessions;
+        // Use currentSessions as needed
+        console.log("hahiyaaaaaaaaaaaaa", currentSessions);
         if (response.data?.data) {
           setCards(response.data.data);
         }
@@ -50,28 +63,41 @@ const TeacherTopics = () => {
     fetchData();
   }, [navigate]);
 
-  // Filter cards based on status
-  const submittedCards = cards.filter(
-    (card) => card.status === "NOT_VALIDE" || !card.status
-  );
-  const validatedCards = cards.filter((card) => card.status === "VALIDE");
-  const declinedCards = cards.filter((card) => card.status === "REJECTED");
-
-  const getCurrentCards = () => {
+  // Memoized filtered cards with combined filters
+  const currentCards = useMemo(() => {
+    let filtered = [];
     switch (activeTab) {
       case SUBMITTED:
-        return submittedCards;
+        filtered = cards.filter(
+          (card) => card.status === "NOT_VALIDE" || !card.status
+        );
+        break;
       case VALIDATED:
-        return validatedCards;
-      case DECLINED:
-        return declinedCards;
+        filtered = cards.filter((card) => card.status === "VALIDE");
+        break;
+      case DECLINED: // Added Declined case
+        filtered = cards.filter((card) => card.status === "REJECTED");
+        break;
       default:
-        return [];
+        filtered = [];
     }
-  };
 
-  const currentCards = getCurrentCards();
+    if (selectedFilters && selectedFilters.length > 0) {
+      filtered = filtered.filter((card) =>
+        selectedFilters.includes(card.specialization)
+      );
+    }
+
+    return filtered;
+  }, [activeTab, cards, selectedFilters]);
   const totalCount = currentCards.length;
+
+  useEffect(() => {
+    // Reset selections when filters change
+    setSelectedIds([]);
+    setSelectedCount(0);
+    setIsChecked(false);
+  }, [currentCards]);
 
   const reset = () => {
     setSelectedIds([]);
@@ -114,7 +140,7 @@ const TeacherTopics = () => {
         )
       );
 
-      // Refresh data after deletion
+      // Refresh data
       const response = await axios.get("/pfe/my-pfes", {
         withCredentials: true,
         headers: {
@@ -126,8 +152,8 @@ const TeacherTopics = () => {
       reset();
       setSuccess(true);
     } catch (error) {
-      console.error("Failed to delete topic(s):", error);
-      alert("Failed to delete one or more topics.");
+      console.error("Delete failed:", error);
+      alert("Failed to delete topics");
       reset();
     }
   };
@@ -137,8 +163,9 @@ const TeacherTopics = () => {
       setSelectedCount(0);
       setSelectedIds([]);
     } else {
-      setSelectedCount(totalCount);
-      setSelectedIds(currentCards.map((card) => card.id));
+      const ids = currentCards.map((card) => card.id).filter(Boolean);
+      setSelectedCount(ids.length);
+      setSelectedIds(ids);
     }
     setIsChecked(!isChecked);
   };
@@ -146,6 +173,46 @@ const TeacherTopics = () => {
   return (
     <div className="containert">
       {/* Tabs */}
+      <div className="pageheader">
+        <p className="pagetitle">MyTopics</p>
+        {onDelete && (
+          <div className="delete-popup">
+            <div className="selection-container" onClick={handleToggle}>
+              <input
+                type="checkbox"
+                id="all"
+                name="selection"
+                className="radio-input"
+                checked={isChecked}
+                readOnly
+              />
+              <label htmlFor="all" className="label-text">
+                All
+              </label>
+            </div>
+            <span className="selected-count">{selectedCount} Selected</span>
+          </div>
+        )}
+        {activeTab === SUBMITTED && (
+          <div className="pageheaderbuttons">
+            <button className="btnd" onClick={handleButtons}>
+              <p className="managebtns-text">Delete Topics</p>
+            </button>
+            <button
+              className={` ${onDelete ? "btna-on-cancel" : "btna"}`}
+              onClick={
+                onDelete ? cancelDelete : () => navigate("/teacher/Addatopic")
+              }
+            >
+              <p
+                className={` ${onDelete ? "txt-on-cancel" : "managebtns-text"}`}
+              >
+                {onDelete ? "Cancel" : "Add a Topic"}
+              </p>
+            </button>
+          </div>
+        )}
+      </div>
       <div className="tabs-container">
         <div className="tabs">
           <button
@@ -169,45 +236,17 @@ const TeacherTopics = () => {
         </div>
       </div>
 
-      <div className="pageheader">
-        <p className="pagetitle">MyTopics</p>
-        {onDelete && (
-          <div className="delete-popup">
-            <div className="selection-container" onClick={handleToggle}>
-              <input
-                type="checkbox"
-                id="all"
-                name="selection"
-                className="radio-input"
-                checked={isChecked}
-                readOnly
-              />
-              <label htmlFor="all" className="label-text">
-                All
-              </label>
-            </div>
-            <span className="selected-count">{selectedCount} Selected</span>
-          </div>
-        )}
-
-        <p className="spacing"></p>
-        <button className="btnd" onClick={handleButtons}>
-          <p className="managebtns-text">Delete Topics</p>
-        </button>
-        <button
-          className={` ${onDelete ? "btna-on-cancel" : "btna"}`}
-          onClick={
-            onDelete ? cancelDelete : () => navigate("/teacher/Addatopic")
-          }
-        >
-          <p className={` ${onDelete ? "txt-on-cancel" : "managebtns-text"}`}>
-            {onDelete ? "Cancel" : "Add a Topic"}
-          </p>
-        </button>
-      </div>
-
       {showConfirmation && (
-        <Popup onCancel={cancelDelete} onConfirm={confirmDelete} poproud={1} />
+        <Popup
+          onCancel={cancelDelete}
+          onConfirm={confirmDelete}
+          onOkey={onOkey}
+          poproud={1}
+          confirmTitle={"Delete PFE Topics"}
+          confirmMessage={
+            "Are you sure you want to delete this? This action cannot be undone."
+          }
+        />
       )}
 
       {success && <Popup poproud={2} onOkey={onOkey} />}
@@ -216,7 +255,7 @@ const TeacherTopics = () => {
         {error && <div className="error-message">{error}</div>}
 
         {loading ? (
-          <div className="loading-indicator">Loading...</div>
+          <div className="loading-indicator">Loading</div>
         ) : (
           <PFEList
             filteredCards={currentCards}
@@ -231,68 +270,6 @@ const TeacherTopics = () => {
   );
 };
 
-// Popup Component
-const Popup = ({ onCancel, onConfirm, poproud, onOkey }) => {
-  const popupRef = useRef(null);
-
-  useEffect(() => {
-    if (poproud !== 1) return;
-
-    const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        onCancel();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onCancel, poproud]);
-
-  return (
-    <div className="overlay">
-      {poproud === 1 && (
-        <div className="popup-cont" ref={popupRef}>
-          <div className="conf-warn-cont">
-            <img src={Alert} alt="" className="conf-warn" />
-          </div>
-          <p className="conf-ttl">Delete PFE Topics</p>
-          <p className="conf-mssg">
-            Are you sure you want to delete this? This action cannot be undone.
-          </p>
-          <div className="conf-btns">
-            <button className="cancel-button" onClick={onCancel}>
-              Cancel
-            </button>
-            <button className="delete-button" onClick={onConfirm}>
-              Delete
-            </button>
-          </div>
-        </div>
-      )}
-      {poproud === 2 && (
-        <div className="popup-cont" ref={popupRef}>
-          <div className="conf-warn-cont">
-            <img src={SuccessIcon} alt="" className="conf-warn" />
-          </div>
-          <p className="conf-ttl">Success!</p>
-          <p className="conf-mssg">
-            The item has been successfully deleted! You won't be able to undo
-            this action.
-          </p>
-          <div className="conf-btn">
-            <button className="okey-button" onClick={onOkey}>
-              Okey
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// PFEList Component
 const PFEList = ({
   filteredCards,
   onDelete,
@@ -300,14 +277,17 @@ const PFEList = ({
   setSelectedIds,
   setSelectedCount,
 }) => {
+  useEffect(() => {
+    setSelectedIds([]);
+    setSelectedCount(0);
+  }, [filteredCards, setSelectedIds, setSelectedCount]);
+
   const handleCardClick = (id) => {
     if (onDelete) {
-      setSelectedIds((prevSelected) => {
-        const isSelected = prevSelected.includes(id);
-        const newSelected = isSelected
-          ? prevSelected.filter((selectedId) => selectedId !== id)
-          : [...prevSelected, id];
-
+      setSelectedIds((prev) => {
+        const newSelected = prev.includes(id)
+          ? prev.filter((i) => i !== id)
+          : [...prev, id];
         setSelectedCount(newSelected.length);
         return newSelected;
       });
@@ -315,7 +295,7 @@ const PFEList = ({
   };
 
   return (
-    <div className="cards-container" style={{ marginTop: "40px" }}>
+    <div className="cards-container">
       {filteredCards.length > 0 ? (
         filteredCards.map((card, index) => (
           <PFECard

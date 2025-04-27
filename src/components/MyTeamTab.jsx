@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import InviteModal from "./modals/InviteModal";
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
-const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites, session,reloadMyTeam }) => {
+const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites, session,reloadMyTeam }) => {
   const navigate = useNavigate();
   const [showSetRoleModal, setShowSetRoleModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -21,7 +21,14 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
       email: "no invites exists",
       team_id: "xx",
     }];
-
+    const handleModalClose = (message) => {
+      setShowSetRoleModal(false);
+       if (message) {
+            setToastMessage(message);
+            setShowToast(true);
+         }
+    };
+    
   const handleAcceptInvite = async (inviteId) => {
 
     try {
@@ -32,6 +39,8 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
       reloadMyTeam();
     } catch (error) {
       console.error("Error:", error);
+      setToastMessage(error);
+      setShowToast(true);
     }
   };
   const handleAcceptReq = async (reqId) => {
@@ -40,9 +49,11 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
       const response = await axios.post('/jointeam/accepteJoinRequests', { requestId: reqId }
       );
       console.log(response.data);
-
+      reloadMyTeam();
     } catch (error) {
       console.error("Error:", error);
+      setToastMessage(error);
+      setShowToast(true);
     }
   };
 
@@ -51,19 +62,27 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
       const response = await axios.post('/jointeam/rejectJoinRequests', { requestId: reqId });
       console.log(`Declined req with ID: ${reqId}`);
       console.log(response.data);
+      setToastMessage(`Declined req with ID: ${reqId}`);
+      setShowToast(true);
     } catch (error) {
       console.error("Error:", error);
+      setToastMessage(error);
+      setShowToast(true);
     }
 
   }
   const handleDeclineInvite = (inviteId) => {
     console.log(`Declined invite with ID: ${inviteId}`);
     axios.patch('/invitation/declineInvitation', { invitationId: inviteId });
+    setToastMessage(`Declined invite with ID: ${inviteId}`);
+    setShowToast(true);
   };
 
   const handleCancelInvite = (inviteId) => {
     axios.patch('/invitation/cancelInvitation', { invitationId: inviteId });
     console.log(`Cancelled invite with ID: ${inviteId}`);
+    setToastMessage(`Cancelled invite with ID: ${inviteId}`);
+    setShowToast(true);
   };
 
   if (!myTeamNumber && session === "Group formation session") {
@@ -157,7 +176,7 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
               <tr key={index}>
                 <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"}</td>
                 <td>{member.user?.email || "N/A"}</td>
-                <td>{member.role || "-- - - - - - - - - - - - "}</td>
+                <td>{member.role || "member"}</td>
                 <td></td>
                 <td></td>
               </tr>
@@ -267,9 +286,10 @@ const MyTeamTab = ({ myTeamNumber, myTeamMembers, myTeamPendingInvites, collabor
       />
       {/* Render the SetRoleModal, passing the state and onClose function */}
       <SetRoleModal
-        show={showSetRoleModal}
-        onClose={() => setShowSetRoleModal(false)}
-        Roleseted={() => setToastMessage("Team created successfully.")}
+       show={showSetRoleModal}
+       onClose={handleModalClose}
+       currentRole={userRole}
+       
       />
       {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
