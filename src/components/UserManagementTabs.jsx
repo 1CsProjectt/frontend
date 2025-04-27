@@ -234,9 +234,12 @@ useEffect(() => {
               </div>
 
       <div className={classes["pagination-container"]}>
+
+      <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
+        
       <div className={classes["pagination"]}>
-        <p>Page {currentPage} out of {totalPages}</p>
-        <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
+        <p>{currentPage}/{totalPages}</p>
+  
         {totalPages <= 10 ? (
           [...Array(totalPages)].map((_, i) => (
             <button 
@@ -279,8 +282,9 @@ useEffect(() => {
             <button onClick={handleCustomPageSubmit}>Go</button>
           </div>
         )}
-        <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
+
       </div>
+      <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
       </div>
       <UserFormModal isOpen={isUserFormModalOpen} onClose={() => setUserFormModalOpen(false)} userObject={userToEdit} operation={operation} userManagementActiveTab={activeTab}/>
       <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="User" userToDelete={userToDelete} />
