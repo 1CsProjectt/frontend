@@ -84,29 +84,33 @@
   .table-container{
     padding:20px;
   }
-
   .main-table {
-
     width: 100%;
-    border-collapse: collapse;
     background: white;
-    border-radius: 8px;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+    border: 2px solid rgb(221, 226, 228); /* Light gray border */
+    border-radius: 8px;
+    border-spacing: 0; /* instead of collapse, use spacing = 0 */
     overflow: hidden;
+    min-height: 60vh;
   }
+  
+  
 
   .main-table thead {
     
-
+    border-top: none;
     text-transform: uppercase;
     font-size: 14px;
     color: rgb(90,94,96);
   }
 
   .main-table thead th {
+    border-top: none;
     padding: 12px;
     text-align: center;
-
+    border-right: none;
+    border-left: none;
   }
 
   .main-table tbody tr {
@@ -119,13 +123,10 @@
     height:20px;
     font-size: 14px;
     color: #444;
+    border-right: none;
+    border-left: none;
   }
 
-
-  .main-table{
-    min-height: 60vh;
-
-  }
   .status-active {
     color: #28a745;
     font-weight: bold;
@@ -175,10 +176,16 @@
   }
 
   .pagination-container {
-   
     display: flex;
-    position: relative;
+    justify-content: space-between; /* Left - Center - Right */
+    align-items: center;
+    margin-top: 20px;
+    padding: 0 20px;
     width: 100%;
+    position: relative;
+    bottom: 20px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     
     
   }
@@ -191,8 +198,20 @@
     
   }
 
+  .pagination-container button {
+    padding: 12px 20px;
+    border: 2px solid rgb(208,213,221);
+    background-color: white;
+    color: rgb(88,92,95);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+    width: 120px;
+  }
   .pagination button {
-    padding: 8px 12px;
+    width: 50px;
+    height: 50px;
+  
     border: none;
     background:none;
     color: rgb(88,92,95);
@@ -200,26 +219,27 @@
     border-radius: 6px;
     transition: 0.3s;
   }
+  .pagination .active {
+   
+    color: rgb(7,126,212);
+    font-weight: bold;
+  }
+  
 
-  .pagination button:hover {
-    background: #0056b3;
+
+  .pagination-container button:hover {
+    background: #63636351;
   }
 
-  .pagination button:disabled {
+  .pagination-container button:disabled {
     background: #ccc;
     cursor: not-allowed;
   }
 
   .pagination {
     display: flex;
-    justify-content: center;
+    gap: 8px;
     align-items: center;
-    margin-top: 20px;
-    position: relative;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
   }
 
 
@@ -229,4 +249,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
+  .page-input{
+    display: flex;
+    flex-direction: row;
+  }
+  
   

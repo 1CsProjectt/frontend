@@ -82,6 +82,7 @@ useEffect(() => {
         <PFECard
           key={card.id}
           card={card}
+          toggleSelect={console.log("card clicked !")}
           onExplore={(e) => {
             e.stopPropagation();
           }}

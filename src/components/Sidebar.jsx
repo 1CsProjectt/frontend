@@ -29,8 +29,10 @@ const Sidebar = () => {
       setActiveMenu("pfe");
     } else if (path.includes("mytopics") || path.includes("Addatopic")) {
       setActiveMenu("mytopics"); // ✅ Match this to the comparison
-    } else if (path.includes("teamselection")) {
-      setActiveMenu("teamselection");
+    } else if (path.includes("requests")) {
+      setActiveMenu("requests");
+    } else if (path.includes("myteam")) {
+      setActiveMenu("myteam");
     } else if (path.includes("/teacher")) {
       setActiveMenu("pfe");
     } else if (path.includes("/TeamFormationPage")) {
@@ -109,16 +111,36 @@ const Sidebar = () => {
             <li className={Module["menu-item"]}>
               <button
                 className={`${Module["menu-btn"]} ${
-                  activeMenu === "teamselection" ? Module["active"] : ""
+                  activeMenu === "requests" ? Module["active"] : ""
                 }`}
-                onClick={() => toggleMenu("/teacher/teamselection")}
+                onClick={() => toggleMenu("/teacher/requests")}
               >
                 <img
                   src={TeamformationIcon}
-                  alt="Team Selection"
+                  alt="Requests"
                   className={Module["icon"]}
                 />
-                Team Selection
+                Requests
+                <img
+                  src={ChevronRightIcon}
+                  alt="Arrow"
+                  className={Module["row-icon"]}
+                />
+              </button>
+            </li>
+            <li className={Module["menu-item"]}>
+              <button
+                className={`${Module["menu-btn"]} ${
+                  activeMenu === "myteam" ? Module["active"] : ""
+                }`}
+                onClick={() => toggleMenu("/teacher/myteam")}
+              >
+                <img
+                  src={TeamformationIcon}
+                  alt="Requests"
+                  className={Module["icon"]}
+                />
+                My Teams
                 <img
                   src={ChevronRightIcon}
                   alt="Arrow"

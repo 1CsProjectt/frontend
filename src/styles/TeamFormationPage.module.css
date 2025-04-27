@@ -62,18 +62,15 @@
 }
 th {
   text-transform: none;
-
 }
 .W250 {
   width: 250px;
 }
 .table-wrapper td {
- 
-  white-space: nowrap;     
-  overflow: hidden;       
-  text-overflow: ellipsis; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: start;
-  
 }
 
 /* Wrapper around the table itself */
@@ -100,7 +97,6 @@ th {
 }
 
 .table-wrapper thead th {
-  
   border: none;
   padding: 12px 16px 12px 36px;
   font-size: 0.9rem;
@@ -108,7 +104,6 @@ th {
   color: #313638cc;
   text-align: start;
   background-color: #ffffff;
-  
 }
 
 .table-wrapper tbody td {
@@ -309,7 +304,7 @@ th {
 .create-team-button {
   background-color: #0284c7;
   color: #fff;
-  border: 2px solid #0284c7;/*matching other buttons size using the border */
+  border: 2px solid #0284c7; /*matching other buttons size using the border */
   border-radius: 6px;
   padding: 12px 28px;
   cursor: pointer;
@@ -506,7 +501,6 @@ th {
   padding: 0.5rem;
   text-align: left;
   background-color: #f2f2f2;
- 
 }
 
 /* See more page */
@@ -548,7 +542,7 @@ th {
 
 .button-container-ExistedTeams {
   margin-left: auto;
-  
+
   justify-content: space-between;
 }
 .my-team-table-wrapper {
@@ -591,13 +585,10 @@ th {
   text-align: center;
 }
 
-
-  
-.admin-auto-organize-button{
-
+.admin-auto-organize-button {
   background-color: white;
-  color: rgb(7,126,212);
-  border: 2px solid rgb(7,126,212);
+  color: rgb(7, 126, 212);
+  border: 2px solid rgb(7, 126, 212);
   border-radius: 6px;
   padding: 12px 28px;
   cursor: pointer;
@@ -605,12 +596,8 @@ th {
   font-weight: 500;
   transition: background-color 0.2s ease;
   margin-right: 15px;
-
 }
 
-
-
-
-.admin-auto-organize-button:hover{
-  background-color:   rgb(229, 229, 229);
+.admin-auto-organize-button:hover {
+  background-color: rgb(229, 229, 229);
 }
