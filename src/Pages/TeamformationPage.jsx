@@ -86,12 +86,13 @@ function TeamFormationPage() {
   const fetchMyTeamData = async () => {
     try {
       const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
+      console.log("API Response (My Team):", teamData);
       setMyTeam(teamData.team);
       if (sessionTitle === "Group formation session") {
         if (teamData?.team?.id) {
           const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
           setMyTeamPendingInvites(pendingInvites);
-console.log(pendingInvites);
+          console.log(pendingInvites);
           const { data: teamReq } = await axios.get("/jointeam//getalljoinmyteamrequests", { withCredentials: true });
           setMyTeamteamReq(teamReq);
         } else {
@@ -111,9 +112,9 @@ console.log(pendingInvites);
 
     setShowLeaveTeamPopup(true);
     console.log("leave clicked");
-       // ▶️ Update user.team_id to null in state + localStorage
-         const updatedUser = { ...user, team_id: null };
-      setUser(updatedUser);
+    // ▶️ Update user.team_id to null in state + localStorage
+    const updatedUser = { ...user, team_id: null };
+    setUser(updatedUser);
   };
   const handleCancel = () => {
     setShowLeaveTeamPopup(false);
@@ -127,7 +128,7 @@ console.log(pendingInvites);
       fetchMyTeamData();
       setToastMessage("Team leaving was successful.");
       setShowToast(true);
-    
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -170,50 +171,50 @@ console.log(pendingInvites);
     }
     setSearchQuery(query);
   };
-// filter by student name/email…
-const filteredStudents = formattedStudents.filter(student =>
-  student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  student.email.toLowerCase().includes(searchQuery.toLowerCase())
-);
+  // filter by student name/email…
+  const filteredStudents = formattedStudents.filter(student =>
+    student.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-// now filter teams by their numeric ID, converted to string
-const filteredTeams = existedTeams.filter(team => {
-  const query = searchQuery.toLowerCase();
+  // now filter teams by their numeric ID, converted to string
+  const filteredTeams = existedTeams.filter(team => {
+    const query = searchQuery.toLowerCase();
 
-  // 1) match by ID
-  const idMatch = team.id
-    .toString()
-    .toLowerCase()
-    .includes(query);
+    // 1) match by ID
+    const idMatch = team.id
+      .toString()
+      .toLowerCase()
+      .includes(query);
 
-  // 2) build the first‐member full name (or empty if none)
-  const firstMemberName = team.members && team.members.length > 0
-    ? `${team.members[0].firstname} ${team.members[0].lastname}`
-    : "";
-
-  // 3) match by that first‐member name
-  const memberMatch = firstMemberName.toLowerCase().includes(query);
-
-  return idMatch || memberMatch;
-});
-
-
-// build autocomplete suggestions
-let suggestionsList = [];
-if (activeTab === "Students List") {
-  suggestionsList = formattedStudents.map(s => s.fullName);
-} else if (activeTab === "Existed Teams") {
-  // pull IDs instead of names
-  const suggestionsList = existedTeams.map(team => {
+    // 2) build the first‐member full name (or empty if none)
     const firstMemberName = team.members && team.members.length > 0
       ? `${team.members[0].firstname} ${team.members[0].lastname}`
-      : "N/A";
-  
-    // return a single string containing both ID and name
-    return `${team.id.toString()} – ${firstMemberName}`;
+      : "";
+
+    // 3) match by that first‐member name
+    const memberMatch = firstMemberName.toLowerCase().includes(query);
+
+    return idMatch || memberMatch;
   });
-  
-}
+
+
+  // build autocomplete suggestions
+  let suggestionsList = [];
+  if (activeTab === "Students List") {
+    suggestionsList = formattedStudents.map(s => s.fullName);
+  } else if (activeTab === "Existed Teams") {
+    // pull IDs instead of names
+    const suggestionsList = existedTeams.map(team => {
+      const firstMemberName = team.members && team.members.length > 0
+        ? `${team.members[0].firstname} ${team.members[0].lastname}`
+        : "N/A";
+
+      // return a single string containing both ID and name
+      return `${team.id.toString()} – ${firstMemberName}`;
+    });
+
+  }
   const renderTabContent = () => {
 
     if (activeTab === "Students List") {
@@ -245,6 +246,7 @@ if (activeTab === "Students List") {
           existedTeams={filteredTeams}
           navigate={navigate}
           session={session.title}
+          
         />
       );
     } else if (activeTab === "My Team") {
@@ -257,7 +259,7 @@ if (activeTab === "Students List") {
           reqInvites={MyTeamteamReq}
           session={sessionTitle}
           reloadMyTeam={fetchMyTeamData}
-          userRole = {user.role}
+         
         />
       );
     }
