@@ -1,61 +1,63 @@
 import React, { useState, useEffect } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
+import UploadFile from "./modals/uploadbox";
 import axios from "axios";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 import Popup from "../components/modals/popup";
 import { useNavigate } from "react-router-dom";
+
 const Seemorepage = ({
   myTeamNumber,
   myTeamMembers = [],
-  userRole,
+  userRole: initialUserRole,
   handleactions,
   success,
   setSuccess,
   requestid,
 }) => {
+  const [mlFile, setMlFile] = useState(null);
+  const [userRole, setUserRole] = useState(initialUserRole);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [status, setStatus] = useState("");
 
-  const [confTitle, setConfTitle] = useState(""); // for confirmation popup title
-  const [confMsg, setConfMsg] = useState(""); // for confirmation popup message
+  const [confTitle, setConfTitle] = useState("");
+  const [confMsg, setConfMsg] = useState("");
   const [confButtonText, setConfButtonText] = useState("");
   const [students, setStudents] = useState([]);
   const navigate = useNavigate();
-  console.log(myTeamNumber);
+
   useEffect(() => {
-    if (userRole === "teacher") {
+    if (userRole === "teacher.teams" || userRole === "teacher") {
       const getTeamMembers = async () => {
         try {
-          // Making GET request to fetch the student data for a specific team
           const response = await axios.get(`/student/${myTeamNumber}/students`);
 
-          // Extract and set the students data
           const fetchedStudents = response.data.students.map((student) => ({
             fullName: `${student.firstname} ${student.lastname}`,
             email: student.user.email,
             group: student.year,
             role: student.roleINproject,
           }));
-
           setStudents(fetchedStudents);
-          console.log("students", students);
+          console.log("students", fetchedStudents);
+          const mlFromTeam = response.data.team?.preflists?.[0]?.ML || null;
+          setMlFile(mlFromTeam);
+          console.log("ML:", mlFromTeam);
         } catch (error) {
           console.error("Error fetching team members:", error);
         }
       };
 
-      // Call the function when the component mounts or when myTeamNumber or userRole changes
       getTeamMembers();
     }
   }, [myTeamNumber, userRole]);
 
   const handleJoinClick = () => {
     if (!myTeamNumber) {
-      // If no team number, show the join alert
       setShowJoinAlert(true);
     }
   };
@@ -86,8 +88,6 @@ const Seemorepage = ({
 
   const handleConfirm = () => {
     setShowJoinAlert(false);
-
-    console.log("Join confirmed!");
     setToastMessage("Team joining was successful.");
     setShowToast(true);
     setTimeout(() => {
@@ -95,16 +95,20 @@ const Seemorepage = ({
     }, 3000);
   };
 
-  // If team members are not provided via props, fall back to static data.
+  const handlePopupOkey = () => {
+    console.log("hahaha");
+    setSuccess(false);
+    setUserRole("teacher.teams");
+  };
+
   const staticTeamMembers = [
     { fullName: "XX", email: "XX@example.com", group: "Group XX", role: "XX" },
   ];
 
-  // Use passed team members if available; otherwise, static data.
   const membersToDisplay =
-    userRole === "teacher"
-      ? students // If role is "teacher", show students
-      : myTeamMembers.length > 0 // If myTeamMembers has data, show that
+    userRole === "teacher" || userRole === "teacher.teams"
+      ? students
+      : myTeamMembers.length > 0
       ? myTeamMembers
       : staticTeamMembers;
 
@@ -145,10 +149,6 @@ const Seemorepage = ({
           {showConfirmation && (
             <Popup
               onConfirm={() => {
-                console.log("Clicked Confirm");
-                console.log("status:", status);
-                console.log("requestid:", requestid);
-
                 if (status === "blue") {
                   handleactions(requestid, "ACCEPTED");
                 } else {
@@ -164,18 +164,10 @@ const Seemorepage = ({
             />
           )}
 
-          {success && (
-            <Popup
-              poproud={2}
-              onOkey={() => {
-                console.log("hahaha");
-                navigate("/teacher/requests");
-                setSuccess(false);
-              }}
-            />
-          )}
+          {success && <Popup poproud={2} onOkey={handlePopupOkey} />}
         </div>
       </div>
+
       <h2>Team Members</h2>
       <div className={Module["table-wrapper"]}>
         <table>
@@ -198,7 +190,8 @@ const Seemorepage = ({
             ))}
           </tbody>
         </table>
-      </div>{" "}
+      </div>
+
       {userRole !== "teacher" && userRole !== "teacher.teams" && (
         <div className={Module["buttons-container-see-more"]}>
           <button
@@ -211,22 +204,37 @@ const Seemorepage = ({
           <button
             className={Module["JoinSeeMoreBtn"]}
             onClick={handleJoinClick}
-            disabled={myTeamNumber !== null} // Disable button if user is already in a team
+            disabled={myTeamNumber !== null}
           >
             Join
           </button>
         </div>
       )}
+
       <JoinTeamAlert
         show={showJoinAlert}
         onCancel={handleCancel}
         onConfirm={handleConfirm}
       />
+
       {showToast && (
         <Toast
           message={toastMessage || "Test Toast"}
           onClose={() => setShowToast(false)}
         />
+      )}
+
+      {(userRole === "teacher" || userRole === "teacher.teams") && (
+        <div className="ml-container">
+          <h2
+            style={{
+              marginTop: "20px",
+            }}
+          >
+            Motivation Letter
+          </h2>
+          <UploadFile pdfFil={mlFile} status={false} />
+        </div>
       )}
     </div>
   );

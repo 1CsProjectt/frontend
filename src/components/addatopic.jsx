@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/addtopic.css";
+import Uploadfile from "./modals/uploadbox";
 import Upload from "../assets/upload.svg";
 import Iconup from "../assets/arrow-up.svg";
 import Icondown from "../assets/arrow-down.svg";
@@ -167,27 +168,12 @@ const Addatopic = () => {
                 placeholder="Include a description..."
                 rows="4"
               />
-              <div className="upload-box">
-                <img src={Upload} alt="" className="upload-image" />
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg"
-                  ref={presentationRef}
-                  onChange={handlePresentationChange}
-                  style={{ display: "none" }}
-                />
-                <p className="msg-at">
-                  {presentationFile
-                    ? presentationFile.name
-                    : "Browse and choose an image (JPG or PNG)"}
-                </p>
-                <button
-                  className="upload-btn"
-                  onClick={() => presentationRef.current.click()}
-                >
-                  +
-                </button>
-              </div>
+              <Uploadfile
+                type={Image}
+                presentationFile={presentationFile}
+                presentationRef={presentationRef}
+                handlePresentationChange={handlePresentationChange}
+              />
             </div>
           </div>
 
@@ -224,7 +210,7 @@ const Addatopic = () => {
                       <p className="ttl-fs-at">
                         {speciality.length === 0
                           ? "Select speciality"
-                          : `${speciality.length} specialities selected`}
+                          : speciality.join(", ")}
                       </p>
                       <img
                         src={isOpen ? Iconup : Icondown}
@@ -269,27 +255,12 @@ const Addatopic = () => {
               </p>
             </div>
             <div className="form-section">
-              <div className="upload-box">
-                <img src={Upload} alt="" className="upload-image" />
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  ref={techSheetRef}
-                  onChange={handleTechSheetChange}
-                  style={{ display: "none" }}
-                />
-                <p className="msg-at">
-                  {techSheetFile
-                    ? techSheetFile.name
-                    : "Browse and choose a PDF technical sheet"}
-                </p>
-                <button
-                  className="upload-btn"
-                  onClick={() => techSheetRef.current.click()}
-                >
-                  +
-                </button>
-              </div>
+              <Uploadfile
+                type={"pdf"}
+                handlePresentationChange={handleTechSheetChange}
+                presentationFile={techSheetFile}
+                presentationRef={techSheetRef}
+              />
             </div>
           </div>
 
