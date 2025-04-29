@@ -1,12 +1,15 @@
 //add that if you are alredt in a team you can not click the join button(i can write in the button that you are alredy in a team)
 
-import React, { useState ,navigate, useEffect} from "react";
+import React, { useState , useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import Module from "../styles/AdminManagePreferencesPage.module.css";
 import axios from "axios";
 import PFECard from "../components/CardComponent";
 import Toast from "../components/modals/Toast";
 
-const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => {
+
+const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selectedTeam }) => {
+  //selected team is the entire team object
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
@@ -18,6 +21,63 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => 
   const [cardsArray,setCardsArray] = useState([]);
   const [loading,setLoading] = useState(false);
   const [connectionError,setConnectionError] = useState(false);
+  const [prefList,setPrefList] = useState([]);
+  const [filteredCards,setFilteredCards] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchPrefList = async (teamId) => {
+    try {
+      const response = await axios.get(`/preflist/${myTeamNumber}`, {
+        withCredentials: true, // important if you're using cookies/sessions
+      });
+      console.log("the preference list of this team : " ,response.data.data); // your preflist array
+      setPrefList(response.data.data || []); // if null, set to empty array
+      return response.data.data;
+    } catch (error) {
+      console.error(error.response?.data?.message || error.message);
+      setPrefList([]); // if error, set empty array to prevent crashing
+      
+    }
+  };
+
+
+const changePfeForTeam = async (teamId, newPfeId) => {
+  try {
+    const response = await axios.post('/pfe/changePfeForTeam', {
+      teamId,
+      newPfeId
+    });
+    
+    console.log('Success:', response.data);
+  } catch (error) {
+    if (error.response) {
+      // The server responded with a status code outside of the 2xx range
+      console.error('Error:', error.response.data.message);
+    } else {
+      // The request was made but no response was received
+      console.error('Error:', error.message);
+    }
+}
+  }
+
+
+
+
+  const autoAssignPfe = async (teamId) => {
+    try {
+      const response = await axios.post('/pfe/autoAssignPfesToTeamWithoutPfe', {
+        teamId
+      },{ withCredentials: true });
+  
+      console.log('Success:', response.data);
+    } catch (error) {
+      if (error.response) {
+        console.error('Error:', error.response.data.message);
+      } else {
+        console.error('Error:', error.message);
+      }
+    }
+  };
   const handleJoinClick = () => {
     setShowJoinAlert(true);
   };
@@ -61,10 +121,21 @@ useEffect(() => {
 
   fetchPublishedCards();
   console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
+  fetchPrefList();//the fetch happens upon page loading
 
 
+  
 }, []);
 
+useEffect(() => {
+  if (cardsArray.length > 0 && selectedTeam) {
+    const newFilteredCards = cardsArray.filter(card =>
+      card.year === selectedTeam.year && 
+      card.specialization === selectedTeam.specialite
+    );
+    setFilteredCards(newFilteredCards);
+  }
+}, [cardsArray, selectedTeam]);
  
 
   // If team members are not provided via props, fall back to static data.
@@ -77,14 +148,21 @@ useEffect(() => {
   const membersToDisplay = myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
   if (showAssignTopicPage){
     return(
+      
+      
     <div className={Module["cards-container"]}>
-      {cardsArray.map((card) => (
+      <div><p>{"showing pfes for year " + selectedTeam.year}
+      {"showing pfes for speciality " + selectedTeam?.specialite}
+      </p>
+      </div>
+      {filteredCards.map((card) => (
         <PFECard
           key={card.id}
           card={card}
-          toggleSelect={console.log("card clicked !")}
+        
           onExplore={(e) => {
             e.stopPropagation();
+            changePfeForTeam(myTeamNumber,card.id);
           }}
           buttonText={"Assign"}
         />
@@ -132,29 +210,43 @@ useEffect(() => {
             <tr>
               <th>Order</th>
               <th>Topic Title</th>
-             
-              <th>Main Supervisor</th>
+              <th>Topic Supervisor</th>
               <th>Result</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {membersToDisplay.map((member, index) => (
+            {prefList.map((card, index) => (
               <tr key={index}>
-                <td>{member.fullName}</td>
-                <td>{member.email}</td>
-              
-                <td>{member.role}</td>
-                <td></td>
-                  <td className={Module["button-container"]}>
-                                        <button
+                <td>{card?.order}</td>
+                <td>{card?.PFE?.title}</td>
+                <td>
+                  {card?.supervisors?.length > 0
+                    ? `${card.supervisors[0]?.firstname} ${card.supervisors[0]?.lastname}`
+                    : "No supervisor assigned yet for this project"}
+                </td>
+                <td>
+                  <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            // Trigger navigation when the button is clicked
+                                            navigate(
+                                              
+                                                 "/admin/sessions/manage-preferences/read-topic",
+                                                
+                                              {
+                                                state: { card }, // Pass the card object to the new route
+                                              } 
+                                            );
+                                          }}
                                           className={Module["invite-button"]}
-                                          style={{ width: "90px", marginRight: "15px" }}
-                                         
                                         >
                                           Read
                                         </button>
-                                      </td>
+                </td>
+
+                {/*  assuming the first supervisor in the list is the main supervisor of the card */}
+                <td>{card?.approved || "Waiting"}</td>
               </tr>
             ))}
           </tbody>
@@ -167,7 +259,7 @@ useEffect(() => {
             
               <button
                 className={Module["admin-auto-assign-button"]}
-                onClick={() => setShowAddMembersModal(true)}
+                 onClick={() =>   autoAssignPfe(myTeamNumber)}
               >
                 auto-assign
               </button>
@@ -180,16 +272,20 @@ useEffect(() => {
         <table>
           <thead>
             <tr>
-              <th>Supervisor</th>
+              <th>Team Supervisor</th>
               <th>Topic title</th>
             </tr>
           </thead>
           <tbody>
             
               <tr >
-                <td>{"No supervisor yet"}</td>
-                <td>{"No topic yet"}</td>
-              </tr>
+              <td>
+                        {selectedTeam?.supervisor?.firstname && selectedTeam?.supervisor?.lastname
+                          ? `${selectedTeam.supervisor.firstname} ${selectedTeam.supervisor.lastname}`
+                          : "No supervisor assigned yet"}
+                      </td>
+                <td>{selectedTeam.assignedPFE ? (selectedTeam.assignedPFE.title || "No topic assigned yet") : "No topic assigned yet"}</td>
+                </tr>
             
           </tbody>
         </table>

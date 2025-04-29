@@ -30,6 +30,7 @@ import SeeMoreMetting from "./components/SeeMoreMettingHistory";
 import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage"
+import ReadTopicPage from "./Pages/ReadTopicPage";
 function App() {
   return (
     <Router>
@@ -85,6 +86,7 @@ function App() {
           <Route path="users" element={<UserManagementTabs />} />
           <Route path="sessions" element={<SessionsManagementTabs/>}/>
           <Route path="sessions/manage-preferences" element={<AdminManagePreferencesPage/>}/>
+          <Route path="sessions/manage-preferences/read-topic" element={<ReadTopicPage/>}/>
           <Route path="sessions/admin-team-formation" element={<AdminTeamFormationPage />} />
           <Route path="sessions/topic-validation" element={<TopicsValidationPage />} />
           <Route path="sessions/topic-validation/published-topic-explore" element={<SubmittedTopicsExplorePage />} />

@@ -5,7 +5,9 @@ import Toast from './Toast';
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const AutoOrganizeTeamsModal = ({ show, onClose }) => {
+const AutoOrganizeTeamsModal = ({ show, onClose ,operation}) => {
+
+  //operation can either be "assign or organize"
   const [year, setYear] = useState("");
   const [specialite, setSpecialite] = useState("");
   const [loading, setLoading] = useState(false); // For loading state
@@ -21,6 +23,7 @@ const AutoOrganizeTeamsModal = ({ show, onClose }) => {
   
 
   const handleConfirm = async () => {
+    if (operation.toLowerCase() === "organize"){
     setLoading(true); // Start loading state
     setError(""); // Reset error state
     try {
@@ -39,6 +42,25 @@ const AutoOrganizeTeamsModal = ({ show, onClose }) => {
     } finally {
       setLoading(false); // End loading state
     }
+  }else if (operation.toLowerCase() ==="assign"){
+
+  
+    try {
+      const response = await axios.post('/pfe/autoAssignPfesToTeamsWithoutPfe', {
+        year,
+        specialite,
+      },{ withCredentials: true });
+  
+      console.log('Success:', response.data);
+    } catch (error) {
+      if (error.response) {
+        console.error('Error:', error.response.data.message);
+      } else {
+        console.error('Error:', error.message);
+      }
+    }
+
+  }
   };
 
   if (!show) return null;
@@ -50,7 +72,13 @@ const AutoOrganizeTeamsModal = ({ show, onClose }) => {
       <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}>
         <h2>Auto Organize Teams</h2>
         <p className={Style["create-team-subtitle"]}>
-          Automatically organize and assign teams to students without ones
+         {/*  {operation.toLowerCase === "organize" ? :( */}
+         
+          "Automatically organize and assign teams to students without ones"
+            
+         
+            
+        
         </p>
 
         <div className={Style["admin-container"]}>

@@ -104,6 +104,32 @@ const TopicsValidationPage = () => {
 
       /*  setCardsArray(submittedCardsArray); */
     }
+    else if (activeTab === "tab3") {
+      setSelectedCards([]); // Reset selected cards when switching tabs
+      setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
+      const fetchDeclinedCards = async () => {
+        if (loading) return; // Prevent multiple fetches when already loading
+        setLoading(true); // Start loading
+        try {
+          const response = await axios.get("/pfe/rejectedpfe");
+          if (response.data && response.data.pfeList) {
+            setCardsArray(response.data.pfeList);
+            console.log(response);
+          }
+          /*  setSubmittedCardsArray(data); // Save data in state */
+        } catch (error) {
+          console.error("Error fetching the declined cards data:", error);
+          setConnectionError(true);
+        } finally {
+          setLoading(false); // Stop loading
+        }
+      };
+
+      fetchDeclinedCards();
+      console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
+
+      /*  setCardsArray(submittedCardsArray); */
+    }
   }, [activeTab]);
 
   return (
@@ -162,6 +188,12 @@ const TopicsValidationPage = () => {
           onClick={() => setActiveTab("tab2")}
         >
           Submitted Topics
+        </button>
+        <button
+          className={activeTab === "tab3" ? classes.active : ""}
+          onClick={() => setActiveTab("tab3")}
+        >
+          Declined Topics
         </button>
       </div>
       

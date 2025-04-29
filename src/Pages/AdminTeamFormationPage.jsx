@@ -226,6 +226,7 @@ function TeamFormationPage() {
         <AutoOrganizeTeamsModal 
           show={showAutoOrganizeModal}
           onClose={() => setShowAutoOrganizeModal(false)}
+          operation={"organize"}
         />
         
         <LeaveTeamPopup

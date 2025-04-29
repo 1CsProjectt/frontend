@@ -8,7 +8,7 @@ import NavBar from "../components/NavBar";
 import Toast from "../components/modals/Toast";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 import DeleteUserModal from "../components/modals/DeleteUserModal";
-
+import AutoOrganizeTeamsModal from "../components/modals/AutoOrganizeTeamsModal";
 const ExistedTeamsTab = ({ user, students }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
@@ -23,7 +23,7 @@ const ExistedTeamsTab = ({ user, students }) => {
   const [activeTab, setActiveTab] = useState("Teams and Their selections");
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-
+  const [showAutoOrganizeModal,setShowAutoOrganizeModal] = useState(false);
   useEffect(() => {
     const fetchAllTeams = async () => {
       try {
@@ -40,13 +40,21 @@ const ExistedTeamsTab = ({ user, students }) => {
     fetchAllTeams();
   }, []);
   useEffect(() => {
-    console.log("Selected team changed:", selectedTeam !== null);
+    if (selectedTeam) {
+      console.log("New selected team:", selectedTeam);
+    } else {
+      console.log("No team selected");
+    }
   }, [selectedTeam]);
+  
   useEffect(() => {
     console.log("teamsArray in the manage preferences page", teamsArray);
     
   }, [teamsArray]);
+ useEffect(() => {
 
+console.log("students list is : ",students)
+ },[students]);
   useEffect(() => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
@@ -100,7 +108,7 @@ const ExistedTeamsTab = ({ user, students }) => {
             </button>
             
             {selectedTeam === null &&  (
-            <button className={Module["admin-auto-organize-button"]}>
+            <button className={Module["admin-auto-organize-button"]} onClick={() => setShowAutoOrganizeModal(true)}>
               auto-assign
             </button>)}
           </div>
@@ -121,11 +129,13 @@ const ExistedTeamsTab = ({ user, students }) => {
         </div>
 
         {selectedTeam ? (
+        
           <Seemorepage
             myTeamNumber={selectedTeam.id}
             myTeamMembers={mappedMembers}
             students={students}
             onBack={() => setSelectedTeam(null)}
+            selectedTeam={selectedTeam}
           />
         ) : (
           <div className={Module["table-wrapper"]} ref={containerRef}>
@@ -134,7 +144,7 @@ const ExistedTeamsTab = ({ user, students }) => {
                 <tr>
                   <th>Team Number</th>
                   <th>Grade</th>
-                  <th>SupervisorID</th>
+                  <th>Team Supervisor</th>
                   <th>Topic title</th>
                   <th></th>
                 </tr>
@@ -149,8 +159,12 @@ const ExistedTeamsTab = ({ user, students }) => {
                     <tr key={idx}>
                       <td>{team?.id || "N/A"}</td>
                       <td>{team?.members[0]?.year || "N/A"}</td>
-                      <td>{team?.supervisorId || "No supervisor assigned yet"}</td>
-                      <td>{"N/A"}</td>
+                      <td>
+                        {team?.supervisor?.firstname && team?.supervisor?.lastname
+                          ? `${team.supervisor.firstname} ${team.supervisor.lastname}`
+                          : "No supervisor assigned yet"}
+                      </td>
+                      <td>{team.assignedPFE ? (team.assignedPFE.title || "No topic assigned yet") : "No topic assigned yet"}</td>
                       <td className={Module["button-container"]}>
                         <button
                           className={Module["invite-button"]}
@@ -220,6 +234,13 @@ const ExistedTeamsTab = ({ user, students }) => {
           entityType="Team"
           teamIDtoDelete={teamIDtoDelete}
         />
+        <AutoOrganizeTeamsModal 
+          show={showAutoOrganizeModal}
+          onClose={() => setShowAutoOrganizeModal(false)}
+            operation={"assign"}
+          
+        />
+        
       </div>
     </div>
   );
