@@ -69,7 +69,7 @@ useEffect(() => {
           main_supervisor: item.PFE.supervisors?.[0]
             ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
             : "Unknown",                // superviseur principal (main supervisor)
-          status: item.approved ? "approved" : "rejected",  // statut (status)
+           // statut (status)
           card_info: {
             ...item.PFE,
             description: item.PFE.description,
@@ -77,6 +77,7 @@ useEffect(() => {
             specialization: item.PFE.specialization,
             pdfFile:item.PFE.pdfFile,
             photo:item.PFE.photo,
+            status: item.PFE.status[0], 
 
 
           }

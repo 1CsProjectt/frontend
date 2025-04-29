@@ -61,7 +61,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
         {submit ? (
           <span
             style={{
-              color:
+              color:  
                 item.status === "rejected"
                   ? "#F9857A"
                   : item.status === "Accepted"
@@ -69,7 +69,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
                     : "inherit",
             }}
           >
-            {item.supervisionRequests || "Pending..."} 
+            {item.card_info.supervisionRequests?.[0]?.status || "- - - - -"} 
           </span>
         ) : (
           <>
