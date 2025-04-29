@@ -50,19 +50,15 @@ const Login = () => {
 
       const { user } = response.data;
 
-   
-
- 
       localStorage.setItem("user", JSON.stringify(user));
 
       console.log("Login successful:", response.data);
-
 
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "student") {
         navigate("/pfe-student");
-        console.log(user.role)
+        console.log(user.role);
       } else {
         navigate("/teacher");
       }
@@ -72,8 +68,7 @@ const Login = () => {
         err.response?.data?.message || "Login failed. Please try again."
       );
       alert("Login failed !");
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };

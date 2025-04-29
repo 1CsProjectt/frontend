@@ -601,3 +601,28 @@ th {
 .admin-auto-organize-button:hover {
   background-color: rgb(229, 229, 229);
 }
+.header-right-teacher {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-container-teacher {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.button-teacher {
+  border: 1px solid #d0d5dd;
+
+  font-weight: 600;
+
+  letter-spacing: -0.6%;
+
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  width: 114px;
+  height: 41px;
+}
