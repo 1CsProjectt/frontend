@@ -15,10 +15,12 @@ axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 function StudentMeetingPage() {
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
+  const [meetingpopup, setmeetingpopup] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const SeeMoreHandle = (e, Item) => {
     e.stopPropagation();
     // pass both the clicked item and the full currentItems list
@@ -293,7 +295,7 @@ function StudentMeetingPage() {
           <div className={Module["header-row"]}>
             <h1>Meetings</h1>
           </div>
-
+          {meetingpopup && <div className="create-meeting-container"></div>}
           <div className={Module["Week-meeting-container"]}>
             <div className={Module["Left-side"]}>
               <div className={Module["Left-side-header"]}>
@@ -323,9 +325,7 @@ function StudentMeetingPage() {
                       <td style={{ paddingRight: "50px" }}>
                         {weekmeeting.time}{" "}
                       </td>
-                      <td style={{ paddingRight: "50px" }}>
-                        {weekmeeting.room}
-                      </td>
+                      <td>{weekmeeting.room}</td>
                       <td
                         className={Module.W500}
                         style={{ textAlign: "center", verticalAlign: "middle" }}
@@ -333,11 +333,28 @@ function StudentMeetingPage() {
                         {" "}
                         <button
                           className={Module["SeeBtn"]}
-                          style={{ padding: "10px 85px", marginLeft: "90px" }}
+                          style={{
+                            width: " 85px",
+                            height: "39px",
+                            marginRight: "50px",
+                          }}
                           onClick={(e) => SeeMoreHandle(e)}
                         >
                           {" "}
                           see
+                        </button>
+                        <button
+                          className={Module["SeeBtn"]}
+                          style={{
+                            width: " 85px",
+                            height: "39px",
+                            background: "#F76659",
+                            color: "white",
+                          }}
+                          onClick={(e) => SeeMoreHandle(e)}
+                        >
+                          {" "}
+                          cancel
                         </button>
                       </td>
                     </tr>
@@ -350,6 +367,20 @@ function StudentMeetingPage() {
                   </tbody>
                 </table>
               </div>
+              <button
+                className={Module["SeeBtn"]}
+                style={{
+                  width: " 100%",
+                  height: "55px",
+                  background: "#077ED4",
+                  color: "white",
+                  marginBottom: "10px",
+                }}
+                onClick={() => setmeetingpopup(true)}
+              >
+                {" "}
+                start new meeting
+              </button>
             </div>
           </div>
           <div
