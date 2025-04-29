@@ -15,7 +15,7 @@ const session = {
   }
 };
 
-const submit = false;
+
 let sessionTitle;
 
 if (session.title === "TEAM_CREATION") {
@@ -38,7 +38,6 @@ const PFEPage = () => {
     }
   });
   useEffect(() => {
-    // whenever preferencesList changes, persist it
     localStorage.setItem("preferencesList", JSON.stringify(preferencesList));
   }, [preferencesList]);
 
@@ -47,6 +46,8 @@ const PFEPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [submit, setSubmit] = useState(false);
+
   // Set the default active tab to "PFE Topics"
   const [activeTab, setActiveTab] = useState("PFE Topics");
 
@@ -56,29 +57,42 @@ const PFEPage = () => {
   const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
 
   // inside PFEPage component
-  useEffect(() => {
-    // Only fetch if no saved preferences
-    if (preferencesList.length === 0) {
-      axios.get("/api/v1/preflist/my", { withCredentials: true })
-        .then((res) => {
-          // Map backend data to your local shape
-          const fetched = res.data.data.map((item, idx) => ({
-            order: String(item.order + 1).padStart(2, "0"),
-            topic_title: item.pfe.title,
-            main_supervisor: "Unknown", // or derive if available
-            status: "rejected",         // default status
-            card_info: item.pfe
-          }));
-          setPreferencesList(fetched);
-        })
-        .catch((err) => {
-          if (err.response?.status !== 404) {
-            console.error("Error fetching preflist:", err);
+useEffect(() => {
+  // 2️⃣ Check if empty, then fetch
+  if (preferencesList.length === 0) {
+    axios.get("/preflist/my", { withCredentials: true })
+      .then(res => {
+        const fetched = res.data.data.map((item, idx) => ({
+          id: item.PFE.id,  // identifiant unique (ID)
+          order: String(item.order).padStart(2, "0"),  // ordre (order)
+          topic_title: item.PFE.title,  // titre du PFE (PFE title)
+          main_supervisor: item.PFE.supervisors?.[0]
+            ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
+            : "Unknown",                // superviseur principal (main supervisor)
+          status: item.approved ? "approved" : "rejected",  // statut (status)
+          card_info: {
+            ...item.PFE,
+            description: item.PFE.description,
+            year: item.PFE.year,
+            specialization: item.PFE.specialization,
+            pdfFile:item.PFE.pdfFile,
+            photo:item.PFE.photo,
+
+
           }
-          // if 404, do nothing—leave list empty
-        });
-    }
-  }, []); // empty deps → runs once on mount
+        }));
+        setPreferencesList(fetched);
+   
+
+      })
+      .catch(err => {
+        if (err.response?.status !== 404) {
+          console.error("Erreur lors du fetch (fetch error):", err);
+        }
+      });
+  }
+}, []); // ⏳ runs once on mount
+
 
   // Add new topic when coming from ExplorePage, preventing duplicates
   useEffect(() => {
@@ -96,7 +110,7 @@ const PFEPage = () => {
             main_supervisor: added.supervisors?.[0]
               ? `${added.supervisors[0].firstname} ${added.supervisors[0].lastname}`
               : 'Unknown',
-            status: 'rejected',
+            
             card_info: added
           }
         ];
@@ -153,7 +167,6 @@ const PFEPage = () => {
   }, []);
 
   const handleSearchChange = useCallback((query) => {
-    console.log("Search query:", query);
     setSearchQuery(query);
   }, []);
 
@@ -212,7 +225,7 @@ const PFEPage = () => {
           <StudentPreferencesTab PreferenecesList={preferencesList}
             session={session.title}
             setPreferencesList={setPreferencesList}
-            submit={submit}
+            submit={preferencesList[0].status === 'approved'}
 
           />
 

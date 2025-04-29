@@ -71,15 +71,14 @@ const ReceivedMyTeamsTab = ({
   useEffect(() => {
     const fetchReceivedMyTeams = async () => {
       try {
-        const response = await axios.get("/api/v1/teams/supervised-by-me");
-        if (!response.data?.data) throw new Error("Invalid response structure");
+        const response = await axios.get("/teams/supervised-by-me");
+        if (!response.data?.teams)
+          throw new Error("Invalid response structure");
 
-        const teams = response.data.data.map((team, index) => ({
+        const teams = response.data.teams.map((team, index) => ({
           ...team,
           order: index + 1,
-          topicTitle: team.pfe?.title || "N/A",
-          grade: team.pfe?.year || "N/A",
-          teamId: team.teamId || "N/A",
+          teamId: team.id || "N/A", // Fixed to use `team.id`
           teamCreator: team.createdBy?.fullName || team.createdBy || "Unknown",
           membersCount: team.members?.length || 0,
         }));
@@ -138,6 +137,7 @@ const ReceivedMyTeamsTab = ({
             <table>
               <thead>
                 <tr>
+                  <th>Order</th> {/* Added Order column */}
                   <th>Team number</th>
                   <th>Team Creator</th>
                   <th>Members number</th>
@@ -148,6 +148,7 @@ const ReceivedMyTeamsTab = ({
                 {paginatedTeams.length > 0 ? (
                   paginatedTeams.map((team) => (
                     <tr key={team.id} className={Module["clickable-row"]}>
+                      <td>{team.order}</td> {/* Display the order */}
                       <td>{team.teamId}</td>
                       <td>{team.teamCreator}</td>
                       <td>{team.membersCount}</td>
