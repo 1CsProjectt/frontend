@@ -100,7 +100,7 @@ export default function SeeMoreMettingHistory() {
                         <tr>
                           <td style={{ paddingRight: "50px" }}>{formatDateToMMDD(item.date)}  </td>
                           <td style={{ paddingRight: "50px" }}>{item.time}  </td>
-                          <td style={{ paddingRight: "50px" }}>{item.salle}</td>
+                          <td style={{ paddingRight: "50px" }}>{item.room}</td>
                           <td className={Module.W500} style={{ textAlign: "center", verticalAlign: "middle" }}> <div style={{ padding: "20px 85px", marginLeft: "90px" }}> </div></td>
                         </tr>
                         <tr>

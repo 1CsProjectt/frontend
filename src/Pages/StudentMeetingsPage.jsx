@@ -13,12 +13,20 @@ import StudentMeetingHistory from "../components/StudentMettingHistory";
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 function StudentMeetingPage() {
+
     const navigate = useNavigate();
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    // + state for fetched meetings
+    const [meetings, setMeetings] = useState([]);
+    const [nextMeeting, setNextMeeting] = useState(null);
+    const [user, setUser] = useState(() => {
+        const json = localStorage.getItem("user");
+        return json ? JSON.parse(json) : {};
+    });
     const SeeMoreHandle = (e, Item) => {
         e.stopPropagation();
         // pass both the clicked item and the full currentItems list
@@ -39,12 +47,33 @@ function StudentMeetingPage() {
         const day = date.getDate().toString().padStart(2, '0');
         return `${month}/${day}`;
     }
-    const weekmeeting = {
-        date: "2025-03-29",
-        time: "13:00",
-        room: "TP06"
-    };
-    const MeetingHistoryList = [
+
+
+
+    const teamId = user.team_id;
+    // + fetch meetings on mount
+    useEffect(() => {
+        setLoading(true);
+        // fetch all meetings
+        axios.get(`/mettings/getAllMeetings/${teamId}`)
+            .then(res => {
+                setMeetings(res.data.data.meetings);
+            })
+            .catch(err => setError("Failed to load meeting history"))
+            .finally(() => setLoading(false));
+            // fetch next meeting
+            axios.get(`/mettings/getNextMeet/${teamId}`)
+            .then(res => {
+                setNextMeeting(res.data.data.nextMeeting);
+            })
+            .catch(err => { });
+    }, []);
+    /*   const weekmeeting = {
+          date: "2025-03-29",
+          time: "13:00",
+          room: "TP06"
+      }; */
+    /* const MeetingHistoryList = [
         { id: "01", date: "2025-03-21T00:00:00", time: "13:30", salle: "TP06", work: "unfinished", status: "unfinished", pdf: "qwertyuioqeqweqwe", note: "10/10" },
         { id: "02", date: "2025-03-29T00:00:00", time: "19:00", salle: "TP6", work: "approved", status: "unfinished" },
         { id: "03", date: "2025-03-16T00:00:00", time: "13:30", salle: "TP06", work: "unfinished", status: "unfinished" },
@@ -73,7 +102,7 @@ function StudentMeetingPage() {
         { id: "26", date: "2025-02-15T00:00:00", time: "04:00", salle: "TP25", work: "approved", status: "approved" },
         { id: "27", date: "2025-02-14T00:00:00", time: "03:00", salle: "TP26", work: "unfinished", status: "unfinished" },
         { id: "28", date: "2025-02-13T00:00:00", time: "02:00", salle: "TP27", work: "approved", status: "approved" },
-    ];
+    ]; */
 
 
     let sessionTitle;
@@ -122,19 +151,23 @@ function StudentMeetingPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td style={{ paddingRight: "50px" }}>{formatDateToMMDD(weekmeeting.date)}  </td>
-                                            <td style={{ paddingRight: "50px" }}>{weekmeeting.time}  </td>
-                                            <td style={{ paddingRight: "50px" }}>{weekmeeting.room}</td>
-                                            <td className={Module.W500} style={{ textAlign: "center", verticalAlign: "middle" }}> <button className={Module["SeeBtn"]} style={{ padding: "10px 85px", marginLeft: "90px" }} onClick={(e) => SeeMoreHandle(e)}> see</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td ></td>
-                                            <td ></td>
-                                            <td ></td>
-                                            <td ></td>
 
-                                        </tr>
+                                        {nextMeeting ? (
+                                            <tr>
+                                                <td>{formatDateToMMDD(nextMeeting.date)}</td>
+                                                <td>{nextMeeting.time}</td>
+                                                <td>{nextMeeting.room}</td>
+                                                <td>
+                                                    <button onClick={(e) => SeeMoreHandle(e, nextMeeting)} className={Module["SeeBtn"]} style={{padding:"8px 20px"}}>
+                                                        see
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4}>No upcoming meetings.</td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -145,10 +178,12 @@ function StudentMeetingPage() {
                         <div className={Module["MeetingsHistory-header"]}>
                             Meetings History
                         </div>
-                        <StudentMeetingHistory MeetingHistoryList={MeetingHistoryList} />
+
+                        {/* + pass the fetched meetings array */}
+                        <StudentMeetingHistory MeetingHistoryList={meetings} loading={loading} error={error} />
 
                     </div>
-                    {showToast && ( 
+                    {showToast && (
                         <Toast
                             message={toastMessage}
                             onClose={() => setShowToast(false)}
