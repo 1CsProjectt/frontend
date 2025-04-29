@@ -32,6 +32,7 @@ import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage"
 import ReadTopicPage from "./Pages/ReadTopicPage";
+import DeclinedTopicsExplorePage from "./Pages/DeclinedTopicsExplorePage";
 function App() {
   return (
     <Router>
@@ -81,10 +82,7 @@ function App() {
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
 
-          <Route
-            path="/admin/sessions/topic-validation/submitted-topic-explore"
-            element={<SubmittedTopicsExplorePage />}
-          />
+          
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<UserManagementTabs />} />
@@ -95,6 +93,7 @@ function App() {
           <Route path="sessions/admin-team-formation" element={<AdminTeamFormationPage />} />
           <Route path="sessions/topic-validation" element={<TopicsValidationPage />} />
           <Route path="sessions/topic-validation/published-topic-explore" element={<SubmittedTopicsExplorePage />} />
+          <Route path="sessions/topic-validation/declined-topic-explore" element={<DeclinedTopicsExplorePage />} />
           <Route path="sessions/topic-validation/submitted-topic-explore" element={<SubmittedTopicsExplorePage />} />
           <Route path="export" element={<div>Export Page</div>} />
           <Route path="loversr" element={<div>Loversr Page</div>} />

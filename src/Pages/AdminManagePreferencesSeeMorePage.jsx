@@ -100,6 +100,7 @@ const changePfeForTeam = async (teamId, newPfeId) => {
 
 useEffect(() => {
   console.log("My team members : " , myTeamMembers);
+  console.log("selectedTeam is : " ,selectedTeam);
   const fetchPublishedCards = async () => {
     if (loading) return; // Prevent multiple fetches when already loading
     setLoading(true); // Start loading
@@ -130,10 +131,11 @@ useEffect(() => {
 useEffect(() => {
   if (cardsArray.length > 0 && selectedTeam) {
     const newFilteredCards = cardsArray.filter(card =>
-      card.year === selectedTeam.year && 
-      card.specialization === selectedTeam.specialite
+      card.year === selectedTeam.members[0].year && 
+      card.specialization === selectedTeam.members[0].specialite
     );
     setFilteredCards(newFilteredCards);
+    console.log("filtered cards array for a specific year and specialite :", filteredCards)
   }
 }, [cardsArray, selectedTeam]);
  
@@ -151,15 +153,17 @@ useEffect(() => {
       
       
     <div className={Module["cards-container"]}>
-      <div><p>{"showing pfes for year " + selectedTeam.year}
-      {"showing pfes for speciality " + selectedTeam?.specialite}
+       {/* <div><p>{"showing pfes for year " + selectedTeam?.members[0]?.year}
+        <br/>
+      {"showing pfes for speciality " + selectedTeam?.members[0]?.specialite}
+      
       </p>
-      </div>
+      </div> */}
       {filteredCards.map((card) => (
         <PFECard
           key={card.id}
           card={card}
-        
+          toggleSelect={() => {}}
           onExplore={(e) => {
             e.stopPropagation();
             changePfeForTeam(myTeamNumber,card.id);

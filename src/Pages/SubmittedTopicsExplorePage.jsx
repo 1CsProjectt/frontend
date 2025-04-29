@@ -34,6 +34,12 @@ export default function PublishedTopicsExplorePage() {
           <div className={Module["header"]}>
             <h1>Reading</h1>
             <div className={Module["buttons-container"]}>
+            <button
+                className={Module["decline-button"]}
+                onClick={() => navigate("/admin/sessions/topic-validation")}
+              >
+                go Back
+                </button>
               <button
                 className={Module["decline-button"]}
                 onClick={() => navigate("/admin/sessions/topic-validation")}

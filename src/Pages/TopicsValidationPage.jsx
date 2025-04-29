@@ -26,7 +26,11 @@ const TopicsValidationPage = () => {
   //the selectedCards array holds the ids of the currently selected cards
   const [deleteBtnActive, setDeleteBtnActive] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
-
+  const pathMap = {
+    tab1: "/admin/sessions/topic-validation/published-topic-explore",
+    tab2: "/admin/sessions/topic-validation/submitted-topic-explore",
+    tab3: "/admin/sessions/topic-validation/declined-topic-explore",
+  };
   const navigate = useNavigate();
 
   const HandleBackButton = () => {
@@ -116,7 +120,7 @@ const TopicsValidationPage = () => {
           const response = await axios.get("/pfe/rejectedpfe");
           if (response.data && response.data.pfeList) {
             setCardsArray(response.data.pfeList);
-            console.log(response);
+            console.log("DECLINED CARDS :" ,response.data.pfeList);
           }
           /*  setSubmittedCardsArray(data); // Save data in state */
         } catch (error) {
@@ -187,18 +191,21 @@ const TopicsValidationPage = () => {
         <button
           className={activeTab === "tab1" ? classes.active : ""}
           onClick={() => setActiveTab("tab1")}
+          disabled={loading}
         >
           Published Topics
         </button>
         <button
           className={activeTab === "tab2" ? classes.active : ""}
           onClick={() => setActiveTab("tab2")}
+          disabled={loading}
         >
           Submitted Topics
         </button>
         <button
           className={activeTab === "tab3" ? classes.active : ""}
           onClick={() => setActiveTab("tab3")}
+          disabled={loading}
         >
           Declined Topics
         </button>
@@ -234,12 +241,8 @@ const TopicsValidationPage = () => {
                 toggleSelect={selectionMode ? toggleSelect : () => {}}
                 onExplore={(e) => {
                   e.stopPropagation();
-                  navigate(
-                    activeTab === "tab1"
-                      ? "/admin/sessions/topic-validation/published-topic-explore"
-                      : "/admin/sessions/topic-validation/submitted-topic-explore",
-                    { state: { card } }
-                  );
+                  navigate(pathMap[activeTab], { state: { card } });
+
                 }}
               />
             ))}
