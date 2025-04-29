@@ -69,7 +69,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
                     : "inherit",
             }}
           >
-            {item.status || "Pending..."} 
+            {item.supervisionRequests || "Pending..."} 
           </span>
         ) : (
           <>

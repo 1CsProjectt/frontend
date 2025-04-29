@@ -71,8 +71,7 @@ const StudentMeetingHistory = ({ MeetingHistoryList }) => {
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Salle</th>
-                                <th>Work</th>
-                                <th>Status</th>
+                                <th>Work Status</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -82,9 +81,8 @@ const StudentMeetingHistory = ({ MeetingHistoryList }) => {
                                     <td>{m.id}</td>
                                     <td>{formatDateToMMDD(m.date)}</td>
                                     <td>{m.time}</td>
-                                    <td>{m.salle}</td>
-                                    <td>{m.work}</td>
-                                    <td>{m.status}</td>
+                                    <td>{m.room}</td>
+                                    <td>{m.work_Status}</td>
                                     <td>
                                         <button
                                             className={Style.SeeBtn}
