@@ -29,16 +29,8 @@ export default function PublishedTopicsExplorePage() {
     );
   }
 
-  // Quand l’utilisateur confirme le refus (decline), on récupère raison et fichier
-  const handleDeclineConfirm = ({ reason, file }) => {
-    // Ici, appeler l’API pour envoyer la raison et le fichier
-    console.log("Declined card id:", card.id);
-    console.log("Reason (Raison):", reason);
-    console.log("File (Fichier):", file);
-    setDeclineModalOpen(false);
-    // Rediriger vers la validation des topics
-    navigate("/admin/sessions/topic-validation");
-  };
+ 
+
 
   return (
     <div className={Module["explore-container"]}>
@@ -80,7 +72,7 @@ export default function PublishedTopicsExplorePage() {
               <DeclineModal
                 isOpen={isDeclineModalOpen}
                 onClose={() => setDeclineModalOpen(false)}
-                onConfirm={handleDeclineConfirm}
+                pfeId={card.id}
               />
             </div>
           </div>
