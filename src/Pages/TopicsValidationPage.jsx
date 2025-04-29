@@ -24,7 +24,9 @@ const TopicsValidationPage = () => {
   const [connectionError, setConnectionError] = useState(false); // State to handle connection error
   //isDeleteUserModalOpen is a state variable that controls the visibility of the delete user modal
   //the selectedCards array holds the ids of the currently selected cards
-  const [deleteBtnActive,setDeleteBtnActive] = useState(false)
+  const [deleteBtnActive, setDeleteBtnActive] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+
   const navigate = useNavigate();
 
   const HandleBackButton = () => {
@@ -139,31 +141,36 @@ const TopicsValidationPage = () => {
       <div className={classes.header}>
         <div className={classes["left-side-container"]}>
           <h1>Validate and Control Topics</h1>
-          {selectedCards.length !== 0 && (
-            
-          <label>
-            <input
-              type="checkbox"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
-            />
-            All
-          </label> )}
-          {selectedCards.length !== 0 && (
-          <p>{selectedCards.length} Selected</p>
+          {selectionMode && (
+            <label>
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
+              />
+              All
+            </label>
           )}
-    
-          
+          {selectedCards.length !== 0 && <p>{selectedCards.length} Selected</p>}
         </div>
         <div className={classes["buttons-container"]}>
-          <button className={classes["back-btn"]} onClick={() => navigate("/admin/sessions")}>
+          <button
+            className={classes["back-btn"]}
+            onClick={() => navigate("/admin/sessions")}
+          >
             Back
           </button>
           <button
             className={classes["delete-btn"]}
-            onClick={() => setPfeTopicModalOpen(true)}
+            onClick={() => {
+              if (!selectionMode) {
+                setSelectionMode(true);
+              } else if (selectedCards.length > 0) {
+                setPfeTopicModalOpen(true);
+              }
+            }}
           >
-            Delete Selected Topics
+            Delete Topics
           </button>
           <PfeTopicModal
             isOpen={isPfeTopicModalOpen}
@@ -196,30 +203,26 @@ const TopicsValidationPage = () => {
           Declined Topics
         </button>
       </div>
-      
+
       <div key={activeTab} className={classes["tab-content"]}>
         {loading ? (
           <div className={classes.loaderContainer}>
-          <div className={classes.loader}>
-            <PulseLoader color="#07cad4" loading={loading} size={25} />
+            <div className={classes.loader}>
+              <PulseLoader color="#07cad4" loading={loading} size={25} />
+            </div>
           </div>
-          </div>
-          
-
-        ) 
-        : connectionError ? (
+        ) : connectionError ? (
           <div className={classes.alertDiv}>
             <img src={errorIcon} alt="Error Icon" />
-            <h3>
-            Error connecting to the server
-            </h3>         
+            <h3>Error connecting to the server</h3>
           </div>
         ) : cardsArray.length === 0 ? (
           <div className={classes.alertDiv}>
             <img src={alertIcon} alt="Alert Icon" />
             <h3>
-            No topics were found . check again later to see if new Topics are added
-            </h3>         
+              No topics were found . check again later to see if new Topics are
+              added
+            </h3>
           </div>
         ) : (
           <div className={classes["cards-container"]}>
@@ -227,8 +230,8 @@ const TopicsValidationPage = () => {
               <PFECard
                 key={card.id}
                 card={card}
-                isSelected={selectedCards.includes(card.id)}
-                toggleSelect={toggleSelect}
+                isSelected={selectionMode && selectedCards.includes(card.id)}
+                toggleSelect={selectionMode ? toggleSelect : () => {}}
                 onExplore={(e) => {
                   e.stopPropagation();
                   navigate(

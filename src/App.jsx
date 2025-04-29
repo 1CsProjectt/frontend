@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SharedStateProvider } from "./contexts/SharedStateContext";
 import Login from "./Pages/Login";
+import TeacherMeetingsPage from "./Pages/teachermeetingspage";
 import ForgotPassword from "./Pages/ForgotPassword";
 import CheckEmail from "./Pages/CheckEmail";
 import ResetPassword from "./Pages/ResetPassword";
@@ -43,8 +44,7 @@ function App() {
           }
 
           <Route path="/" element={<Login />} />
-        
-          
+
           <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/CheckEmail" element={<CheckEmail />} />
 
@@ -56,7 +56,7 @@ function App() {
             <Route path="requests" element={<TeamSelectionTeacher />} />
             <Route path="myteam" element={<TeacherTeam />} />
           </Route>
-
+          <Route path="teachermeetingspage" element={<TeacherMeetingsPage />} />
           {/* Route with dynamic token */}
           <Route
             path="/auth/reset-password/:token"
@@ -70,12 +70,17 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/StudentMeetingsPage" element={<StudentMeetingsPage />} />
-          <Route path="/StudentMeetingsPage/SeeMore" element={<SeeMoreMetting/>} />
+          <Route
+            path="/StudentMeetingsPage"
+            element={<StudentMeetingsPage />}
+          />
+          <Route
+            path="/StudentMeetingsPage/SeeMore"
+            element={<SeeMoreMetting />}
+          />
           <Route path="/TeamFormationPage" element={<TeamFormationPage />} />
           <Route path="/pfe-student/explore" element={<ExplorePage />} />
 
-        
           <Route
             path="/admin/sessions/topic-validation/submitted-topic-explore"
             element={<SubmittedTopicsExplorePage />}

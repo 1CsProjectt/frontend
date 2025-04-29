@@ -33,6 +33,8 @@ const Sidebar = () => {
       setActiveMenu("requests");
     } else if (path.includes("myteam")) {
       setActiveMenu("myteam");
+    } else if (path.includes("teachermeetingspage")) {
+      setActiveMenu("meetings");
     } else if (path.includes("/teacher")) {
       setActiveMenu("pfe");
     } else if (path.includes("/TeamFormationPage")) {
@@ -55,7 +57,8 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    document.cookie = "authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    document.cookie =
+      "authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
 
     localStorage.removeItem("preferencesList");
     localStorage.removeItem("user");
@@ -153,8 +156,9 @@ const Sidebar = () => {
         {!role && (
           <li className={Module["menu-item"]}>
             <button
-              className={`${Module["menu-btn"]} ${activeMenu === "TeamFormationPage" ? Module["active"] : ""
-                }`}
+              className={`${Module["menu-btn"]} ${
+                activeMenu === "TeamFormationPage" ? Module["active"] : ""
+              }`}
               onClick={() => toggleMenu("/TeamFormationPage")}
             >
               <img
@@ -174,9 +178,14 @@ const Sidebar = () => {
 
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "loremres" ? Module["active"] : ""
-              }`}
-            onClick={() => toggleMenu("/StudentMeetingsPage")}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "meetings" ? Module["active"] : ""
+            }`}
+            onClick={() => {
+              role
+                ? toggleMenu("/teachermeetingspage")
+                : toggleMenu("/StudentMeetingsPage");
+            }}
           >
             <img
               src={CheckCircleIcon}
@@ -194,8 +203,9 @@ const Sidebar = () => {
         <li className={Module["menu-item"]}>
           <button
             /* className={Module[`menu-btn ${activeMenu === "notifications" ? "active" : ""}`]} */
-            className={`${Module["menu-btn"]} ${activeMenu === "notifications" ? Module["active"] : ""
-              }`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "notifications" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/meetings")}
           >
             <img
@@ -214,8 +224,9 @@ const Sidebar = () => {
 
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "lovers" ? Module["active"] : ""
-              }`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "lovers" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/lovers")}
           >
             <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
@@ -229,8 +240,9 @@ const Sidebar = () => {
         </li>
         <li className={Module["menu-item"]}>
           <button
-            className={`${Module["menu-btn"]} ${activeMenu === "export" ? Module["active"] : ""
-              }`}
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "export" ? Module["active"] : ""
+            }`}
             onClick={() => toggleMenu("/export")}
           >
             <img src={ExportIcon} alt="Export" className={Module["icon"]} />
