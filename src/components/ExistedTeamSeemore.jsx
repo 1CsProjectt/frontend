@@ -6,7 +6,24 @@ import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 import Popup from "../components/modals/popup";
 import { useNavigate } from "react-router-dom";
+const session = {
+  title: "TOPIC_SELECTION",
+  targetDate: {
+    start: new Date("2025-03-29T00:00:00"),
+    end: new Date("2025-04-29T23:59:59")
+  }
+};
 
+
+let sessionTitle;
+
+if (session.title === "TEAM_CREATION") {
+  sessionTitle = "Group formation session";
+} else if (session.title === "TOPIC_SELECTION") {
+  sessionTitle = "Select topics session";
+} else {
+  sessionTitle = "Unknown session";
+}
 const Seemorepage = ({
   myTeamNumber,
   myTeamMembers = [],
@@ -201,13 +218,13 @@ const Seemorepage = ({
             Back
           </button>
 
-          <button
+        {sessionTitle === "Group formation session" &&  <button
             className={Module["JoinSeeMoreBtn"]}
             onClick={handleJoinClick}
             disabled={myTeamNumber !== null}
           >
             Join
-          </button>
+          </button>}
         </div>
       )}
 

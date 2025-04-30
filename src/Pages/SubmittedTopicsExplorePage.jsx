@@ -1,46 +1,54 @@
-import { React, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/NavBar";
+import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
+import DeclineModal from "../components/modals/DeclineReasoning.jsx";
 import FileIcon from "../assets/fileIcon.svg";
 import ArrowIcon from "../assets/expand_less_black.svg";
 import Module from "../styles/SubmittedTopicsExplorePage.module.css";
-import AdminSidebar from "../components/AdminSidebar";
-import PfeTopicModal from "../components/modals/PfeTopicModal.jsx";
 
 export default function PublishedTopicsExplorePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { card } = location.state || {};
+
+  // États pour les modals
   const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
-  const [modalOperation, setModalOperation] = useState(""); //by default no operation is chosen
+  const [modalOperation, setModalOperation] = useState("");
+  const [isDeclineModalOpen, setDeclineModalOpen] = useState(false);
 
   if (!card) {
-    // If no card data is found, navigate back or show a message.
     return (
       <div>
-        <p>No project data available. Please go back and select a project.</p>
+        <p>
+          No project data available. Please go back and select a project.
+        </p>
         <button onClick={() => navigate("/pfe")}>Go Back</button>
       </div>
     );
   }
 
+ 
+
+
   return (
     <div className={Module["explore-container"]}>
-      
-      <div className={Module["explore-content"]} >
+      <div className={Module["explore-content"]}>
         <Navbar />
         <div className={Module["scroll-container"]}>
           <div className={Module["header"]}>
             <h1>Reading</h1>
             <div className={Module["buttons-container"]}>
+              {/* Bouton de refus (Decline) */}
               <button
                 className={Module["decline-button"]}
-                onClick={() => navigate("/admin/sessions/topic-validation")}
+                onClick={() => setDeclineModalOpen(true)}
               >
                 Decline
               </button>
 
+              {/* Bouton de validation (Validate) */}
               <button
                 className={Module["validate-button"]}
                 onClick={() => {
@@ -51,7 +59,7 @@ export default function PublishedTopicsExplorePage() {
                 Validate
               </button>
 
-              {/*  Only one modal, controlled by operation state */}
+              {/* Modal de validation existant */}
               <PfeTopicModal
                 isOpen={isPfeTopicModalOpen}
                 onClose={() => setPfeTopicModalOpen(false)}
@@ -59,8 +67,16 @@ export default function PublishedTopicsExplorePage() {
                 operation={modalOperation}
                 validatedcardid={card.id}
               />
+
+              {/* Modal de raison de refus */}
+              <DeclineModal
+                isOpen={isDeclineModalOpen}
+                onClose={() => setDeclineModalOpen(false)}
+                pfeId={card.id}
+              />
             </div>
           </div>
+
           <div className={Module["banner-wrapper"]}>
             <img
               src={card.photo || "https://via.placeholder.com/300x200"}
@@ -68,6 +84,7 @@ export default function PublishedTopicsExplorePage() {
               className={Module["project-banner"]}
             />
           </div>
+
           <div className={Module["project-details"]}>
             <h1 className={Module["project-title"]}>{card.title}</h1>
             <p className={Module["project-description"]}>{card.description}</p>
@@ -75,8 +92,8 @@ export default function PublishedTopicsExplorePage() {
             <h2 className={Module["section-heading"]}>Supervisors</h2>
             <ul className={Module["supervisors-list"]}>
               {card.supervisors && card.supervisors.length > 0 ? (
-                card.supervisors.map((supervisor, index) => (
-                  <li key={index}>{supervisor.name || "No name provided"}</li>
+                card.supervisors.map((sup, idx) => (
+                  <li key={idx}>{sup.name || "No name provided"}</li>
                 ))
               ) : (
                 <li>No supervisors available</li>
