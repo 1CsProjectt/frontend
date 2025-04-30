@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/addtopic.css";
 import Uploadfile from "./modals/uploadbox";
-import Upload from "../assets/upload.svg";
+
 import Iconup from "../assets/arrow-up.svg";
 import Icondown from "../assets/arrow-down.svg";
 import searchicon from "../assets/Search.svg";

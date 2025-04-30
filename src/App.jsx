@@ -30,7 +30,7 @@ import TeamFormationPage from "./Pages/TeamformationPage";
 import SeeMoreMetting from "./components/SeeMoreMettingHistory";
 import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
-import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage"
+import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage";
 import ReadTopicPage from "./Pages/ReadTopicPage";
 function App() {
   return (
@@ -56,7 +56,7 @@ function App() {
             <Route path="requests" element={<TeamSelectionTeacher />} />
             <Route path="myteam" element={<TeacherTeam />} />
           </Route>
-          <Route path="teachermeetingspage" element={<TeacherMeetingsPage />} />
+
           {/* Route with dynamic token */}
           <Route
             path="/auth/reset-password/:token"
@@ -86,22 +86,39 @@ function App() {
             element={<SubmittedTopicsExplorePage />}
           />
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
-        <Route path="/admin" element={<AdminDashboard />}>
-          <Route index element={<UserManagementTabs />} />
-          <Route path="users" element={<UserManagementTabs />} />
-          <Route path="sessions" element={<SessionsManagementTabs/>}/>
-          <Route path="sessions/manage-preferences" element={<AdminManagePreferencesPage/>}/>
-          <Route path="sessions/manage-preferences/read-topic" element={<ReadTopicPage/>}/>
-          <Route path="sessions/admin-team-formation" element={<AdminTeamFormationPage />} />
-          <Route path="sessions/topic-validation" element={<TopicsValidationPage />} />
-          <Route path="sessions/topic-validation/published-topic-explore" element={<SubmittedTopicsExplorePage />} />
-          <Route path="sessions/topic-validation/submitted-topic-explore" element={<SubmittedTopicsExplorePage />} />
-          <Route path="export" element={<div>Export Page</div>} />
-          <Route path="loversr" element={<div>Loversr Page</div>} />
-          <Route path="dashboard" element={<div>Dashboard Page</div>} />
-          <Route path="settings" element={<div>Settings Page</div>} />
-        </Route>
-
+          <Route path="/admin" element={<AdminDashboard />}>
+            <Route index element={<UserManagementTabs />} />
+            <Route path="users" element={<UserManagementTabs />} />
+            <Route path="sessions" element={<SessionsManagementTabs />} />
+            <Route
+              path="sessions/manage-preferences"
+              element={<AdminManagePreferencesPage />}
+            />
+            <Route
+              path="sessions/manage-preferences/read-topic"
+              element={<ReadTopicPage />}
+            />
+            <Route
+              path="sessions/admin-team-formation"
+              element={<AdminTeamFormationPage />}
+            />
+            <Route
+              path="sessions/topic-validation"
+              element={<TopicsValidationPage />}
+            />
+            <Route
+              path="sessions/topic-validation/published-topic-explore"
+              element={<SubmittedTopicsExplorePage />}
+            />
+            <Route
+              path="sessions/topic-validation/submitted-topic-explore"
+              element={<SubmittedTopicsExplorePage />}
+            />
+            <Route path="export" element={<div>Export Page</div>} />
+            <Route path="loversr" element={<div>Loversr Page</div>} />
+            <Route path="dashboard" element={<div>Dashboard Page</div>} />
+            <Route path="settings" element={<div>Settings Page</div>} />
+          </Route>
         </Routes>
       </SharedStateProvider>
     </Router>

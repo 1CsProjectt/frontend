@@ -3,45 +3,63 @@ import Module from "../styles/TeamSelectionTeacher.module.css";
 import Seemorepage from "../components/ExistedTeamSeemore";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion"; // Import the Seemorepage component
 import axios from "axios";
+import TeacherMeetingPage from "../Pages/teachermeetingspage";
 
 const TEAM_INFORMATION = "Team Information";
 const SUPERVISION_LOGS = "Supervision Logs";
 
 const TeacherTeam = () => {
+  const [seeMore, setSeeMore] = useState(false);
   const [activeTab, setActiveTab] = useState(TEAM_INFORMATION); // Default to "Team Information"
-
+  const [inteam, setInTeam] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
   return (
     <div className={Module["team-formation-container"]}>
       <div className={Module["header-part"]}>
         <div className={Module["header-container"]}>
           <p className="pagetitle">My teams</p>
         </div>
-
-        <div className="tabs-container">
-          <div className="tabs">
-            <button
-              className={`tab-item ${
-                activeTab === TEAM_INFORMATION ? "active" : ""
-              }`}
-              onClick={() => setActiveTab(TEAM_INFORMATION)}
-            >
-              Team Information
-            </button>
-            <button
-              className={`tab-item ${
-                activeTab === SUPERVISION_LOGS ? "active" : ""
-              }`}
-              onClick={() => setActiveTab(SUPERVISION_LOGS)}
-            >
-              Supervision Logs
-            </button>
+        {inteam && (
+          <div className="tabs-container">
+            <div className="tabs">
+              <button
+                className={`tab-item ${
+                  activeTab === TEAM_INFORMATION ? "active" : ""
+                }`}
+                onClick={() => {
+                  setActiveTab(TEAM_INFORMATION);
+                  setInTeam(true);
+                }}
+              >
+                Team Information
+              </button>
+              <button
+                className={`tab-item ${
+                  activeTab === SUPERVISION_LOGS ? "active" : ""
+                }`}
+                onClick={() => setActiveTab(SUPERVISION_LOGS)}
+              >
+                Supervision Logs
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
-
       {/* Render Seemorepage component only when the Team Information tab is active */}
-      {activeTab === TEAM_INFORMATION && <ReceivedMyTeamsTab />}
-
+      {activeTab === TEAM_INFORMATION && (
+        <ReceivedMyTeamsTab
+          setInTeam={setInTeam}
+          seeMore={seeMore}
+          setSeeMore={setSeeMore}
+          selectedTeamId={selectedTeamId}
+          setSelectedTeamId={setSelectedTeamId}
+        />
+      )}{" "}
+      {activeTab === SUPERVISION_LOGS && (
+        <div>
+          <TeacherMeetingPage teamid={selectedTeamId} />
+        </div>
+      )}
       {/* You can add further content for the Supervision Logs tab here if needed */}
     </div>
   );
@@ -53,17 +71,23 @@ const ReceivedMyTeamsTab = ({
   setSelectedRequest,
   setSelectedRequestid,
   selectedRequestid,
+  setInTeam,
+  seeMore,
+  setSeeMore,
+  selectedTeamId,
+  setSelectedTeamId,
 }) => {
   const [myTeamsList, setMyTeamsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [myTeamsPerPage, setMyTeamsPerPage] = useState(10);
-  const [seeMore, setSeeMore] = useState(false); // <<<<< ADD THIS
-  const [selectedTeamId, setSelectedTeamId] = useState(null); // <<<< Optional if you want to pass team id
+  // <<<<< ADD THIS
+  // <<<< Optional if you want to pass team id
   const containerRef = useRef(null);
 
   const handleRowClick = (teamId) => {
+    setInTeam(true);
     setSeeMore(true); // <<<<< Show SeeMorepage when clicked
     setSelectedTeamId(teamId); // <<<<< Save which team was clicked
   };
