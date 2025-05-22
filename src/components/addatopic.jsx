@@ -86,8 +86,10 @@ const Addatopic = () => {
 
     const formData = new FormData();
     formData.append("title", title);
-    if (user?.role === "teacher") {
+    if (user?.role === "teacher" && ["1CS", "2CS", "3CS"].includes(grade)) {
       formData.append("specialization", speciality.join(","));
+    }
+    if (user?.role === "teacher") {
       selectedSupervisors.forEach((sup, index) => {
         formData.append(`supervisors[${index}]`, sup); // makes an arrayP
       });
@@ -193,56 +195,60 @@ const Addatopic = () => {
                   onChange={(e) => setGrade(e.target.value)}
                   className="select-at"
                 >
+                  <option value="3CS">3CS</option>
                   <option value="2CS">2CS</option>
                   <option value="1CS">1CS</option>
+                  <option value="2CP">2CP</option>
+                  <option value="1CP">1CP</option>
                 </select>
                 {isspec && <div className="space-year"></div>}{" "}
               </div>
-              {user.role === "teacher" && (
-                <div className="form-section">
-                  <label className="ttl-fs-at">Speciality</label>
+              {user.role === "teacher" &&
+                ["1CS", "2CS", "3CS"].includes(grade) && (
+                  <div className="form-section">
+                    <label className="ttl-fs-at">Speciality</label>
 
-                  <div className="select-sv-at">
-                    <button
-                      className="sv-button-at"
-                      onClick={() => toggleMenu("static")}
-                    >
-                      <p className="ttl-fs-at">
-                        {speciality.length === 0
-                          ? "Select speciality"
-                          : speciality.join(", ")}
-                      </p>
-                      <img
-                        src={isOpen ? Iconup : Icondown}
-                        alt="Toggle"
-                        className="arrow-icon"
-                      />
-                    </button>
-                  </div>
-                  {isspec && (
-                    <div className="border-form-at">
-                      <div className="sv-list">
-                        {specialityList
-                          .filter((name) =>
-                            name
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                          )
-                          .map((name) => (
-                            <label key={name} className="sv-item">
-                              <input
-                                type="checkbox"
-                                checked={speciality.includes(name)}
-                                onChange={() => handleSpecialityToggle(name)}
-                              />
-                              {name}
-                            </label>
-                          ))}
-                      </div>
+                    <div className="select-sv-at">
+                      <button
+                        className="sv-button-at"
+                        onClick={() => toggleMenu("static")}
+                      >
+                        <p className="ttl-fs-at">
+                          {speciality.length === 0
+                            ? "Select speciality"
+                            : speciality.join(", ")}
+                        </p>
+                        <img
+                          src={isOpen ? Iconup : Icondown}
+                          alt="Toggle"
+                          className="arrow-icon"
+                        />
+                      </button>
                     </div>
-                  )}
-                </div>
-              )}
+                    {isspec && (
+                      <div className="border-form-at">
+                        <div className="sv-list">
+                          {specialityList
+                            .filter((name) =>
+                              name
+                                .toLowerCase()
+                                .includes(searchTerm.toLowerCase())
+                            )
+                            .map((name) => (
+                              <label key={name} className="sv-item">
+                                <input
+                                  type="checkbox"
+                                  checked={speciality.includes(name)}
+                                  onChange={() => handleSpecialityToggle(name)}
+                                />
+                                {name}
+                              </label>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
 

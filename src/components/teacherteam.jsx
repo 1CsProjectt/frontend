@@ -13,11 +13,23 @@ const TeacherTeam = () => {
   const [activeTab, setActiveTab] = useState(TEAM_INFORMATION); // Default to "Team Information"
   const [inteam, setInTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
+
   return (
     <div className={Module["team-formation-container"]}>
       <div className={Module["header-part"]}>
         <div className={Module["header-container"]}>
           <p className="pagetitle">My teams</p>
+          {seeMore && (
+            <button
+              className={Module["back-btn"]}
+              onClick={() => {
+                setSeeMore(false);
+                setInTeam(false);
+              }}
+            >
+              Back
+            </button>
+          )}
         </div>
         {inteam && (
           <div className="tabs-container">
@@ -96,13 +108,27 @@ const ReceivedMyTeamsTab = ({
     const fetchReceivedMyTeams = async () => {
       try {
         const response = await axios.get("/teams/supervised-by-me");
-        if (!response.data?.teams)
-          throw new Error("Invalid response structure");
+        const teamsData = response.data?.teams;
 
-        const teams = response.data.teams.map((team, index) => ({
+        if (!teamsData || teamsData.length === 0) {
+          // Static fallback data
+          const fallbackTeams = [
+            {
+              order: 1,
+              teamId: "StaticTeam001",
+              teamCreator: "John Doe",
+              membersCount: 3,
+              // Add any other fields your UI expects
+            },
+          ];
+          setMyTeamsList(fallbackTeams);
+          return;
+        }
+
+        const teams = teamsData.map((team, index) => ({
           ...team,
           order: index + 1,
-          teamId: team.id || "N/A", // Fixed to use `team.id`
+          teamId: team.id || "N/A",
           teamCreator: team.createdBy?.fullName || team.createdBy || "Unknown",
           membersCount: team.members?.length || 0,
         }));
@@ -110,7 +136,16 @@ const ReceivedMyTeamsTab = ({
         setMyTeamsList(teams);
       } catch (err) {
         console.error("Error fetching teams:", err);
-        // fallback static data...
+        // Static fallback on error
+        const fallbackTeams = [
+          {
+            order: 1,
+            teamId: "StaticTeam001",
+            teamCreator: "John Doe",
+            membersCount: 3,
+          },
+        ];
+        setMyTeamsList(fallbackTeams);
       } finally {
         setLoading(false);
       }

@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/NavBar";
+
 import Uploadfile from "../components/modals/uploadbox";
 import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import Module from "../styles/myteacher.module.css";
 import Popup from "../components/modals/popup";
-
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
@@ -420,227 +418,214 @@ function TeacherMeetingPage(teamid) {
   }
 
   return (
-    <div className={Module["Student-meeting-page"]}>
-      <div>
-        <div className={Module["Student-meeting-container"]}>
-          {oncancel && (
-            <Popup
-              confirmMessage={"are your u want to cancel meeting"}
-              confirmTitle={"cancel meeting"}
-              poproud={1}
-              onConfirm={() => {
-                handleCancelMeeting();
-                setoncancel(false); // Hide popup after action
-              }}
-            />
-          )}
-          {success && <Popup poproud={2} onOkey={setSuccess(false)} />}
-          <div className={Module["header-row"]}>
-            <h1>Meetings</h1>
-          </div>
-          {meetingpopup && (
-            <div className={Module["modal-overlay"]}>
-              <div className={Module["start-meeting-container"]}>
-                <h2 className={Module["meeting-header"]}>Start new meeting</h2>
+    <div className={Module["Student-meeting-container"]}>
+      {oncancel && (
+        <Popup
+          confirmMessage={"are your u want to cancel meeting"}
+          confirmTitle={"cancel meeting"}
+          poproud={1}
+          onConfirm={() => {
+            handleCancelMeeting();
+            setoncancel(false); // Hide popup after action
+          }}
+        />
+      )}
+      {success && <Popup poproud={2} onOkey={setSuccess(false)} />}
+      <div className={Module["header-row"]}>
+        <h1>Meetings</h1>
+      </div>
+      {meetingpopup && (
+        <div className={Module["modal-overlay"]}>
+          <div className={Module["start-meeting-container"]}>
+            <h2 className={Module["meeting-header"]}>Start new meeting</h2>
 
-                <div className={Module["meeting-description"]}>
-                  <p>
-                    Schedule a New Meeting: Set the date, time, objectives, and
-                    room to plan your next supervision session.
-                  </p>
-                </div>
-
-                <div className={Module["meeting-form"]}>
-                  <div className={Module["time-selection"]}>
-                    <div
-                      style={{
-                        justifyContent: "space-between",
-                        display: "flex",
-                        width: "100%",
-                      }}
-                    >
-                      {" "}
-                      <div
-                        className={Module["form-group"]}
-                        style={{
-                          width: "45%",
-                        }}
-                      >
-                        <label>Start date</label>
-                        <input
-                          type="date"
-                          name="startDate" // Add name attribute
-                          className={Module["date-input"]}
-                          value={formData.startDate}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div
-                        className={Module["form-group"]}
-                        style={{
-                          width: "45%",
-                        }}
-                      >
-                        <label>Time</label>
-                        <input
-                          type="time"
-                          name="startTime" // Add name attribute
-                          className={Module["time-input"]}
-                          value={formData.startTime}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={Module["form-group"]}>
-                    <select
-                      className={Module["salle-input"]}
-                      name="salleName"
-                      value={formData.salleName}
-                      onChange={handleInputChange}
-                    >
-                      {["tp06", "tp07", "tp08", "tp09", "tp10"].map((salle) => (
-                        <option key={salle} value={salle}>
-                          {salle.toUpperCase()}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className={Module["form-group"]}>
-                    <label>Objectives</label>
-                    <Uploadfile
-                      handlePresentationChange={handleFileUpload}
-                      presentationFile={formData.presentationFile}
-                      presentationRef={presentationRef}
-                      type="pdf"
-                    />
-                  </div>
-
-                  <div className={Module["form-buttons"]}>
-                    <button
-                      className={Module["cancel-btn"]}
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className={Module["start-btn"]}
-                      onClick={handleStartMeeting}
-                      disabled={loading || hasNextMeeting}
-                    >
-                      {loading ? "Starting..." : "Start"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div className={Module["Week-meeting-container"]}>
-            <div className={Module["Left-side"]}>
-              <div className={Module["Left-side-header"]}>
-                This week meeting
-              </div>
-              <div className={Module["Left-side-body"]}>
+            <div className={Module["meeting-description"]}>
+              <p>
                 Schedule a New Meeting: Set the date, time, objectives, and room
                 to plan your next supervision session.
-              </div>
+              </p>
             </div>
-            <div className={Module["Right-side"]}>
-              <div className={Style["table-wrapper"]}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th style={{ paddingRight: "50px" }}>Date</th>
-                      <th style={{ paddingRight: "50px" }}>Time</th>
-                      <th style={{ paddingRight: "50px" }}>Salle</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {weekmeeting ? (
-                      <tr>
-                        <td style={{ paddingRight: "50px" }}>
-                          {formatDateToMMDD(weekmeeting.date)}
-                        </td>
-                        <td style={{ paddingRight: "50px" }}>
-                          {weekmeeting.time}
-                        </td>
-                        <td>{weekmeeting.room}</td>
-                        <td
-                          className={Module.W500}
-                          style={{
-                            textAlign: "center",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          <button
-                            className={Module["SeeBtn"]}
-                            style={{
-                              width: "85px",
-                              height: "39px",
-                              marginRight: "50px",
-                            }}
-                            onClick={SeeMoreHandle}
-                          >
-                            see
-                          </button>
-                          <button
-                            className={Module["SeeBtn"]}
-                            style={{
-                              width: "85px",
-                              height: "39px",
-                              background: "#F76659",
-                              color: "white",
-                            }}
-                            onClick={oncancelverf}
-                          >
-                            cancel
-                          </button>
-                        </td>
-                      </tr>
-                    ) : (
-                      <tr>
-                        <td colSpan="4" style={{ textAlign: "center" }}>
-                          No upcoming meeting found.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              {hasNextMeeting && (
-                <button
-                  className={Module["SeeBtn"]}
+
+            <div className={Module["meeting-form"]}>
+              <div className={Module["time-selection"]}>
+                <div
                   style={{
-                    width: " 100%",
-                    height: "55px",
-                    background: "#077ED4",
-                    color: "white",
-                    marginBottom: "10px",
+                    justifyContent: "space-between",
+                    display: "flex",
+                    width: "100%",
                   }}
-                  onClick={() => setmeetingpopup(true)}
                 >
                   {" "}
-                  start new meeting
+                  <div
+                    className={Module["form-group"]}
+                    style={{
+                      width: "45%",
+                    }}
+                  >
+                    <label>Start date</label>
+                    <input
+                      type="date"
+                      name="startDate" // Add name attribute
+                      className={Module["date-input"]}
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div
+                    className={Module["form-group"]}
+                    style={{
+                      width: "45%",
+                    }}
+                  >
+                    <label>Time</label>
+                    <input
+                      type="time"
+                      name="startTime" // Add name attribute
+                      className={Module["time-input"]}
+                      value={formData.startTime}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className={Module["form-group"]}>
+                <select
+                  className={Module["salle-input"]}
+                  name="salleName"
+                  value={formData.salleName}
+                  onChange={handleInputChange}
+                >
+                  {["tp06", "tp07", "tp08", "tp09", "tp10"].map((salle) => (
+                    <option key={salle} value={salle}>
+                      {salle.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={Module["form-group"]}>
+                <label>Objectives</label>
+                <Uploadfile
+                  handlePresentationChange={handleFileUpload}
+                  presentationFile={formData.presentationFile}
+                  presentationRef={presentationRef}
+                  type="pdf"
+                />
+              </div>
+
+              <div className={Module["form-buttons"]}>
+                <button className={Module["cancel-btn"]} onClick={handleCancel}>
+                  Cancel
                 </button>
-              )}
+                <button
+                  className={Module["start-btn"]}
+                  onClick={handleStartMeeting}
+                  disabled={loading || hasNextMeeting}
+                >
+                  {loading ? "Starting..." : "Start"}
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+      )}
+      <div className={Module["Week-meeting-container"]}>
+        <div className={Module["Left-side"]}>
+          <div className={Module["Left-side-header"]}>This week meeting</div>
+          <div className={Module["Left-side-body"]}>
+            Schedule a New Meeting: Set the date, time, objectives, and room to
+            plan your next supervision session.
+          </div>
+        </div>
+        <div className={Module["Right-side"]}>
           <div
-            className={Module["MeetingsHistory"]}
-            style={{ padding: "20px" }}
+            className={Style["table-wrapper"]}
+            style={{ width: "602px", height: "136px" }}
           >
-            <div className={Module["MeetingsHistory-header"]}>
-              Meetings History
-            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style={{ paddingRight: "50px" }}>Date</th>
+                  <th style={{ paddingRight: "50px" }}>Time</th>
+                  <th style={{ paddingRight: "50px" }}>Salle</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {weekmeeting ? (
+                  <tr>
+                    <td style={{ paddingRight: "50px" }}>
+                      {formatDateToMMDD(weekmeeting.date)}
+                    </td>
+                    <td style={{ paddingRight: "50px" }}>{weekmeeting.time}</td>
+                    <td>{weekmeeting.room}</td>
+                    <td
+                      className={Module.W500}
+                      style={{
+                        textAlign: "center",
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      <button
+                        className={Module["SeeBtn"]}
+                        style={{
+                          width: "85px",
+                          height: "39px",
+                          marginRight: "50px",
+                        }}
+                        onClick={SeeMoreHandle}
+                      >
+                        see
+                      </button>
+                      <button
+                        className={Module["SeeBtn"]}
+                        style={{
+                          width: "85px",
+                          height: "39px",
+                          background: "#F76659",
+                          color: "white",
+                        }}
+                        onClick={oncancelverf}
+                      >
+                        cancel
+                      </button>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: "center" }}>
+                      No upcoming meeting found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-          {showToast && (
-            <Toast message={toastMessage} onClose={() => setShowToast(false)} />
+          {hasNextMeeting && (
+            <button
+              className={Module["SeeBtn"]}
+              style={{
+                width: " 100%",
+                height: "55px",
+                background: "#077ED4",
+                color: "white",
+                marginBottom: "10px",
+              }}
+              onClick={() => setmeetingpopup(true)}
+            >
+              {" "}
+              start new meeting
+            </button>
           )}
         </div>
       </div>
+      <div className={Module["MeetingsHistory"]} style={{ padding: "20px" }}>
+        <div className={Module["MeetingsHistory-header"]}>Meetings History</div>
+      </div>
+      {showToast && (
+        <Toast message={toastMessage} onClose={() => setShowToast(false)} />
+      )}
     </div>
   );
 }
