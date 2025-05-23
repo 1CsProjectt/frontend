@@ -215,7 +215,7 @@ const TopicsValidationPage = () => {
         {loading ? (
           <div className={classes.loaderContainer}>
             <div className={classes.loader}>
-              <PulseLoader color="#07cad4" loading={loading} size={25} />
+              <PulseLoader color="#077fd4" loading={loading} size={25} />
             </div>
           </div>
         ) : connectionError ? (
@@ -244,6 +244,8 @@ const TopicsValidationPage = () => {
                   navigate(pathMap[activeTab], { state: { card } });
 
                 }}
+
+                year={card.year}
               />
             ))}
           </div>

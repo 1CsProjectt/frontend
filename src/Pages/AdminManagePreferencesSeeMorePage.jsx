@@ -169,6 +169,7 @@ useEffect(() => {
             changePfeForTeam(myTeamNumber,card.id);
           }}
           buttonText={"Assign"}
+          year={card.year}
         />
       ))}
     </div>);
@@ -225,8 +226,8 @@ useEffect(() => {
                 <td>{card?.order}</td>
                 <td>{card?.PFE?.title}</td>
                 <td>
-                  {card?.supervisors?.length > 0
-                    ? `${card.supervisors[0]?.firstname} ${card.supervisors[0]?.lastname}`
+                  {card?.PFE?.supervisors?.length > 0
+                    ? `${card.PFE?.supervisors[0]?.firstname} ${card.PFE?.supervisors[0]?.lastname}`
                     : "No supervisor assigned yet for this project"}
                 </td>
                 <td>
@@ -261,12 +262,21 @@ useEffect(() => {
           <h2>Assigned topic</h2>
             <div className={Module["buttons-container-see-more"]}>
             
-              <button
-                className={Module["admin-auto-assign-button"]}
-                 onClick={() =>   autoAssignPfe(myTeamNumber)}
-              >
-                auto-assign
-              </button>
+            <button
+              className={Module["admin-auto-assign-button"]}
+              onClick={() => autoAssignPfe(myTeamNumber)}
+              title={selectedTeam?.assignedPFE ? "A topic is already assigned" : "Assign the best available topic automatically"}
+              disabled={!!selectedTeam?.assignedPFE} // disables if a topic is already assigned
+              style={{
+                backgroundColor: selectedTeam?.assignedPFE ? "lightGray" : "",
+                borderColor: selectedTeam?.assignedPFE ? "lightGray" : "",
+                color: selectedTeam?.assignedPFE ? "gray" : "",
+                cursor: selectedTeam?.assignedPFE ? "not-allowed" : "pointer",
+              }}
+            >
+              {selectedTeam?.assignedPFE ? "Already assigned" : "auto-assign"}
+            </button>
+
               <button className={Module["admin-assign-topic-button"]} onClick={() => {setShowAssignTopicPage(true)}}>
                 Assign a topic
               </button>

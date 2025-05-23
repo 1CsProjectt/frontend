@@ -4,26 +4,35 @@ import styles from '../../styles/MoveTeamMemberModal.module.css';
 import { Search } from 'lucide-react';
 import axios from 'axios';
 
-const MoveTeamMemberModal = ({ isOpen, onClose ,memberIdToMove}) => {
+const MoveTeamMemberModal = ({ isOpen, onClose ,memberToMove}) => {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [teams, setTeams] = useState([]);// the fetch happens in the modal to improve accuracy of the data
 
 
   useEffect(() => {
-    /* alert("memberIdToMove: " + JSON.stringify(memberIdToMove, null, 2)); */
     if (isOpen) {
       axios.get('/teams/all')
         .then(res => {
           if (res.data && res.data.teams) {
-            setTeams(res.data.teams);
+            // Filter teams based on year and specialite match
+            const filtered = res.data.teams.filter(team => {
+              const firstMember = team.members?.[0];
+              return firstMember &&
+                firstMember.year === memberToMove.year &&
+                firstMember.specialite === memberToMove.specialite;
+            });
+  
+            setTeams(filtered);
+            console.log('Filtered teams:', filtered);
           }
         })
         .catch(err => {
           console.error('Error fetching teams:', err);
         });
     }
-  }, [isOpen]);
+  }, [isOpen, memberToMove]);
+  
 
 /*   const teams = [
     { id: '01', name: 'Team Alpha' },
@@ -44,16 +53,17 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberIdToMove}) => {
       alert("Please select a team first");
       return;
     }else {
-      alert("Moving member of id :" + memberIdToMove + " to team id :" + selectedTeam);
+      alert("Moving member of id :" + memberToMove.id + " to team id :" + selectedTeam);
     }
 
   
     axios.patch('/teams/move-student', {
-      studentIds: [memberIdToMove],
+      studentIds: [memberToMove.id],
       newTeamId: selectedTeam
     })
     .then(res => {
       alert("Member moved successfully!");
+      setTeams(null); // Clear teams after moving
       onClose(); // Close modal
     })
     .catch(err => {
@@ -89,9 +99,9 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberIdToMove}) => {
             value={selectedTeam}
             onChange={handleTeamSelect}
           >
-            <option value="" disabled>Select team by id</option>
+            <option value="" disabled>Select team by team number</option>
             {teams.map(team => (
-              <option key={team.id} value={team.id.toString()}> teamID : {team.id}  {team.name}</option>
+              <option key={team.id} value={team.id.toString()}> team number: {team.id}  {team.name}</option>
             ))}
           </select>
         </div>
@@ -109,10 +119,16 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberIdToMove}) => {
           </div>
           <div className={styles.resultList}>
             {filteredTeams.map((team) => (  
-              <div key={team.id} className={styles.resultItem}  onClick={() => setSelectedTeam(team.id.toString())}>
-                {/* {team.id} - {team.name} */}     
-                {team.id}
-              </div>
+              <div
+              key={team.id}
+              className={styles.resultItem}
+              onClick={() => setSelectedTeam(team.id.toString())}
+            >
+              <span className={styles.label}>Team Number:</span>
+              <span className={styles.value}>{team.id}</span>
+              <span className={styles.value}>– {team.members[0]?.year}</span>
+              <span className={styles.value}>– {team.members[0]?.specialite}</span>
+            </div>
             ))}
             {filteredTeams.length === 0 && (
            <div className={styles.resultItem}>No teams found</div>
@@ -122,7 +138,11 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberIdToMove}) => {
         </div>
 
         <div className={styles.buttonGroup}>
-          <button className={styles.cancelButton} onClick={onClose}>Cancel</button>
+          <button className={styles.cancelButton} onClick={() => {
+                setTeams(null);
+                onClose();
+              }}
+                >Cancel</button>
           <button className={styles.moveButton} onClick={handleMove}>move</button>
         </div>
       </div>

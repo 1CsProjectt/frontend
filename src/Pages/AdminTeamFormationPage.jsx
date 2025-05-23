@@ -107,6 +107,7 @@ function TeamFormationPage() {
     fullName: `${student.firstname || ""} ${student.lastname || ""}`.trim(),
     email: student.user?.email || "No Email",
     year: student.year || "N/A",
+    specialite: student.specialite || "",
     status: student.status || "No Status",
   }));
 

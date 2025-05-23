@@ -144,6 +144,7 @@ console.log("students list is : ",students)
                 <tr>
                   <th>Team Number</th>
                   <th>Grade</th>
+                  <th>Speciality</th>
                   <th>Team Supervisor</th>
                   <th>Topic title</th>
                   <th></th>
@@ -159,6 +160,7 @@ console.log("students list is : ",students)
                     <tr key={idx}>
                       <td>{team?.id || "N/A"}</td>
                       <td>{team?.members[0]?.year || "N/A"}</td>
+                      <td>{team?.members[0]?.specialite || "N/A"}</td>
                       <td>
                         {team?.supervisor?.firstname && team?.supervisor?.lastname
                           ? `${team.supervisor.firstname} ${team.supervisor.lastname}`

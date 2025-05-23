@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Style from "../styles/CardComponent.module.css";
 
-const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
+const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,year}) => {
   //the buttonText is an optional prop when wanting to override the default buttonText (Explore)
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,16 +33,28 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
-          {Array.isArray(card.specialization) ? (
-            card.specialization.map((spec, i) => (
-              <span key={i} className={Style.category}>
-                {spec}
-              </span>
-            ))
-          ) : (
-            <span className={Style.category}>{card.specialization}</span>
-          )}
+{/*           added by khedim youcef for the display of the year in the card
+ */}          {[
+            ...(Array.isArray(card.specialization)
+              ? card.specialization
+              : card.specialization
+              ? [card.specialization]
+              : []),
+            ...(year &&
+            !(
+              Array.isArray(card.specialization)
+                ? card.specialization
+                : [card.specialization]
+            ).includes(year)
+              ? [year]
+              : []),
+          ].map((spec, i) => (
+            <span key={i} className={Style.category}>
+              {spec}
+            </span>
+          ))}
         </div>
+
         <p className={Style["card-description"]}>{card.description}</p>
         <p className={Style["card-author"]}>By {username}</p>
         <button

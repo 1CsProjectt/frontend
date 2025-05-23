@@ -5,7 +5,7 @@ import Toast from './Toast';
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const AddMembersModal = ({ show, onClose,students,selectedTeamID}) => {
+const AddMembersModal = ({ show, onClose,students,selectedTeamID,year,specialite}) => {
 
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState([]);
@@ -44,8 +44,20 @@ const AddMembersModal = ({ show, onClose,students,selectedTeamID}) => {
 
   
       const newMember = matchedStudent
-        ? { id: matchedStudent.id, email: matchedStudent.email, fullName: matchedStudent.fullName }
-        : { id: null ,email: memberInput, fullName: memberInput }; // fallback if unmatched
+      ? {
+          id: matchedStudent.id,
+          email: matchedStudent.email,
+          fullName: matchedStudent.fullName,
+          year: matchedStudent.year,
+          specialite: matchedStudent.specialite,
+        }
+      : {
+          id: null,
+          email: memberInput,
+          fullName: memberInput,
+          year: "",
+          specialite: "",
+        };
 
         // Check if the member already exists to prevent duplicates
         if (members.some((m) => m.email === newMember.email)) {
@@ -124,29 +136,38 @@ const AddMembersModal = ({ show, onClose,students,selectedTeamID}) => {
             onChange={(e) => setMemberInput(e.target.value)}
           />
           {memberInput && (
-            <div className={Style["suggestions-list"]}>
-              {students
-                .filter((student) =>
-                  `${student.fullName} ${student.email}`.toLowerCase().includes(memberInput.toLowerCase())
-                )
-                .slice(0, 10) // limit suggestions
-                .map((student, index) => (
-                  <div
-                    key={index}
-                    className={Style["suggestion-item"]}
-                    onClick={() => {
-                      // setMemberInput(`${student.fullName} <${student.email}>`);  the email here contains both the name and email
-                      setMemberInput(student.email);
-                      // You can auto-add here if desired
-                     /*  setMembers([...members, { email: student.email }]);  //using these lines will add the member to the list automatically when the suggestion item is clicked
-                      setMemberInput(""); */
-                    }}
-                  >
-                    {student.fullName} ({student.email})
-                  </div>
-                ))}
-            </div>
-          )}
+                        <div className={Style["suggestions-list"]}>
+                          {students
+                            .filter((student) => {
+                              const matchesText = `${student.fullName} ${student.email}`.toLowerCase().includes(memberInput.toLowerCase());
+                              const matchesFilter = student.year === year && student.specialite === specialite;
+                              return matchesText && matchesFilter;
+                            })
+                            .slice(0, 10)
+                            .map((student, index) => (
+                              <div
+                                key={index}
+                                className={Style["suggestion-item"]}
+                                onClick={() => setMemberInput(student.email)}
+                              >
+                                {student.fullName} ({student.email}) ({student.year}) ({student.specialite})
+                              </div>
+                            ))
+                          }
+          
+                          {/* Show "no matches" fallback if no students matched */}
+                          {students.filter((student) => {
+                              const matchesText = `${student.fullName} ${student.email}`.toLowerCase().includes(memberInput.toLowerCase());
+                              const matchesFilter = student.year === year && student.specialite === specialite;
+
+                              return matchesText && matchesFilter;
+                            }).length === 0 && (
+                              <div className={Style["suggestion-item"]}>
+                                There are no matching students for the year: <strong>{year || "any"}</strong> and speciality: <strong>{specialite || "any"}</strong>.
+                              </div>
+                            )}
+                        </div>
+                      )}
           <button className={Style["invite-button"]} onClick={addMember}>
             Add
           </button>
@@ -157,7 +178,7 @@ const AddMembersModal = ({ show, onClose,students,selectedTeamID}) => {
           <h3>Members</h3>
           {members.map((member, index) => (
             <div key={index} className={Style["member-row"]}>
-              <span className={Style["member-email"]}> {member.fullName} ({member.email})</span>
+              <span className={Style["member-email"]}> {member.fullName} ({member.email}) ({member.year}) ({member.specialite})</span>
               <button
                 className={Style["remove-member-btn"]}
                 onClick={() => {
