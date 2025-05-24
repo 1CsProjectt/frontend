@@ -63,7 +63,7 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberToMove}) => {
     })
     .then(res => {
       alert("Member moved successfully!");
-      setTeams(null); // Clear teams after moving
+      setTeams([]); // Clear teams after moving
       onClose(); // Close modal
     })
     .catch(err => {
@@ -139,8 +139,9 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberToMove}) => {
 
         <div className={styles.buttonGroup}>
           <button className={styles.cancelButton} onClick={() => {
-                setTeams(null);
+                
                 onClose();
+                setTeams([]); // Clear teams when closing
               }}
                 >Cancel</button>
           <button className={styles.moveButton} onClick={handleMove}>move</button>

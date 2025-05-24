@@ -158,15 +158,20 @@ console.log("students list is : ",students)
                       : "N/A";
                   return (
                     <tr key={idx}>
-                      <td>{team?.id || "N/A"}</td>
-                      <td>{team?.members[0]?.year || "N/A"}</td>
-                      <td>{team?.members[0]?.specialite || "N/A"}</td>
-                      <td>
-                        {team?.supervisor?.firstname && team?.supervisor?.lastname
-                          ? `${team.supervisor.firstname} ${team.supervisor.lastname}`
-                          : "No supervisor assigned yet"}
-                      </td>
-                      <td>{team.assignedPFE ? (team.assignedPFE.title || "No topic assigned yet") : "No topic assigned yet"}</td>
+                     <td>{team?.id || <span style={{ color: '#ff6666' }}>N/A</span>}</td>
+                    <td>{team?.members[0]?.year || <span style={{ color: '#ff6666' }}>N/A</span>}</td>
+                    <td>{team?.members[0]?.specialite || <span style={{ color: '#ff6666' }}></span>}</td>
+                    <td>
+                      {team?.supervisor?.firstname && team?.supervisor?.lastname
+                        ? `${team.supervisor.firstname} ${team.supervisor.lastname}`
+                        : <span style={{ color: '#ff6666' }}>No supervisor assigned yet</span>}
+                    </td>
+                    <td>
+                      {team.assignedPFE && team.assignedPFE.title
+                        ? team.assignedPFE.title
+                        : <span style={{ color: '#ff6666' }}>No topic assigned yet</span>}
+                    </td>
+
                       <td className={Module["button-container"]}>
                         <button
                           className={Module["invite-button"]}

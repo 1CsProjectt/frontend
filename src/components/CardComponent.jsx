@@ -14,7 +14,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,year})
       .join(" ") // Join with space
       .trim() || // Remove any extra whitespace
     "Unknown";
-  console.log(username);
+ 
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
@@ -33,7 +33,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,year})
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
-{/*           added by khedim youcef for the display of the year in the card
+{/*           added by khedim youcef for the display of the year in the card}
  */}          {[
             ...(Array.isArray(card.specialization)
               ? card.specialization

@@ -33,6 +33,7 @@ import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage";
 import ReadTopicPage from "./Pages/ReadTopicPage";
 import DeclinedTopicsExplorePage from "./Pages/DeclinedTopicsExplorePage";
+import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
 function App() {
   return (
     <Router>
@@ -105,7 +106,7 @@ function App() {
             />
             <Route
               path="sessions/topic-validation/published-topic-explore"
-              element={<SubmittedTopicsExplorePage />}
+              element={<PublishedTopicsExplorePage />}
             />
             <Route
               path="sessions/topic-validation/declined-topic-explore"

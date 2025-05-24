@@ -10,11 +10,12 @@ import Toast from "../components/modals/Toast";
 
 const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selectedTeam }) => {
   //selected team is the entire team object
-  const [toastMessage, setToastMessage] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  
   const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [showAddMembersModal, setShowAddMembersModal] = useState(false);
   const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const [memberIdToMove,setMemberIdToMove] = useState(null);
   const [showAssignTopicPage,setShowAssignTopicPage] = useState(false);
@@ -70,12 +71,24 @@ const changePfeForTeam = async (teamId, newPfeId) => {
       },{ withCredentials: true });
   
       console.log('Success:', response.data);
+      setToastMessage("Topic assgined successfully.");
+            setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
     } catch (error) {
+    ; 
+            
       if (error.response) {
         console.error('Error:', error.response.data.message);
+        setToastMessage(error.response.data.message);
       } else {
         console.error('Error:', error.message);
       }
+      setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
     }
   };
   const handleJoinClick = () => {
@@ -131,8 +144,8 @@ useEffect(() => {
 useEffect(() => {
   if (cardsArray.length > 0 && selectedTeam) {
     const newFilteredCards = cardsArray.filter(card =>
-      card.year === selectedTeam.members[0].year && 
-      card.specialization === selectedTeam.members[0].specialite
+      card.year === selectedTeam.members[0]?.year && 
+      card.specialization === selectedTeam.members[0]?.specialite
     );
     setFilteredCards(newFilteredCards);
     console.log("filtered cards array for a specific year and specialite :", filteredCards)

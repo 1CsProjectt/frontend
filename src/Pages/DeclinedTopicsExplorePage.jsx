@@ -22,7 +22,7 @@ export default function DeclinedTopicsExplorePage() {
     return (
       <div>
         <p>No project data available. Please go back and select a project.</p>
-        <button onClick={() => navigate("/pfe")}>Go Back</button>
+        <button onClick={() => navigate(-1)}>Go Back</button>
       </div>
     );
   }
@@ -130,9 +130,9 @@ export default function DeclinedTopicsExplorePage() {
 
 {activeTab === "reason" && (
   <div className={Module["project-details"]}>
-    <h2 className={Module["section-heading"]}>{card.reason}</h2>
+    <h2 className={Module["section-heading"]}>Rejection reason :</h2>
     <p className={Module["project-description"]}>
-      {card.rejectionReason || "No rejection reason provided."}
+      {card.reason || "No rejection reason provided."}
     </p>
 
     <h2 className={Module["section-heading"]}>Emhancing Sheet</h2>
