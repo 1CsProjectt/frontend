@@ -202,18 +202,18 @@ const Sidebar = () => {
         </li>
         <li className={Module["menu-item"]}>
           <button
-            /* className={Module[`menu-btn ${activeMenu === "notifications" ? "active" : ""}`]} */
+            /* className={Module[`menu-btn ${activeMenu === "Soutenance" ? "active" : ""}`]} */
             className={`${Module["menu-btn"]} ${
-              activeMenu === "notifications" ? Module["active"] : ""
+              activeMenu === "Soutenance" ? Module["active"] : ""
             }`}
-            onClick={() => toggleMenu("/meetings")}
+            onClick={() => toggleMenu("/SoutenanceStudentPage")}
           >
             <img
               src={NotificationsIcon}
-              alt="Notifications"
+              alt="Soutenance"
               className={Module["icon"]}
             />
-            Notifications
+           Soutenance
             <img
               src={ChevronRightIcon}
               alt="Arrow"

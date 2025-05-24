@@ -5,12 +5,7 @@ import schoolIcon from "../assets/school-icon.svg";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../config";
-/* mohamed, [3/30/25 2:47 PM]
-mohamed.boudja@gmgail.com"
 
-mohamed, [3/30/25 2:47 PM]
-12345678 pass */
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
@@ -24,11 +19,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const validateEmail = (email) => {
-    const emailPattern =
-      /^[a-z]+(-[a-z]+)*\.[a-z]+(-[a-z]+)*@[a-z]+(-[a-z]+)?\.[a-z]{2,3}$/;
-    return emailPattern.test(email);
-  };
+
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -59,6 +50,7 @@ const Login = () => {
       } else if (user.role === "student") {
         navigate("/pfe-student");
         console.log(user.role);
+        console.log(user);
       } else {
         navigate("/teacher");
       }

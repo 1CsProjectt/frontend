@@ -13,7 +13,12 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-
+   // add this mapping above or in scope
+   const roleMap = {
+     back_end:    "Back-end Developer",
+     front_end:   "Front-end Developer",
+     design:      "UI/UX Designer"
+   };
   const invites = (collaborationInvites && collaborationInvites.length > 0)
     ? collaborationInvites
     : [{
@@ -176,7 +181,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
               <tr key={index}>
                 <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"}</td>
                 <td>{member.user?.email || "N/A"}</td>
-                <td>{member.roleINproject|| "N/A"}  </td>
+                <td>{roleMap[member.roleINproject]|| "N/A"}  </td>
                 <td></td>
                 <td></td>
               </tr>
@@ -288,7 +293,10 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
       <SetRoleModal
        show={showSetRoleModal}
        onClose={handleModalClose}
-       currentRole={userRole}
+        currentRole={
+           (roleMap[userRole] || "Member")
+            
+         }
        
       />
       {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}

@@ -7,27 +7,14 @@ import Sidebar from "../components/Sidebar";
 import PFECard from "../components/CardComponent";
 import Style from "../styles/PFEPage.module.css";
 import StudentPreferencesTab from "../components/StudentPreferencesTab";
-const session = {
-  title: "TOPIC_SELECTION",
-  targetDate: {
-    start: new Date("2025-03-29T00:00:00"),
-    end: new Date("2025-04-29T23:59:59")
-  }
-};
+import formatSessions from '../utils/formatSessions';
 
 
-let sessionTitle;
-
-if (session.title === "TEAM_CREATION") {
-  sessionTitle = "Group formation session";
-} else if (session.title === "TOPIC_SELECTION") {
-  sessionTitle = "Select topics session";
-} else {
-  sessionTitle = "Unknown session";
-}
 //dummy PreferenecesList
 
 const PFEPage = () => {
+    const [currentSessions, setCurrentSessions] = useState([]);
+
   const [cards, setCards] = useState([]);
   const [preferencesList, setPreferencesList] = useState(() => {
     try {
@@ -57,42 +44,42 @@ const PFEPage = () => {
   const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
 
   // inside PFEPage component
-useEffect(() => {
-  // 2️⃣ Check if empty, then fetch
-  if (preferencesList.length === 0) {
-    axios.get("/preflist/my", { withCredentials: true })
-      .then(res => {
-        const fetched = res.data.data.map((item, idx) => ({
-          id: item.PFE.id,  // identifiant unique (ID)
-          order: String(item.order).padStart(2, "0"),  // ordre (order)
-          topic_title: item.PFE.title,  // titre du PFE (PFE title)
-          main_supervisor: item.PFE.supervisors?.[0]
-            ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
-            : "Unknown",                // superviseur principal (main supervisor)
-           // statut (status)
-          card_info: {
-            ...item.PFE,
-            description: item.PFE.description,
-            year: item.PFE.year,
-            specialization: item.PFE.specialization,
-            pdfFile:item.PFE.pdfFile,
-            photo:item.PFE.photo,
-            status: item.PFE.status[0], 
+   useEffect(() => {
+    //  Check if empty, then fetch
+    if (preferencesList.length === 0) {
+      axios.get("/preflist/my", { withCredentials: true })
+        .then(res => {
+          const fetchedData = res.data.data;
+          const fetched = fetchedData.map((item, idx) => ({
+            id: item.PFE.id,  // identifiant unique (ID)
+            order: String(item.order).padStart(2, "0"),  // ordre (order)
+            topic_title: item.PFE.title,  // titre du PFE (PFE title)
+            main_supervisor: item.PFE.supervisors?.[0]
+              ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
+              : "Unknown",                // superviseur principal (main supervisor)
+            // statut (status)
+            card_info: {
+              ...item.PFE,
+              description: item.PFE.description,
+              year: item.PFE.year,
+              specialization: item.PFE.specialization,
+              pdfFile: item.PFE.pdfFile,
+              photo: item.PFE.photo,
+              status: item.PFE.status[0],
 
 
+            }
+          }));
+          setPreferencesList(fetched);
+
+        })
+        .catch(err => {
+          if (err.response?.status !== 404) {
+            console.error("Erreur lors du fetch (fetch error):", err);
           }
-        }));
-        setPreferencesList(fetched);
-   
-
-      })
-      .catch(err => {
-        if (err.response?.status !== 404) {
-          console.error("Erreur lors du fetch (fetch error):", err);
-        }
-      });
-  }
-}, []); // ⏳ runs once on mount
+        });
+    }
+  }, []); //  runs once on mount 
 
 
   // Add new topic when coming from ExplorePage, preventing duplicates
@@ -111,7 +98,7 @@ useEffect(() => {
             main_supervisor: added.supervisors?.[0]
               ? `${added.supervisors[0].firstname} ${added.supervisors[0].lastname}`
               : 'Unknown',
-            
+
             card_info: added
           }
         ];
@@ -124,11 +111,9 @@ useEffect(() => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        // build params object dynamically
+        // Build params object dynamically
         const params = {};
         if (selectedFilters.length > 0) {
-
           params.specialization = selectedFilters;
         }
 
@@ -137,19 +122,32 @@ useEffect(() => {
           withCredentials: true,
         });
 
-        if (response.data && response.data.pfeList) {
-          setCards(response.data.pfeList);
+        if (response.data) {
+          const { pfeList, currentSessions } = response.data;
+
+          // Set PFE cards
+          if (pfeList) {
+            setCards(pfeList);
+            console.log("Fetched PFE cards:", pfeList);
+          }
+
+
+          if (currentSessions) {
+            const processedSessions = formatSessions(currentSessions);
+            setCurrentSessions(processedSessions);
+            console.log("Processed current sessions:", processedSessions);
+          }
         }
       } catch (err) {
-        // …error handling…
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
 
-
     fetchData();
   }, [endpoint, selectedFilters, navigate]);
+
 
 
   const suggestionList = Array.from(
@@ -191,6 +189,7 @@ useEffect(() => {
 
   useEffect(() => {
     console.log("Filtered cards:", filteredCards);
+
   }, [filteredCards]);
 
   // Render the content for the active tab
@@ -212,6 +211,8 @@ useEffect(() => {
                 card={card}
                 isSelected={null}
                 toggleSelect={() => { }}
+                sessionTitle={currentSessions[0]?.sessionTitle || "No session"}
+                targetDate={currentSessions[0]?.targetDate || null}
               />
             ))
           ) : (
@@ -224,7 +225,7 @@ useEffect(() => {
       return (
         <div className={Style["preferences-container"]} style={{ marginTop: "1rem", padding: "1rem" }}>
           <StudentPreferencesTab PreferenecesList={preferencesList}
-            session={session.title}
+            session={currentSessions[0]?.sessionTitle || "No session"}
             setPreferencesList={setPreferencesList}
             submit={preferencesList[0].status === 'approved'}
 
@@ -247,15 +248,15 @@ useEffect(() => {
         }}
       >
         <Navbar
-          title={sessionTitle}
+          title={currentSessions[0]?.sessionTitle || "No session"}
           selectedFilters={selectedFilters}
           onFilterApply={handleFilterApply}
           onSearchChange={handleSearchChange}
           suggestions={suggestionList}
-          targetDate={session.targetDate}
+          targetDate={currentSessions[0]?.targetDate || null}
         />
 
-        {sessionTitle === "Select topics session" && (
+        {currentSessions[0]?.sessionTitle === "Select topics session" && (
           <div >
             <div className={Style["header-row"]}>
               <h1>Explore PFE Topics</h1>
@@ -275,10 +276,8 @@ useEffect(() => {
               )}
 
             </div>
-          </div>
-        )}
 
-        {/* Tabs header similar to TeamFormationPage's approach */}
+      
         <div className={Style["tabs"]}>
           {["PFE Topics", "My Preferences List"].map((tab) => (
             <div
@@ -293,6 +292,10 @@ useEffect(() => {
             </div>
           ))}
         </div>
+
+          </div>
+          
+        )}
 
 
         {/* Render the content for the currently active tab */}

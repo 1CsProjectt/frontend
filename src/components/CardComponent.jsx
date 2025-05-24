@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Style from "../styles/CardComponent.module.css";
 
-const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
+const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessionTitle,targetDate}) => {
   //the buttonText is an optional prop when wanting to override the default buttonText (Explore)
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,7 +18,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-    navigate("/pfe-student/explore", { state: { card } });
+    navigate("/pfe-student/explore", { state: { card , sessionTitle,targetDate } });
   };
 
   // If onExplore prop is not passed, fallback to defaultHandleExplore

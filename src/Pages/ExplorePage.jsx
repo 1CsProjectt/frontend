@@ -8,12 +8,11 @@ import FileIcon from "../assets/fileIcon.svg";
 import ArrowIcon from "../assets/expand_less_black.svg";
 import Module from "../styles/ExplorePage.module.css";
 
-const Session = "TOPIC_SELECTION";
 
 export default function ExplorePage() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { card } = location.state;
+  const location = useLocation();
+  const { card ,sessionTitle ,targetDate } = location.state;
   const [inList, setInList] = useState(false);
 
   useEffect(() => {
@@ -47,14 +46,17 @@ export default function ExplorePage() {
       <Sidebar />
       <div className={Module["explore-content"]}>
         <div style={{ marginRight: "6vw" }}>
-          <Navbar />
+        <Navbar
+          title={ sessionTitle || "No session"}
+          targetDate={targetDate }
+        />
         </div>
 
         <div style={{ height: "90vh", overflowY: "auto" }}>
           <div className={Module.padding}></div>
           <div className={Module.header}>
             <h1>Exploring</h1>
-            {Session === "TOPIC_SELECTION" && (
+            {sessionTitle === "TOPIC_SELECTION" && (
               <div className={Module.btnContainer}>
                 <button className={Module["BackBtn"]} onClick={() => navigate(-1)}>
                   Back
