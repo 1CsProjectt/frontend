@@ -259,7 +259,6 @@ const ReceivedRequestsTab = ({
 
   return (
     <div className={Module["page-container"]}>
-      {error && <div className={Module["error-message"]}>{error}</div>}
       {selectedRequest ? (
         <div style={{ padding: "10px" }}>
           {" "}

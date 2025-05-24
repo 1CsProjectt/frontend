@@ -1,14 +1,41 @@
-// ===== DeclineModal.jsx =====
 import React, { useState, useEffect, useRef } from "react";
 import Style from "../../styles/TeamFormationPage.module.css";
 import Uploadbox from "./uploadbox";
+import axios from "axios";
 
-export default function DeclineModal({ isOpen, onClose, onConfirm }) {
-  // état pour le texte et le fichier (state for reason and file)
+export default function DeclineModal({ isOpen, onClose, onConfirm, pfeId }) {
+  // State for reason and file
   const [reason, setReason] = useState("");
   const [file, setFile] = useState(null);
-  // référence pour l’input caché (ref for the hidden input)
+
+  // Reference for the hidden input (file input)
   const presentationRef = useRef(null);
+
+  // Handle reject action
+  const handleReject = async () => {
+    if (!pfeId) return; // Ensure we have the ID
+
+    try {
+      const formData = new FormData();
+      formData.append("reason", reason);
+      if (file) {
+        formData.append("resonfile", file);
+      }
+
+      const response = await axios.patch(`/pfe/${pfeId}/reject`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Reject success:", response.data);
+      // Optionally, handle any UI updates after the reject action
+      onConfirm();  // Trigger parent callback to close modal or update UI
+    } catch (error) {
+      console.error("Error rejecting PFE:", error);
+      // Optionally show an error message to the user
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -19,14 +46,15 @@ export default function DeclineModal({ isOpen, onClose, onConfirm }) {
 
   if (!isOpen) return null;
 
-  // quand le fichier change (when file changes)
+  // Handle file changes
   const handlePresentationChange = (e) => {
     const selected = e.target.files?.[0] || null;
     setFile(selected);
   };
 
   const handleConfirmClick = () => {
-    onConfirm({ reason, file });
+    handleReject();
+    onClose(); // Close the modal after confirming
   };
 
   return (
@@ -53,14 +81,13 @@ export default function DeclineModal({ isOpen, onClose, onConfirm }) {
         </div>
 
         <div className={Style["form-group"]} style={{ marginTop: "2vh" }}>
-          {/* Intégration de Uploadbox (integration of Uploadbox) */}
+          {/* Uploadbox for file attachment */}
           <Uploadbox
             handlePresentationChange={handlePresentationChange}
             presentationFile={file}
             presentationRef={presentationRef}
-            type="pdf"            // ou "image" selon besoin (or "image" as needed)
-
-            status={true}         // true pour uploader, false pour lecture seule (read-only)
+            type="pdf"            // or "image" as needed
+            status={true}         // true to allow upload, false for read-only
           />
         </div>
 

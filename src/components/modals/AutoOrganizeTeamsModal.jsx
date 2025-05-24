@@ -70,16 +70,17 @@ const AutoOrganizeTeamsModal = ({ show, onClose ,operation}) => {
   return (
     <div className={Style["modal-overlay"]}>
       <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}>
-        <h2>Auto Organize Teams</h2>
-        <p className={Style["create-team-subtitle"]}>
-         {/*  {operation.toLowerCase === "organize" ? :( */}
-         
-          "Automatically organize and assign teams to students without ones"
-            
-         
-            
-        
+        {operation === "organize" ? (<div><h2>Auto Organize Teams</h2>
+         <p className={Style["create-team-subtitle"]}>
+
+          Automatically organize and assign teams to students without ones
+        </p></div>)
+        :(<div><h2>Auto Assign Projects</h2>
+         <p className={Style["create-team-subtitle"]}>
+          Automatically assign projects to Teams without ones
         </p>
+        </div>) }
+       
 
         <div className={Style["admin-container"]}>
           <label htmlFor="year">Student Year</label>

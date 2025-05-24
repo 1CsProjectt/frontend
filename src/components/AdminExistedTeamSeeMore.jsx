@@ -6,7 +6,7 @@ import axios from "axios";
 import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 import MoveTeamMemberModal from "./modals/MoveTeamMemberModal";
-import AddMembersModal from "./modals/AddMembersModal";
+import AddMembersModal from "./modals/AdminAddMembersModal";
 const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -116,6 +116,8 @@ useEffect(() => {
         onClose={() => setShowAddMembersModal(false)}
         students={students}
         selectedTeamID={myTeamNumber}
+        year={myTeamMembers[0]?.year}
+        specialite={myTeamMembers[0]?.specialite}
       />
       {showToast && (
         <Toast

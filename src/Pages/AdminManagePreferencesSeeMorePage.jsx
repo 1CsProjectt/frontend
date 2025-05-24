@@ -10,11 +10,12 @@ import Toast from "../components/modals/Toast";
 
 const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selectedTeam }) => {
   //selected team is the entire team object
-  const [toastMessage, setToastMessage] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  
   const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [showAddMembersModal, setShowAddMembersModal] = useState(false);
   const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const [memberIdToMove,setMemberIdToMove] = useState(null);
   const [showAssignTopicPage,setShowAssignTopicPage] = useState(false);
@@ -70,12 +71,24 @@ const changePfeForTeam = async (teamId, newPfeId) => {
       },{ withCredentials: true });
   
       console.log('Success:', response.data);
+      setToastMessage("Topic assgined successfully.");
+            setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
     } catch (error) {
+    ; 
+            
       if (error.response) {
         console.error('Error:', error.response.data.message);
+        setToastMessage(error.response.data.message);
       } else {
         console.error('Error:', error.message);
       }
+      setShowToast(true);
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
     }
   };
   const handleJoinClick = () => {
@@ -100,6 +113,7 @@ const changePfeForTeam = async (teamId, newPfeId) => {
 
 useEffect(() => {
   console.log("My team members : " , myTeamMembers);
+  console.log("selectedTeam is : " ,selectedTeam);
   const fetchPublishedCards = async () => {
     if (loading) return; // Prevent multiple fetches when already loading
     setLoading(true); // Start loading
@@ -130,10 +144,11 @@ useEffect(() => {
 useEffect(() => {
   if (cardsArray.length > 0 && selectedTeam) {
     const newFilteredCards = cardsArray.filter(card =>
-      card.year === selectedTeam.year && 
-      card.specialization === selectedTeam.specialite
+      card.year === selectedTeam.members[0]?.year && 
+      card.specialization === selectedTeam.members[0]?.specialite
     );
     setFilteredCards(newFilteredCards);
+    console.log("filtered cards array for a specific year and specialite :", filteredCards)
   }
 }, [cardsArray, selectedTeam]);
  
@@ -151,20 +166,23 @@ useEffect(() => {
       
       
     <div className={Module["cards-container"]}>
-      <div><p>{"showing pfes for year " + selectedTeam.year}
-      {"showing pfes for speciality " + selectedTeam?.specialite}
+       {/* <div><p>{"showing pfes for year " + selectedTeam?.members[0]?.year}
+        <br/>
+      {"showing pfes for speciality " + selectedTeam?.members[0]?.specialite}
+      
       </p>
-      </div>
+      </div> */}
       {filteredCards.map((card) => (
         <PFECard
           key={card.id}
           card={card}
-        
+          toggleSelect={() => {}}
           onExplore={(e) => {
             e.stopPropagation();
             changePfeForTeam(myTeamNumber,card.id);
           }}
           buttonText={"Assign"}
+          year={card.year}
         />
       ))}
     </div>);
@@ -221,8 +239,8 @@ useEffect(() => {
                 <td>{card?.order}</td>
                 <td>{card?.PFE?.title}</td>
                 <td>
-                  {card?.supervisors?.length > 0
-                    ? `${card.supervisors[0]?.firstname} ${card.supervisors[0]?.lastname}`
+                  {card?.PFE?.supervisors?.length > 0
+                    ? `${card.PFE?.supervisors[0]?.firstname} ${card.PFE?.supervisors[0]?.lastname}`
                     : "No supervisor assigned yet for this project"}
                 </td>
                 <td>
@@ -257,12 +275,21 @@ useEffect(() => {
           <h2>Assigned topic</h2>
             <div className={Module["buttons-container-see-more"]}>
             
-              <button
-                className={Module["admin-auto-assign-button"]}
-                 onClick={() =>   autoAssignPfe(myTeamNumber)}
-              >
-                auto-assign
-              </button>
+            <button
+              className={Module["admin-auto-assign-button"]}
+              onClick={() => autoAssignPfe(myTeamNumber)}
+              title={selectedTeam?.assignedPFE ? "A topic is already assigned" : "Assign the best available topic automatically"}
+              disabled={!!selectedTeam?.assignedPFE} // disables if a topic is already assigned
+              style={{
+                backgroundColor: selectedTeam?.assignedPFE ? "lightGray" : "",
+                borderColor: selectedTeam?.assignedPFE ? "lightGray" : "",
+                color: selectedTeam?.assignedPFE ? "gray" : "",
+                cursor: selectedTeam?.assignedPFE ? "not-allowed" : "pointer",
+              }}
+            >
+              {selectedTeam?.assignedPFE ? "Already assigned" : "auto-assign"}
+            </button>
+
               <button className={Module["admin-assign-topic-button"]} onClick={() => {setShowAssignTopicPage(true)}}>
                 Assign a topic
               </button>

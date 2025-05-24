@@ -165,7 +165,8 @@ th {
   justify-content: space-between;
   align-items: center;
   margin: 16px 0;
-  gap: 8px;
+  
+ padding: 3px;
   position: relative;
 }
 

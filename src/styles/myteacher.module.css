@@ -1,0 +1,318 @@
+.Student-meeting-container {
+  background-color: #f5f7fa;
+  width: 100%;
+  height: 100%;
+  font-family: Manrope, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.Student-meeting-container h1 {
+  font-size: 1.7rem;
+  font-weight: 700;
+
+  color: #313638;
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 1vh;
+  margin-top: 10px;
+  padding: 0 0 0 20px;
+}
+
+.Week-meeting-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  border: 2px solid #dde2e4;
+  border-left: none;
+  border-right: none;
+}
+.Left-side {
+  display: flex;
+  flex-direction: column;
+  width: 32%;
+  padding: 20px;
+  color: #313638;
+}
+
+.Left-side-header {
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+.Left-side-body {
+  margin-top: 2vh;
+  font-weight: 400;
+  font-size: 1.1rem;
+
+  text-align: justify;
+}
+
+.Right-side {
+  color: #313638;
+  margin: 10px 20px 0 auto;
+}
+.SeeBtn {
+  background-color: #f1f1f1;
+  border: 1px solid #d0d5dd;
+  color: #344054;
+
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  margin-right: 5px;
+}
+.SeeBtn:hover {
+  background-color: #d0d5dd;
+  color: #344054;
+}
+.W500 {
+  width: 500px;
+}
+.W500 td {
+  padding: 0 10% 0 auto;
+}
+.MeetingsHistory-header {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 1vh;
+  color: #313638;
+}
+
+/* metting see more */
+.Scroll {
+  height: calc(100vh - 21vh);
+  overflow: auto;
+}
+
+.file-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 2vh;
+  color: #313638;
+}
+
+.file-container h2 {
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+.file-container-header {
+  width: 100%;
+  text-align: end;
+  padding: 2vh 4vw 0 0;
+}
+
+/* Technical sheet section */
+.technical-sheet {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 18px 16px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  height: 8vh;
+  width: 40vw;
+}
+
+.technical-sheet-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-icon {
+  width: 45px;
+  height: 45px;
+}
+
+.file-name {
+  font-weight: 400;
+}
+
+.file-size {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.arrow-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.upload-area {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dde2e4;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  position: relative;
+  background-color: #ffffff;
+  width: 100%;
+}
+
+.upload-area:hover {
+  background: #f0f4f8;
+}
+
+.upload-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 1.8rem;
+  margin-right: 12px;
+}
+
+.upload-label {
+  margin-top: 5px;
+  font-size: 1rem;
+  color: #2d3748;
+}
+.left-upload-side {
+  width: 40vw;
+  margin: 0 2vw 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.Review-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 97%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 18px 16px;
+  color: inherit;
+  height: 8vh;
+  margin: 20px 30px 20px 20px;
+}
+.Title {
+  padding: 0 20px;
+  font-family: Manrope;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+.Note {
+  font-family: Manrope;
+  font-weight: bolder;
+  font-size: 1.2rem;
+  padding: 8px 25px 0 0;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.start-meeting-container {
+  position: absolute; /* Ensure it's not within overlay's background */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 575px;
+  height: 690px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.meeting-header {
+  font-size: 1.5rem;
+  color: #1a365d;
+  margin-bottom: 1rem;
+}
+.meeting-form {
+  width: 100%;
+  justify-content: start;
+  flex-direction: column;
+  display: flex;
+  font-size: 1.5rem;
+  color: #1a365d;
+  margin-bottom: 1rem;
+}
+
+.meeting-description p {
+  color: #718096;
+  margin-bottom: 1.5rem;
+}
+
+.time-selection {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2d3748;
+}
+
+.date-input,
+.time-input,
+.salle-input {
+  height: 55px;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  background: #f7fafc;
+  border: 1px solid #cbd5e0;
+  color: #718096;
+  border-radius: 4px;
+}
+
+.start-btn {
+  padding: 0.5rem 1rem;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}

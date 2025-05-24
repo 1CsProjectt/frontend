@@ -8,11 +8,11 @@ import axios from "axios";
 import alertIcon from "../assets/alert-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
 import { useNavigate } from "react-router-dom";
-
+import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
 import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 
 const TopicsValidationPage = () => {
-  const [activeTab, setActiveTab] = useState("tab1"); // Default active tab
+  const {topicsPageAtiveTab, setTopicsPageActiveTab} = useSharedState(); // Default active tab
   const [isChecked, setIsChecked] = useState(false); // for the select all checkbox
   const [selectedCards, setSelectedCards] = useState([]); // Moved state here
   const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
@@ -26,7 +26,11 @@ const TopicsValidationPage = () => {
   //the selectedCards array holds the ids of the currently selected cards
   const [deleteBtnActive, setDeleteBtnActive] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
-
+  const pathMap = {
+    tab1: "/admin/sessions/topic-validation/published-topic-explore",
+    tab2: "/admin/sessions/topic-validation/submitted-topic-explore",
+    tab3: "/admin/sessions/topic-validation/declined-topic-explore",
+  };
   const navigate = useNavigate();
 
   const HandleBackButton = () => {
@@ -54,7 +58,7 @@ const TopicsValidationPage = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "tab1") {
+    if (topicsPageAtiveTab === "tab1") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
       const fetchPublishedCards = async () => {
@@ -68,7 +72,7 @@ const TopicsValidationPage = () => {
           }
           /* setPublishedCardsArray(data); // Save data in state */
         } catch (error) {
-          console.error("Error fetching the submitted cards data:", error);
+          console.error("Error fetching the published cards data:", error);
 
           setConnectionError(true); // Set connection error state
         } finally {
@@ -80,7 +84,7 @@ const TopicsValidationPage = () => {
       console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
 
       /*  setCardsArray(publishedCardsArray); */
-    } else if (activeTab === "tab2") {
+    } else if (topicsPageAtiveTab === "tab2") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
       const fetchSubmittedCards = async () => {
@@ -92,6 +96,7 @@ const TopicsValidationPage = () => {
             setCardsArray(response.data.pfeList);
             console.log(response);
           }
+          console.log(response.data.pfeList);
           /*  setSubmittedCardsArray(data); // Save data in state */
         } catch (error) {
           console.error("Error fetching the submitted cards data:", error);
@@ -106,7 +111,7 @@ const TopicsValidationPage = () => {
 
       /*  setCardsArray(submittedCardsArray); */
     }
-    else if (activeTab === "tab3") {
+    else if (topicsPageAtiveTab === "tab3") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
       const fetchDeclinedCards = async () => {
@@ -116,7 +121,7 @@ const TopicsValidationPage = () => {
           const response = await axios.get("/pfe/rejectedpfe");
           if (response.data && response.data.pfeList) {
             setCardsArray(response.data.pfeList);
-            console.log(response);
+            console.log("DECLINED CARDS :" ,response.data.pfeList);
           }
           /*  setSubmittedCardsArray(data); // Save data in state */
         } catch (error) {
@@ -132,7 +137,7 @@ const TopicsValidationPage = () => {
 
       /*  setCardsArray(submittedCardsArray); */
     }
-  }, [activeTab]);
+  }, [topicsPageAtiveTab]);
 
   return (
     <div>
@@ -185,30 +190,33 @@ const TopicsValidationPage = () => {
 
       <div className={classes.tabs}>
         <button
-          className={activeTab === "tab1" ? classes.active : ""}
-          onClick={() => setActiveTab("tab1")}
+          className={topicsPageAtiveTab === "tab1" ? classes.active : ""}
+          onClick={() => setTopicsPageActiveTab("tab1")}
+          disabled={loading}
         >
           Published Topics
         </button>
         <button
-          className={activeTab === "tab2" ? classes.active : ""}
-          onClick={() => setActiveTab("tab2")}
+          className={topicsPageAtiveTab === "tab2" ? classes.active : ""}
+          onClick={() => setTopicsPageActiveTab("tab2")}
+          disabled={loading}
         >
           Submitted Topics
         </button>
         <button
-          className={activeTab === "tab3" ? classes.active : ""}
-          onClick={() => setActiveTab("tab3")}
+          className={topicsPageAtiveTab === "tab3" ? classes.active : ""}
+          onClick={() => setTopicsPageActiveTab("tab3")}
+          disabled={loading}
         >
           Declined Topics
         </button>
       </div>
 
-      <div key={activeTab} className={classes["tab-content"]}>
+      <div key={topicsPageAtiveTab} className={classes["tab-content"]}>
         {loading ? (
           <div className={classes.loaderContainer}>
             <div className={classes.loader}>
-              <PulseLoader color="#07cad4" loading={loading} size={25} />
+              <PulseLoader color="#077fd4" loading={loading} size={25} />
             </div>
           </div>
         ) : connectionError ? (
@@ -234,13 +242,12 @@ const TopicsValidationPage = () => {
                 toggleSelect={selectionMode ? toggleSelect : () => {}}
                 onExplore={(e) => {
                   e.stopPropagation();
-                  navigate(
-                    activeTab === "tab1"
-                      ? "/admin/sessions/topic-validation/published-topic-explore"
-                      : "/admin/sessions/topic-validation/submitted-topic-explore",
-                    { state: { card } }
-                  );
+                  navigate(pathMap[topicsPageAtiveTab], { state: { card } });
+
                 }}
+                
+                
+                year={card.year}
               />
             ))}
           </div>

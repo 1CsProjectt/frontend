@@ -16,7 +16,8 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
   const containerRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
   const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
-  const [memberIdToMove,setMemberIdToMove] = useState(null);//entire student object is set 
+
+  const [memberToMove,setMemberToMove] = useState(null);//entire student object is set 
   useEffect(() => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
@@ -89,7 +90,7 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
               <th>Full-name</th>
               <th>Email-address</th>
               <th>Grade</th>
-              <th>Group</th>
+              <th>Speciality</th>
               
               <th>Status</th>
               <th></th>
@@ -101,7 +102,7 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
                 <td>{student.fullName}</td>
                 <td>{student.email}</td>
                 <td>{student.year}</td>
-                <td>G5</td>
+                <td>{student.specialite}</td>
                 <td>
                   {student.status === "available" ? (
                     <span className={Module["status-available"]}>Available</span>
@@ -122,7 +123,9 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
                   {/* //the admin can move a member whatever he is already in a team or not */}
                               <button className={Module["invite-button"]} onClick={() => {
                                 console.log("selected student is : " + student.id);
-                setMemberIdToMove(student.id);
+                                console.log("selected student full object is : " , student);
+                
+                setMemberToMove(student);
                 setIsMoveTeamMemberModalOpen(true);
               }}>
                       Move
@@ -188,7 +191,8 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
         
         onClose={() => setIsMoveTeamMemberModalOpen(false)}
     
-        memberIdToMove={memberIdToMove}      />
+        memberToMove={memberToMove}   
+           />
     </div>
   );
 };
