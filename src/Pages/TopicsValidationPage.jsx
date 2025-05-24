@@ -68,7 +68,7 @@ const TopicsValidationPage = () => {
           const response = await axios.get("/pfe/validpfe");
           if (response.data && response.data.pfeList) {
             setCardsArray(response.data.pfeList);
-            console.log(response);
+            console.log(response.data.pfeList);
           }
           /* setPublishedCardsArray(data); // Save data in state */
         } catch (error) {

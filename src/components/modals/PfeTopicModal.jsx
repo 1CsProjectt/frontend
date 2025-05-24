@@ -124,7 +124,8 @@ const PfeTopicModal = ({
   const handleDecline = () => {};
   const handleValidate = async () => {
     if (role === "company") {
-      addSupervisorsToPFE(validatedcardid, supervisorToAssign);
+      addSupervisorsToPFE(validatedcardid, [supervisorToAssign]);
+      //the supervisorToAssign is the id of the supervisor to assign and it must be passed as an array
       addSpecializationToPFE(validatedcardid, specialite);
     }
     try {

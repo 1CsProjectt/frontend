@@ -20,8 +20,8 @@ export default function SubmittedTopicsExplorePage() {
   const [modalOperation, setModalOperation] = useState("");
   const [isDeclineModalOpen, setDeclineModalOpen] = useState(false);
   const [supervisors, setSupervisors] = useState([]);
-  const [selectedSupervisor, setSelectedSupervisor] = useState("");
-  const [specialite,setSpecialite] = useState("");
+  const [selectedSupervisor, setSelectedSupervisor] = useState();
+  const [specialite,setSpecialite] = useState("ISI");
   const fetchTeachers = async () => {
     try {
       const response = await axios.get('/users/teachers');
@@ -44,6 +44,11 @@ export default function SubmittedTopicsExplorePage() {
     
   }
   , [card]);
+  useEffect(() => {
+    console.log("Selected supervisor:", selectedSupervisor);
+    
+  }
+  , [selectedSupervisor]);
 
 
   if (!card) {
@@ -104,6 +109,7 @@ export default function SubmittedTopicsExplorePage() {
                 validatedcardid={card.id}
                 role={card?.creator?.role}
                 specialite={specialite}
+                supervisorToAssign={selectedSupervisor}
               />
 
               {/* Modal de raison de refus */}
