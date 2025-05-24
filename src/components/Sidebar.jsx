@@ -202,18 +202,42 @@ const Sidebar = () => {
 
         <li className={Module["menu-item"]}>
           <button
-            /* className={Module[`menu-btn ${activeMenu === "notifications" ? "active" : ""}`]} */
             className={`${Module["menu-btn"]} ${
-              activeMenu === "notifications" ? Module["active"] : ""
+              activeMenu === "meetings" ? Module["active"] : ""
             }`}
-            onClick={() => toggleMenu("/meetings")}
+            onClick={() => {
+              role
+                ? toggleMenu("/teachermeetingspage")
+                : toggleMenu("/StudentMeetingsPage");
+            }}
+          >
+            <img
+              src={CheckCircleIcon}
+              alt="Loremres"
+              className={Module["icon"]}
+            />
+            Meetings
+            <img
+              src={ChevronRightIcon}
+              alt="Arrow"
+              className={Module["row-icon"]}
+            />
+          </button>
+        </li>
+        <li className={Module["menu-item"]}>
+          <button
+            /* className={Module[`menu-btn ${activeMenu === "Soutenance" ? "active" : ""}`]} */
+            className={`${Module["menu-btn"]} ${
+              activeMenu === "Soutenance" ? Module["active"] : ""
+            }`}
+            onClick={() => toggleMenu("/SoutenanceStudentPage")}
           >
             <img
               src={NotificationsIcon}
-              alt="Notifications"
+              alt="Soutenance"
               className={Module["icon"]}
             />
-            Notifications
+           Soutenance
             <img
               src={ChevronRightIcon}
               alt="Arrow"
