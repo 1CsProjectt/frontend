@@ -5,13 +5,16 @@ import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
 import { setMyGlobalString } from "../global.js";
 import Teacherpfetopicseemore from "./teacherpfetopicseemore.jsx";
+import Toast from "../components/modals/Toast";
 const TeacherPfePage = () => {
   const [seemore, setSeeMore] = useState(false);
   const [cards, setCards] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const { selectedFilters } = useOutletContext();
   const filteredCards = useMemo(() => {
     if (!selectedFilters || selectedFilters.length === 0) return cards;
@@ -40,10 +43,9 @@ const TeacherPfePage = () => {
       } catch (err) {
         console.error("Error fetching card data", err);
         if (err.response?.status === 401) {
-          alert("Session expired. Please log in again.");
+          setToastMessage("Session expired. Please log in again.");
+          setShowToast(true);
           navigate("/login");
-        } else {
-          setError("Failed to fetch PFE projects. Please try again later.");
         }
       } finally {
         setLoading(false);
@@ -80,8 +82,6 @@ const TeacherPfePage = () => {
       </div>
 
       <div className="content-area">
-        {error && <div className="error-message">{error}</div>}
-
         {loading ? (
           <div className="loading-indicator">Loading</div>
         ) : seemore ? (
@@ -91,6 +91,14 @@ const TeacherPfePage = () => {
             setSeeMore={setSeeMore}
             filteredCards={cards}
             setSelectedTopic={setSelectedTopic}
+          />
+        )}
+        {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => {
+              setShowToast(false);
+            }}
           />
         )}
       </div>
@@ -115,9 +123,7 @@ const PFEList = ({ filteredCards, setSeeMore, setSelectedTopic }) => {
           />
         ))
       ) : (
-        <p className="no-results-message">
-          No topics found matching the selected filters.
-        </p>
+        <p className="no-results-message">No topics found .</p>
       )}
     </div>
   );

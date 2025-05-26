@@ -12,14 +12,17 @@ import Popup from "../components/modals/popup";
 import axios from "axios";
 import { setMyGlobalString } from "../global.js";
 import Teacherpfetopicseemore from "./teacherpfetopicseemore.jsx";
+import Toast from "../components/modals/Toast";
 
 const SUBMITTED = "Submitted";
 const VALIDATED = "Validated";
 const DECLINED = "Declined";
 
 const TeacherTopics = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const { selectedFilters } = useOutletContext();
-  console.log("hahahaha", selectedFilters);
+  console.log("hahahaha", user.id);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +37,8 @@ const TeacherTopics = () => {
   const [seemore, setSeeMore] = useState(false);
   const [reason, setReason] = useState(null);
   const [reasonFile, setReasonFile] = useState(null);
-
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [confTitle, setConfTitle] = useState(""); // for confirmation popup title
   const [confMsg, setConfMsg] = useState(""); // for confirmation popup message
   const [confButtonText, setConfButtonText] = useState("");
@@ -59,7 +63,9 @@ const TeacherTopics = () => {
       } catch (err) {
         console.error("Error fetching card data", err);
         if (err.response?.status === 401) {
-          alert("Session expired. Please log in again.");
+          setToastMessage("Session expired. Please log in again.");
+          setShowToast(true);
+
           navigate("/login");
         } else {
           setError("Failed to fetch PFE projects. Please try again later.");
@@ -275,8 +281,6 @@ const TeacherTopics = () => {
       {success && <Popup poproud={2} onOkey={onOkey} />}
 
       <div className="content-area-mytopics">
-        {error && <div className="error-message">{error}</div>}
-
         {loading ? (
           <div className="loading-indicator">Loading</div>
         ) : seemore ? (
@@ -295,6 +299,18 @@ const TeacherTopics = () => {
             setSelectedIds={setSelectedIds}
             setSelectedCount={setSelectedCount}
             setSelectedTopic={setSelectedTopic}
+            userid={user.id}
+            setToastMessage={setToastMessage}
+            setShowToast={setShowToast}
+            activeTab={activeTab}
+          />
+        )}
+        {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => {
+              setShowToast(false);
+            }}
           />
         )}
       </div>
@@ -310,6 +326,10 @@ const PFEList = ({
   setSelectedIds,
   setSelectedCount,
   setSelectedTopic,
+  userid,
+  setToastMessage,
+  setShowToast,
+  activeTab,
 }) => {
   useEffect(() => {
     setSelectedIds([]);
@@ -336,7 +356,16 @@ const PFEList = ({
             key={card.id || index}
             card={card}
             isSelected={selectedIds.includes(card.id)}
-            toggleSelect={() => handleCardClick(card.id)}
+            toggleSelect={() => {
+              if (userid === card.creator.id) {
+                handleCardClick(card.id);
+              } else {
+                setToastMessage(
+                  "You can't delete a topic that you didn't create"
+                );
+                setShowToast(true);
+              }
+            }}
             onExplore={() => {
               setSelectedTopic(card);
               setSeeMore(true);
@@ -344,7 +373,22 @@ const PFEList = ({
           />
         ))
       ) : (
-        <p className="no-results-text">No projects found.</p>
+        <p
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontSize: "1.5rem",
+            color: "#777",
+            textAlign: "center",
+            zIndex: 1000,
+          }}
+        >
+          {activeTab === SUBMITTED && "No submitted topics"}
+          {activeTab === VALIDATED && "No validated topics"}
+          {activeTab === DECLINED && "No declined topics"}
+        </p>
       )}
     </div>
   );

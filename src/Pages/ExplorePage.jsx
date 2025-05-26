@@ -12,12 +12,15 @@ export default function ExplorePage({ topic, ondeclined = false }) {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const safeState = user.role !== "teacher" ? location.state : {};
-  const { card, sessionTitle, targetDate, submit } = safeState;
+  const safeState =
+    user.role !== "teacher" && user.role !== "extern"
+      ? location.state ?? {}
+      : {};
+  const { card, sessionTitle, targetDate, submit } = safeState ?? {};
   const [inList, setInList] = useState(false);
 
   useEffect(() => {
-    if (!card || user.role === "teacher") return;
+    if (!card || user.role === "teacher" || user.role === "extern") return;
     const preferencesList =
       JSON.parse(localStorage.getItem("preferencesList")) || [];
     const exists = preferencesList.some(
@@ -27,8 +30,8 @@ export default function ExplorePage({ topic, ondeclined = false }) {
   }, [card]);
 
   if (
-    (user.role === "teacher" && !topic) ||
-    (user.role !== "teacher" && !card)
+    ((user.role === "teacher" || user.role === "extern") && !topic) ||
+    (user.role !== "teacher" && user.role !== "extern" && !card)
   ) {
     return (
       <div>
@@ -46,7 +49,7 @@ export default function ExplorePage({ topic, ondeclined = false }) {
     navigate("/pfe-student", { state: { addedTopic: card } });
   };
 
-  return user.role === "teacher" ? (
+  return user.role === "teacher" || user.role === "extern" ? (
     <div>
       <div className={Module.padding}></div>
       <div className={Module.header}>

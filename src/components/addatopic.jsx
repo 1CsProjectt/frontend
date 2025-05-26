@@ -65,7 +65,8 @@ const Addatopic = () => {
     if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
       setPresentationFile(file);
     } else {
-      alert("Please upload a valid JPG or PNG image.");
+      setToastMessage("Please upload a valid JPG or PNG image.");
+      setShowToast(true);
     }
   };
 
@@ -74,7 +75,8 @@ const Addatopic = () => {
     if (file?.type === "application/pdf") {
       setTechSheetFile(file);
     } else {
-      alert("Please upload a valid PDF file.");
+      setToastMessage("Please upload a valid PDF file.");
+      setShowToast(true);
     }
   };
   const handleSpecialityToggle = (name) => {
@@ -121,7 +123,9 @@ const Addatopic = () => {
     const formData = new FormData();
     formData.append("title", title);
     if (user?.role === "teacher" && ["2CS", "3CS"].includes(grade)) {
-      formData.append("specialization", speciality.join(","));
+      speciality.forEach((spec) => {
+        formData.append("specialization[]", spec);
+      });
     }
     if (user?.role === "teacher") {
       selectedSupervisors.forEach((supId) => {
@@ -150,7 +154,8 @@ const Addatopic = () => {
       setpdfcheck(false);
     } catch (error) {
       console.error(error);
-      alert(error);
+      setToastMessage(error.message);
+      setShowToast(true);
     }
   };
 
