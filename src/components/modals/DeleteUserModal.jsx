@@ -28,7 +28,7 @@ const DeleteUserModal = ({ isOpen, onClose, onDelete, entityType ,userToDelete,t
         const result = await response.json();
   
         if (response.ok) {
-          alert(result.message);
+          /* alert(result.message); */
           setShowDeleteModal(false);
           setSuccessConfirmationModal(true);
           

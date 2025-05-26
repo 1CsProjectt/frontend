@@ -16,8 +16,8 @@ const PfeTopicModal = ({
   validatedcardid,
   setCardsArray,
   role,
-  specialite,
-  supervisorToAssign,
+  specializationArray,
+  supervisorsToAssign,
   cardIdToAssign,
   myTeamNumber
 }) => {
@@ -25,6 +25,7 @@ const PfeTopicModal = ({
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] =
     useState(false);
   const [showModal, setShowModal] = useState(true);
+  
   const navigate = useNavigate();
    const addSupervisorsToPFE = async (pfeId, supervisorIds) => {
       try {
@@ -39,18 +40,36 @@ const PfeTopicModal = ({
         throw error;
       }
     };
-    const addSpecializationToPFE = async (pfeId, specialization) => {
-      try {
-        const response = await axios.post(`/pfe/${pfeId}/add-specialization`, {
-          specialization: specialization
-        });
-        console.log("Specialization added:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("Failed to add specialization:", error.response?.data || error.message);
-        throw error;
+    // Frontend: send JSON body, not FormData
+
+const addSpecializationToPFE = async (pfeId, specializationArray) => {
+  try {
+    console.log("Specializations being sent (JSON):", specializationArray);
+
+    const response = await axios.post(
+      `/pfe/${pfeId}/add-specialization`,
+      { specialization: specializationArray },            // JSON array
+      {
+        withCredentials: true,
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+          // Axios will automatically set Content-Type: application/json
+        },
       }
-    };
+    );
+
+    console.log("Specialization added:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Failed to add specialization:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+    
     
   if (!isOpen) return null;
 
@@ -125,10 +144,13 @@ const PfeTopicModal = ({
 
   const handleDecline = () => {};
   const handleValidate = async () => {
-    if (role === "company") {
-      addSupervisorsToPFE(validatedcardid, [supervisorToAssign]);
-      //the supervisorToAssign is the id of the supervisor to assign and it must be passed as an array
-      addSpecializationToPFE(validatedcardid, specialite);
+    if (role === "extern") {
+      const supervisorIds = supervisorsToAssign.map((sup) => sup.id);
+// e.g. [3, 7, 12]
+
+    await addSupervisorsToPFE(validatedcardid, supervisorIds);
+      //the supervisorsToAssign is the id of the supervisor to assign and it must be passed as an array
+      addSpecializationToPFE(validatedcardid, specializationArray);
     }
     try {
       const response = await axios.patch(

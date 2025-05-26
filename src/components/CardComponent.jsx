@@ -17,14 +17,19 @@ const PFECard = ({
   const navigate = useNavigate();
   const location = useLocation();
   const username = card.creator?.extern
-    ? card.creator?.extern.name
-    : (card.creator?.lastname || card.creator?.firstname
-        ? [card.creator?.lastname, card.creator?.firstname]
-        : [card.createdBy?.lastname, card.createdBy?.firstname]
-      )
-        .filter(Boolean)
-        .join(" ")
-        .trim() || "Unknown";
+  //added a fallback value for the username by khedim youcef 
+  ? card.creator.extern.name
+  : (
+      (card.creator?.lastname || card.creator?.firstname)
+        ? [card.creator.lastname, card.creator.firstname]
+        : (card.createdBy?.lastname || card.createdBy?.firstname)
+          ? [card.createdBy.lastname, card.createdBy.firstname]
+          : [card.creator?.username]
+    )
+      .filter(Boolean)
+      .join(" ")
+      .trim() 
+  || "Unknown";
 
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
