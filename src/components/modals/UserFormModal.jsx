@@ -81,6 +81,7 @@ useEffect(() => {
     setLastName(userObject.lastName || ""); */
     //the user object does not have first name and last name only user name cause it is fetched from the users table which only has username
     const [firstName, lastName] = userObject.username.split(' ');
+    console.log(userObject);
     setFirstName(firstName || "");
     setLastName(lastName || "");
     setEmail(userObject.email || "");
@@ -378,7 +379,7 @@ const handleUpdateUser = async (formData) => {
               <option value="student">Student</option>
               <option value="teacher">Supervisor</option>
               {/* <option value="jury">Jury</option> */}
-              <option value="company">Company</option>
+              <option value="company">Extern</option>
             </select>
             {errors.role && <p className={classes["error-message"]}>{errors.role}</p>}
           </div>

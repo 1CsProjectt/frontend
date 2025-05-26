@@ -800,3 +800,36 @@
     background-color: #f2f2f2;
   }
   
+
+  .alertDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   
+    height: 65vh; /* Full viewport height */
+
+width: 100%;  }
+
+  .alertDiv h3 {
+    margin-top: 20px;
+    color: rgb(131, 134, 136);
+    size: 2rem;
+  }
+
+
+  .loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 65vh; /* Full viewport height */
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* or a fixed height like 100px if needed */
+  }
+
+  

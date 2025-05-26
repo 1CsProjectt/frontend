@@ -44,7 +44,7 @@ export default function DeclinedTopicsExplorePage() {
                 </button>
         
 
-              <button
+             {/*  <button
                 className={Module["validate-button"]}
                 onClick={() => {
                   setModalOperation("validate");
@@ -52,7 +52,7 @@ export default function DeclinedTopicsExplorePage() {
                 }}
               >
                 Undo Decline
-              </button>
+              </button> */}
               
 
               {/*  Only one modal, controlled by operation state */}
@@ -95,7 +95,7 @@ export default function DeclinedTopicsExplorePage() {
     <ul className={Module["supervisors-list"]}>
       {card.supervisors && card.supervisors.length > 0 ? (
         card.supervisors.map((supervisor, index) => (
-          <li key={index}>{supervisor.name || "No name provided"}</li>
+          <li key={index}>-{`${supervisor.firstname} ${supervisor.lastname}` || "No name provided"}</li>
         ))
       ) : (
         <li>No supervisors available</li>

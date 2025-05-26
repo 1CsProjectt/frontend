@@ -11,7 +11,7 @@ axios.defaults.withCredentials = true;
 
 const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [studentsPerPage, setStudentsPerPage] = useState(6);
+  const [studentsPerPage, setStudentsPerPage] = useState(5);
   const [showToast, setShowToast] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [pendingInviteEmail, setPendingInviteEmail] = useState(null);
@@ -25,9 +25,9 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const estimatedRowHeight = 75;
+        const estimatedRowHeight = 70;
         const calculated = Math.floor(containerHeight / estimatedRowHeight);
-        setStudentsPerPage(calculated > 0 ? calculated : 6);
+        setStudentsPerPage(calculated > 0 ? calculated : 5);
       }
     };
     updateStudentsPerPage();

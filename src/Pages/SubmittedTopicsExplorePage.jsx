@@ -137,7 +137,7 @@ export default function SubmittedTopicsExplorePage() {
             <ul className={Module["supervisors-list"]}>
               {card.supervisors && card.supervisors.length > 0 ? (
                 card.supervisors.map((sup, idx) => (
-                  <li key={idx}>{sup.name || "No name provided"}</li>
+                  <li key={idx}>-{`${sup.firstname} ${sup.lastname}` || "No name provided"}</li>
                 ))
               ) : (
                 <li>No supervisors are assigned</li>

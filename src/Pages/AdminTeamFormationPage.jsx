@@ -13,6 +13,7 @@ import Style from "../styles/TeamFormationPage.module.css";
 import LeaveTeamPopup from "../components/modals/LeaveTeamPopup";
 import { useSharedState } from '../contexts/SharedStateContext'; // Import the custom hook
 import AutoOrganizeTeamsModal from "../components/modals/AutoOrganizeTeamsModal";
+import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
@@ -209,7 +210,11 @@ function TeamFormationPage() {
           </div>
 
           {loading ? (
-            <div>Loading...</div>
+            <div className={Style["loaderContainer"]}>
+            <div className={Style["loader"]}>
+              <PulseLoader color="#077fd4" loading={loading} size={25} />
+            </div>
+          </div>
           ) : error ? (
             <div>Error: {error}</div>
           ) : (

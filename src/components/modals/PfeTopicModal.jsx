@@ -18,6 +18,8 @@ const PfeTopicModal = ({
   role,
   specialite,
   supervisorToAssign,
+  cardIdToAssign,
+  myTeamNumber
 }) => {
   // the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] =
@@ -150,7 +152,28 @@ const PfeTopicModal = ({
       alert("Validation failed.");
     }
   };
-
+  
+  const handleAssign = async (teamId, newPfeId) => {
+    try {
+      const response = await axios.post('/pfe/changePfeForTeam', {
+        teamId,
+        newPfeId
+      });
+      
+      console.log('Success:', response.data);
+       // After successful assign, hide this dialog and show confirmation:
+       setShowModal(false);
+       setSuccessConfirmationModal(true);
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status code outside of the 2xx range
+        console.error('Error:', error.response.data.message);
+      } else {
+        // The request was made but no response was received
+        console.error('Error:', error.message);
+      }
+  }
+    }
   entityType = "Topic"; //entityType is a prop to pass to the success confirmation modal
 
   if (operation == "delete") {
@@ -268,6 +291,46 @@ const PfeTopicModal = ({
                   onClick={handleValidate}
                 >
                   Validate
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }else if (operation == "assign") {
+    return (
+      <>
+        {showSuccessConfirmationModal && (
+          <SuccessConfirmationModal
+            message={`The ${entityType}(s) has been successfully validated! You won’t be able to undo this action.`}
+            onClose={() => {
+              setSuccessConfirmationModal(false);
+              onClose();
+              navigate(-1);
+            }}
+          />
+        )}
+
+        {showModal && (
+          <div className={classes["modal-overlay"]}>
+            <div className={classes["modal-container"]}>
+              <div className={classes["modal-header"]}>
+                <img src={blueWarningIcon} alt="blue Warning Icon" width="50" />
+                <h2 className={classes["modal-title"]}>Assign the Topic</h2>
+              </div>
+              <p className={classes["modal-buttontext"]}>
+                Are you sure you want to assign the Topic to this team
+              </p>
+              <div className={classes["modal-actions"]}>
+                <button className={classes["cancel-btn"]} onClick={onClose}>
+                  Cancel
+                </button>
+                <button
+                  className={classes["validate-btn"]}
+                  onClick={() => handleAssign(myTeamNumber, cardIdToAssign)}
+                >
+                  Assign
                 </button>
               </div>
             </div>
