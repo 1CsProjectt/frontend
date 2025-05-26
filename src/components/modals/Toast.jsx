@@ -36,7 +36,7 @@ const closeButtonStyle = {
  * - duration?: number (ms visible before hiding)
  * - animationDuration?: number (ms for show/hide transition)
  */
-const Toast = ({ message, onClose, duration = 1500, animationDuration =500 }) => {
+const Toast = ({ message, onClose, duration = 1500, animationDuration =500,isError }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
