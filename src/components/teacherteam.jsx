@@ -13,7 +13,11 @@ const TeacherTeam = () => {
   const [activeTab, setActiveTab] = useState(TEAM_INFORMATION); // Default to "Team Information"
   const [inteam, setInTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
-
+  const [stages, setStages] = useState("1");
+  const [seeMore2, setSeeMore2] = useState(false);
+  const [historyseemore, setHistorySeeMore] = useState(false);
+  const isgoingback =
+    activeTab === "TEAM_INFORMATION" && stages === "1" ? true : false;
   return (
     <div className={Module["team-formation-container"]}>
       <div className={Module["header-part"]}>
@@ -23,8 +27,19 @@ const TeacherTeam = () => {
             <button
               className={Module["back-btn"]}
               onClick={() => {
-                setSeeMore(false);
-                setInTeam(false);
+                if (stages === "1") {
+                  setSeeMore(false);
+                  setInTeam(false);
+
+                  setActiveTab(TEAM_INFORMATION);
+                } else if (stages === "2") {
+                  setSeeMore2(false);
+                  setStages("1");
+                } else if (stages === "3") {
+                  setSeeMore2(false);
+                  setHistorySeeMore(false);
+                  setStages("1");
+                }
               }}
             >
               Back
@@ -67,9 +82,19 @@ const TeacherTeam = () => {
           setSelectedTeamId={setSelectedTeamId}
         />
       )}{" "}
-      {activeTab === SUPERVISION_LOGS && (
+      {activeTab === SUPERVISION_LOGS && !isgoingback && (
         <div>
-          <TeacherMeetingPage teamid={selectedTeamId} />
+          {" "}
+          <TeacherMeetingPage
+            teamid={selectedTeamId}
+            stages={stages}
+            setStages={setStages}
+            seemore={seeMore2}
+            setSeeMore={setSeeMore2}
+            historyseemore={historyseemore}
+            setHistorySeeMore={setHistorySeeMore}
+            goingback={seeMore}
+          />
         </div>
       )}
       {/* You can add further content for the Supervision Logs tab here if needed */}

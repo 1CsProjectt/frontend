@@ -10,10 +10,9 @@ const session = {
   title: "TOPIC_SELECTION",
   targetDate: {
     start: new Date("2025-03-29T00:00:00"),
-    end: new Date("2025-04-29T23:59:59")
-  }
+    end: new Date("2025-04-29T23:59:59"),
+  },
 };
-
 
 let sessionTitle;
 
@@ -218,13 +217,15 @@ const Seemorepage = ({
             Back
           </button>
 
-        {sessionTitle === "Group formation session" &&  <button
-            className={Module["JoinSeeMoreBtn"]}
-            onClick={handleJoinClick}
-            disabled={myTeamNumber !== null}
-          >
-            Join
-          </button>}
+          {sessionTitle === "Group formation session" && (
+            <button
+              className={Module["JoinSeeMoreBtn"]}
+              onClick={handleJoinClick}
+              disabled={myTeamNumber !== null}
+            >
+              Join
+            </button>
+          )}
         </div>
       )}
 

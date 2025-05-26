@@ -34,6 +34,7 @@ const Addatopic = () => {
 
         if (response.data) {
           setsupervisorsList(response.data);
+          console.log("heres the teachers", response.data);
         }
       } catch (err) {
         console.error(
@@ -77,6 +78,7 @@ const Addatopic = () => {
     setSelectedSupervisors((prev) =>
       prev.includes(name) ? prev.filter((sup) => sup !== name) : [...prev, name]
     );
+    console.log("heres the teachers 2", supervisorsList);
   };
   const handleSubmit = async () => {
     if (!title || !description || !presentationFile || !techSheetFile) {
@@ -86,12 +88,12 @@ const Addatopic = () => {
 
     const formData = new FormData();
     formData.append("title", title);
-    if (user?.role === "teacher" && ["1CS", "2CS", "3CS"].includes(grade)) {
+    if (user?.role === "teacher" && ["2CS", "3CS"].includes(grade)) {
       formData.append("specialization", speciality.join(","));
     }
     if (user?.role === "teacher") {
-      selectedSupervisors.forEach((sup, index) => {
-        formData.append(`supervisors[${index}]`, sup); // makes an arrayP
+      selectedSupervisors.forEach((supId) => {
+        formData.append("supervisor[]", supId); // use the same key with []
       });
     }
 
@@ -203,52 +205,51 @@ const Addatopic = () => {
                 </select>
                 {isspec && <div className="space-year"></div>}{" "}
               </div>
-              {user.role === "teacher" &&
-                ["1CS", "2CS", "3CS"].includes(grade) && (
-                  <div className="form-section">
-                    <label className="ttl-fs-at">Speciality</label>
+              {user.role === "teacher" && ["2CS", "3CS"].includes(grade) && (
+                <div className="form-section">
+                  <label className="ttl-fs-at">Speciality</label>
 
-                    <div className="select-sv-at">
-                      <button
-                        className="sv-button-at"
-                        onClick={() => toggleMenu("static")}
-                      >
-                        <p className="ttl-fs-at">
-                          {speciality.length === 0
-                            ? "Select speciality"
-                            : speciality.join(", ")}
-                        </p>
-                        <img
-                          src={isOpen ? Iconup : Icondown}
-                          alt="Toggle"
-                          className="arrow-icon"
-                        />
-                      </button>
-                    </div>
-                    {isspec && (
-                      <div className="border-form-at">
-                        <div className="sv-list">
-                          {specialityList
-                            .filter((name) =>
-                              name
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            )
-                            .map((name) => (
-                              <label key={name} className="sv-item">
-                                <input
-                                  type="checkbox"
-                                  checked={speciality.includes(name)}
-                                  onChange={() => handleSpecialityToggle(name)}
-                                />
-                                {name}
-                              </label>
-                            ))}
-                        </div>
-                      </div>
-                    )}
+                  <div className="select-sv-at">
+                    <button
+                      className="sv-button-at"
+                      onClick={() => toggleMenu("static")}
+                    >
+                      <p className="ttl-fs-at">
+                        {speciality.length === 0
+                          ? "Select speciality"
+                          : speciality.join(", ")}
+                      </p>
+                      <img
+                        src={isOpen ? Iconup : Icondown}
+                        alt="Toggle"
+                        className="arrow-icon"
+                      />
+                    </button>
                   </div>
-                )}
+                  {isspec && (
+                    <div className="border-form-at">
+                      <div className="sv-list">
+                        {specialityList
+                          .filter((name) =>
+                            name
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((name) => (
+                            <label key={name} className="sv-item">
+                              <input
+                                type="checkbox"
+                                checked={speciality.includes(name)}
+                                onChange={() => handleSpecialityToggle(name)}
+                              />
+                              {name}
+                            </label>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -311,6 +312,7 @@ const Addatopic = () => {
                         <img src={searchicon} alt="search-icon" />
                       </div>
                     </div>
+
                     <div className="sv-list">
                       {supervisorsList
                         .filter((teacher) =>
@@ -318,21 +320,27 @@ const Addatopic = () => {
                             .toLowerCase()
                             .includes(searchTerm.toLowerCase())
                         )
-                        .map((teacher) => {
-                          const fullName = `${teacher.firstname} ${teacher.lastname}`;
-                          return (
-                            <label key={teacher._id} className="sv-item">
-                              <input
-                                type="checkbox"
-                                checked={selectedSupervisors.includes(fullName)}
-                                onChange={() =>
-                                  handleSupervisorToggle(fullName)
+                        .map((teacher) => (
+                          <label key={teacher.id} className="sv-item">
+                            <input
+                              type="checkbox"
+                              checked={selectedSupervisors.includes(teacher.id)}
+                              onChange={() => {
+                                if (selectedSupervisors.includes(teacher.id)) {
+                                  setSelectedSupervisors((prev) =>
+                                    prev.filter((id) => id !== teacher.id)
+                                  );
+                                } else {
+                                  setSelectedSupervisors((prev) => [
+                                    ...prev,
+                                    teacher.id,
+                                  ]);
                                 }
-                              />
-                              {fullName}
-                            </label>
-                          );
-                        })}
+                              }}
+                            />
+                            {teacher.firstname} {teacher.lastname}
+                          </label>
+                        ))}
                     </div>
                   </div>
                 )}
