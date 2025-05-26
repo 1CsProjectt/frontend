@@ -16,8 +16,7 @@ import TeamformationIcon from "../assets/Teamformation.svg";
 const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   console.log(user.role);
-  const role =
-    user.role === "company" || user.role === "teacher" ? true : false;
+  const role = user.role === "extern" || user.role === "teacher" ? true : false;
   const navigate = useNavigate();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState("");
@@ -28,7 +27,7 @@ const Sidebar = () => {
     if (path.includes("/pfe-student")) {
       setActiveMenu("pfe");
     } else if (path.includes("mytopics") || path.includes("Addatopic")) {
-      setActiveMenu("mytopics"); // ✅ Match this to the comparison
+      setActiveMenu("mytopics");
     } else if (path.includes("requests")) {
       setActiveMenu("requests");
     } else if (path.includes("myteam")) {
@@ -237,7 +236,7 @@ const Sidebar = () => {
               alt="Soutenance"
               className={Module["icon"]}
             />
-           Soutenance
+            Soutenance
             <img
               src={ChevronRightIcon}
               alt="Arrow"
