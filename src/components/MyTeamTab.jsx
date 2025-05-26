@@ -78,17 +78,27 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
   }
   const handleDeclineInvite = (inviteId) => {
     console.log(`Declined invite with ID: ${inviteId}`);
-    axios.patch('/invitation/declineInvitation', { invitationId: inviteId });
+    axios.post('/invitation/declineInvitation', { invitationId: inviteId });
     setToastMessage(`Declined invite with ID: ${inviteId}`);
     setShowToast(true);
   };
 
   const handleCancelInvite = (inviteId) => {
-    axios.patch('/invitation/cancelInvitation', { invitationId: inviteId });
-    console.log(`Cancelled invite with ID: ${inviteId}`);
-    setToastMessage(`Cancelled invite with ID: ${inviteId}`);
-    setShowToast(true);
+    axios.delete('/invitation/cancelInvitation', {
+      data: { invitationId: inviteId },
+    })
+    .then(() => {
+      console.log(`Cancelled invite with ID: ${inviteId}`);
+      setToastMessage(`Cancelled invite with ID: ${inviteId}`);
+      setShowToast(true);
+    })
+    .catch((error) => {
+      console.error('Error cancelling invitation:', error);
+      setToastMessage('Failed to cancel invite.');
+      setShowToast(true);
+    });
   };
+  
 
   if (!myTeamNumber && session === "Group formation session") {
     return (
@@ -223,7 +233,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
                       <td>
                         <button
                           className={Module["invite-button"]}
-                          onClick={() => handleCancelInvite(invite.sender.team_id)}//to change later when the backend is ready
+                          onClick={() => handleCancelInvite(invite.id)}//to change later when the backend is ready
                         >
                           Cancel invite
                         </button>

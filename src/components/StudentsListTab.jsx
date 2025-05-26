@@ -131,7 +131,7 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
             <tr>
               <th>Full name</th>
               <th>Email address</th>
-              <th>Group</th>
+            
               <th>Status</th>
               <th></th>
             </tr>
@@ -141,7 +141,7 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
               <tr key={student.email}>
                 <td>{student.fullName}</td>
                 <td>{student.email}</td>
-                <td>{student.group || "G5"}</td>
+               
                 <td>
                   {student.status === "available" ? (
                     <span className={styles["status-available"]}>

@@ -61,7 +61,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessio
           className={Style["card-button"]}
           onClick={(e) => handleExplore(e, card)} // Use handleExplore here
         >
-          {buttonText || "Explore"}
+          {buttonText || "Explore"}By
         </button>
       </div>
     </div>

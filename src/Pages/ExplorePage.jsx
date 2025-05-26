@@ -56,7 +56,7 @@ export default function ExplorePage() {
           <div className={Module.padding}></div>
           <div className={Module.header}>
             <h1>Exploring</h1>
-            {sessionTitle === "TOPIC_SELECTION" && (
+            {sessionTitle === "Select topics session" && (
               <div className={Module.btnContainer}>
                 <button className={Module["BackBtn"]} onClick={() => navigate(-1)}>
                   Back
