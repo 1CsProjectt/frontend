@@ -15,7 +15,10 @@ import { Outlet } from "react-router-dom";
 import Toast from "../components/modals/Toast";
 
 const SessionsManagementTabs = () => {
-  const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState();
+  /* const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState(); */
+  const [sessionsPageActiveTab, setSessionsPageActiveTab] = useState(() => {
+    return localStorage.getItem("sessionsPageActiveTab") || "Topic Submission Session";
+  });
   const navigate = useNavigate();
   const [sessionsArray,setSessionsArray] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +71,10 @@ const SessionsManagementTabs = () => {
       "Select Topics Session": "PFE_ASSIGNMENT",
       "Project Realization Session": "WORK_STARTING",
     };
+
+    useEffect(() => {
+      localStorage.setItem("sessionsPageActiveTab", sessionsPageActiveTab);
+    }, [sessionsPageActiveTab]);
 
   useEffect(() => {
     const fetchSessions = async () => {

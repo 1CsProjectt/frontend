@@ -4,7 +4,7 @@ import classes from "../../styles/UserFormModal.module.css"; // Import the separ
 import axios from 'axios';
 
 
-const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementActiveTab,setShowToast,setToastMessage,}) => {
+const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementActiveTab,setShowToast,setToastMessage,onSuccess}) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementAc
   const [password, setPassword] = useState("");
   const [year, setYear] = useState("1CS");
   const [specialite, setSpecialite] = useState("");
-  const [companyName, setCompanyName] = useState("");
+  const [externName, setExternName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [website, setWebsite] = useState("");
@@ -33,7 +33,7 @@ const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementAc
   setRole("");
   setYear("1CS");
   setSpecialite("");
-  setCompanyName("");
+  setExternName("");
   setPhone("");
   setAddress("");
   setWebsite("");
@@ -52,7 +52,7 @@ const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementAc
 
 
   // Tabs for different user types
-/*   const tabs = ["Students", "Supervisors", "Enterprises", "Admins"]; */
+/*   const tabs = ["Students", "Supervisors", "Externs", "Admins"]; */
 //these tabs are used to set the role accroding to the currently selected tab
 useEffect(() => {
   switch (userManagementActiveTab) {
@@ -62,8 +62,8 @@ useEffect(() => {
     case "Supervisors":
       setRole("teacher");
       break;
-    case "Enterprises":
-      setRole("company");
+    case "Externs":
+      setRole("extern");
       break;
     case "Admins":
       setRole("admin");
@@ -82,7 +82,8 @@ useEffect(() => {
    /*  setFirstName(userObject.firstName || "");
     setLastName(userObject.lastName || ""); */
     //the user object does not have first name and last name only user name cause it is fetched from the users table which only has username
-    const [firstName, lastName] = userObject.username.split(' ');
+    if (userObject.username ) {
+    const [firstName, lastName] = userObject.username.split(' ');}
     console.log(userObject);
     setFirstName(firstName || "");
     setLastName(lastName || "");
@@ -91,7 +92,7 @@ useEffect(() => {
     setPassword(""); // Password should be left blank for security
     setYear(userObject.year || "1CS");
     setSpecialite(userObject.specialite || "");
-    setCompanyName(userObject.companyName || "");
+    setExternName(userObject.externName || "");
     setPhone(userObject.phone || "");
     setAddress(userObject.address || "");
     setWebsite(userObject.website || "");
@@ -106,7 +107,7 @@ useEffect(() => {
     setPassword("");
     setYear("1CS");
     setSpecialite("");
-    setCompanyName("");
+    setExternName("");
     setPhone("");
 
     setAddress("");
@@ -133,7 +134,7 @@ useEffect(() => {
     let newErrors = {};
 
     if (!firstName.trim()) newErrors.firstName = "First name is required.";
-    if (!lastName.trim() && role !== "company") newErrors.lastName = "Last name is required.";
+    if (!lastName.trim() && role !== "extern") newErrors.lastName = "Last name is required.";
     if (!email.trim()) newErrors.email = "Email is required.";
    /*  if (!validateEmail(email)) newErrors.email = "Invalid email format."; */
     if (!role) newErrors.role = "Please select a role.";
@@ -153,7 +154,7 @@ useEffect(() => {
               role,
               year,
               specialite,
-              companyName,
+              externName,
               phone,
               address,
               website,
@@ -173,7 +174,7 @@ useEffect(() => {
         role,
         year,
         specialite,
-        companyName,
+        externName,
         phone,
         address,
         website,
@@ -191,7 +192,7 @@ useEffect(() => {
           role,
           year,
           specialite,
-          companyName,
+          externName,
           phone,
           address,
           website,
@@ -226,8 +227,8 @@ useEffect(() => {
       if (["2CS", "3CS"].includes(userData.year?.toUpperCase())) {
         payload.specialite = userData.specialite;
       }
-    } else if (userData.role === "company") {
-      payload.companyName = userData.firstName;
+    } else if (userData.role === "extern") {
+      payload.externName = userData.firstName;
       payload.phone = userData.phone;
       payload.address = userData.address;
       payload.website = userData.website;
@@ -249,6 +250,7 @@ useEffect(() => {
       if (!res.ok) throw new Error(result.message || "Something went wrong");
 
       console.log(" User created:", result);
+      onSuccess();
       setToastMessage("User created successfully!");
       setShowToast(true);
       handleClose();
@@ -282,10 +284,10 @@ const handleUpdateUser = async (formData) => {
     if (["2CS", "3CS"].includes(formData.year?.toUpperCase())) {
       payload.specialite = formData.specialite;
     }
-  } else if (formData.role === "company") {
-    /* payload.companyName = formData.companyName; */
-    //i am using the same form for both the firstname and company name just changing the name of the form not the entire form therefore no i used the firstname
-    payload.companyName = formData.firstName;
+  } else if (formData.role === "extern") {
+    /* payload.externName = formData.externName; */
+    //i am using the same form for both the firstname and extern name just changing the name of the form not the entire form therefore no i used the firstname
+    payload.externName = formData.firstName;
     payload.phone = formData.phone;
     payload.address = formData.address;
   
@@ -303,6 +305,7 @@ const handleUpdateUser = async (formData) => {
     });
 
     console.log(" User Updated:", res.data);
+    onSuccess();
     setToastMessage("User Updated successfully!");
     setShowToast(true);
     handleClose();
@@ -324,7 +327,7 @@ const handleUpdateUser = async (formData) => {
           <div className={classes["modal-row"]}>
             {/* First Name or Company Name */}
             <div className={classes["input-group"]}>
-              <label htmlFor="firstName">{role === "company" ? "Company Name" : "First Name"}</label>
+              <label htmlFor="firstName">{role === "extern" ? "Name" : "First Name"}</label>
               <input
                 id="firstName"
                 type="text"
@@ -337,20 +340,20 @@ const handleUpdateUser = async (formData) => {
 
             {/* Last Name or Address */}
             <div className={classes["input-group"]}>
-              <label htmlFor="lastName">{role === "company" ? "Address" : "Last Name"}</label>
+              <label htmlFor="lastName">{role === "extern" ? "Address" : "Last Name"}</label>
               <input
                 id="lastName"
                 type="text"
                 className={classes["modal-input"]}
-                value={role === "company" ? address : lastName}
+                value={role === "extern" ? address : lastName}
                 onChange={(e) =>
-                  role === "company" ? setAddress(e.target.value) : setLastName(e.target.value)
+                  role === "extern" ? setAddress(e.target.value) : setLastName(e.target.value)
                 }
               />
-              {errors.lastName && role !== "company" && (
+              {errors.lastName && role !== "extern" && (
                 <p className={classes["error-message"]}>{errors.lastName}</p>
               )}
-              {errors.address && role === "company" && (
+              {errors.address && role === "extern" && (
                 <p className={classes["error-message"]}>{errors.address}</p>
               )}
             </div>
@@ -384,13 +387,13 @@ const handleUpdateUser = async (formData) => {
               <option value="student">Student</option>
               <option value="teacher">Supervisor</option>
               {/* <option value="jury">Jury</option> */}
-              <option value="company">Extern</option>
+              <option value="extern">Extern</option>
             </select>
             {errors.role && <p className={classes["error-message"]}>{errors.role}</p>}
           </div>
 
-          {/* Company fields */}
-          {role === "company" && (
+          {/* Extern fields */}
+          {role === "extern" && (
             <div className={classes["modal-row"]}>
               <div className={classes["input-group"]}>
                 <label htmlFor="phone">Phone Number</label>
