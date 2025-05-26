@@ -8,11 +8,11 @@ export default function MotivationCard({ onFileSelect }) {
   const fileInputRef = useRef(null); // Create a ref for the hidden input :contentReference[oaicite:0]{index=0}
 
   const handleFileChange = (event) => {
-    const files = event.target.files;
-    if (files.length > 0) {
-      setFileName(files[0].name);
-      console.log('Selected file:', files[0].name);
-      onFileSelect(files); // tell parent about the file
+    const file = event.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      console.log("Selected file:", file.name);
+      onFileSelect(file); // correct: send the File object to parent
     }
   };
 

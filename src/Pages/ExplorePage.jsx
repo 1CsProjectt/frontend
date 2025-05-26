@@ -12,7 +12,7 @@ import Module from "../styles/ExplorePage.module.css";
 export default function ExplorePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { card ,sessionTitle ,targetDate } = location.state;
+  const { card, sessionTitle, targetDate, submit } = location.state;
   const [inList, setInList] = useState(false);
 
   useEffect(() => {
@@ -46,10 +46,10 @@ export default function ExplorePage() {
       <Sidebar />
       <div className={Module["explore-content"]}>
         <div style={{ marginRight: "6vw" }}>
-        <Navbar
-          title={ sessionTitle || "No session"}
-          targetDate={targetDate }
-        />
+          <Navbar
+            title={sessionTitle || "No session"}
+            targetDate={targetDate}
+          />
         </div>
 
         <div style={{ height: "90vh", overflowY: "auto" }}>
@@ -61,15 +61,24 @@ export default function ExplorePage() {
                 <button className={Module["BackBtn"]} onClick={() => navigate(-1)}>
                   Back
                 </button>
-                {inList ? (
-                  <button className={Module["Remove-button"]} onClick={handleRemoveFromList}>
-                    Remove
-                  </button>
-                ) : (
-                  <button className={Module["AddBtn"]} onClick={handleAddToList}>
-                    Add to my List
-                  </button>
+                {!submit && (
+                  inList ? (
+                    <button
+                      className={Module["Remove-button"]}
+                      onClick={handleRemoveFromList}
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      className={Module["AddBtn"]}
+                      onClick={handleAddToList}
+                    >
+                      Add to my List
+                    </button>
+                  )
                 )}
+
               </div>
             )}
           </div>

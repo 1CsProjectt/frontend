@@ -8,13 +8,14 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessio
   const navigate = useNavigate();
   const location = useLocation();
   const username =
-    card.creator?.username ||
-    [card.creator?.lastname, card.creator?.firstname]
-      .filter(Boolean) // Remove any undefined/null values
-      .join(" ") // Join with space
-      .trim() || // Remove any extra whitespace
-    "Unknown";
+  (card.creator?.lastname || card.creator?.firstname
+    ? [card.creator?.lastname, card.creator?.firstname]
+    : [card.createdBy?.lastname, card.createdBy?.firstname])
+      .filter(Boolean)
+      .join(" ")
+      .trim() || "Unknown";
  
+
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
@@ -61,7 +62,7 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessio
           className={Style["card-button"]}
           onClick={(e) => handleExplore(e, card)} // Use handleExplore here
         >
-          {buttonText || "Explore"}By
+          {buttonText || "Explore"}
         </button>
       </div>
     </div>
