@@ -15,7 +15,10 @@ import { Outlet } from "react-router-dom";
 import Toast from "../components/modals/Toast";
 
 const SessionsManagementTabs = () => {
-  const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState();
+  /* const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState(); */
+  const [sessionsPageActiveTab, setSessionsPageActiveTab] = useState(() => {
+    return localStorage.getItem("sessionsPageActiveTab") || "Topic Submission Session";
+  });
   const navigate = useNavigate();
   const [sessionsArray,setSessionsArray] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,6 +30,7 @@ const SessionsManagementTabs = () => {
   const [sessionIDtoDelete,setSessionIDtoDelete] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [isToastError, setToastError] = useState(null);
   const tabs = [
     "Topic Submission Session",
     "Team Formation Session",
@@ -68,6 +72,10 @@ const SessionsManagementTabs = () => {
       "Project Realization Session": "WORK_STARTING",
     };
 
+    useEffect(() => {
+      localStorage.setItem("sessionsPageActiveTab", sessionsPageActiveTab);
+    }, [sessionsPageActiveTab]);
+
   useEffect(() => {
     const fetchSessions = async () => {
       setLoading(true); 
@@ -96,7 +104,7 @@ const SessionsManagementTabs = () => {
     <div className={classes["main-wrapper"]}>
 
       <NavBar />
-      <StartNewSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} setShowToast={setShowToast} setToastMessage={setToastMessage}/>
+      
       <div className={classes["tabs-container"]}>
         
         <h1>Sessions Management</h1>
@@ -513,12 +521,15 @@ const SessionsManagementTabs = () => {
       </div>
       <Outlet />
       <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose ={() => {setDeleteUserModalOpen(false)}} entityType={"session"} sessionIDtoDelete={sessionIDtoDelete} />
-      <EditExistingSessionModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} sessionToUpdate={sessionToUpdate} setShowToast={setShowToast}setToastMessage={setToastMessage}/>
+      <StartNewSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} setShowToast={setShowToast} setToastMessage={setToastMessage} setToastError={setToastError}/>
+      <EditExistingSessionModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} sessionToUpdate={sessionToUpdate} setShowToast={setShowToast}setToastMessage={setToastMessage} setToastError={setToastError}/>
       {showToast && (
           <Toast
-            duration={5000}
+            duration={4000}
             message={toastMessage || "Test Toast"}
             onClose={() => setShowToast(false)}
+            isError={isToastError}
+            
           />
         )}
     </div>

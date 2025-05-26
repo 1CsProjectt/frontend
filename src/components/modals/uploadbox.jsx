@@ -4,6 +4,7 @@ import "../../styles/addtopic.css";
 import Module from "../../styles/StudentMeetingPage.module.css";
 import FileIcon from "../../assets/fileIcon.svg";
 import ArrowIcon from "../../assets/expand_less_black.svg";
+import { Check } from "lucide-react";
 
 const Uploadbox = ({
   handlePresentationChange,
@@ -12,6 +13,7 @@ const Uploadbox = ({
   type,
   pdfFil,
   status = true,
+  check = false,
 }) => {
   const [showImagePreview, setShowImagePreview] = useState(false);
 
@@ -173,7 +175,7 @@ const Uploadbox = ({
           </a>
         </div>
       ) : (
-        <div className="upload-box">
+        <div className={`upload-box ${check ? "invalid" : ""}`}>
           <img src={Upload} alt="Upload" className="upload-image" />
           <p className="msg-at">
             {type === "pdf"

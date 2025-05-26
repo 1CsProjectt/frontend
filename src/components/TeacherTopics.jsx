@@ -10,14 +10,20 @@ import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
 import Popup from "../components/modals/popup";
 import axios from "axios";
+import { setMyGlobalString } from "../global.js";
+import Teacherpfetopicseemore from "./teacherpfetopicseemore.jsx";
+import Toast from "../components/modals/Toast";
 
 const SUBMITTED = "Submitted";
 const VALIDATED = "Validated";
 const DECLINED = "Declined";
 
 const TeacherTopics = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const { selectedFilters } = useOutletContext();
-  console.log("hahahaha", selectedFilters);
+  console.log("hahahaha", user.id);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,8 +34,11 @@ const TeacherTopics = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [activeTab, setActiveTab] = useState(SUBMITTED);
-  const [status, setStatus] = useState("");
-
+  const [seemore, setSeeMore] = useState(false);
+  const [reason, setReason] = useState(null);
+  const [reasonFile, setReasonFile] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [confTitle, setConfTitle] = useState(""); // for confirmation popup title
   const [confMsg, setConfMsg] = useState(""); // for confirmation popup message
   const [confButtonText, setConfButtonText] = useState("");
@@ -41,16 +50,22 @@ const TeacherTopics = () => {
         const response = await axios.get("/pfe/my-pfes", {
           withCredentials: true,
         });
+
         const currentSessions = response.data.currentSessions;
-        // Use currentSessions as needed
+        setMyGlobalString(currentSessions);
         console.log("hahiyaaaaaaaaaaaaa", currentSessions);
+
         if (response.data?.data) {
           setCards(response.data.data);
+
+          // Check for declined topic
         }
       } catch (err) {
         console.error("Error fetching card data", err);
         if (err.response?.status === 401) {
-          alert("Session expired. Please log in again.");
+          setToastMessage("Session expired. Please log in again.");
+          setShowToast(true);
+
           navigate("/login");
         } else {
           setError("Failed to fetch PFE projects. Please try again later.");
@@ -174,7 +189,7 @@ const TeacherTopics = () => {
     <div className="containert">
       {/* Tabs */}
       <div className="pageheader">
-        <p className="pagetitle">MyTopics</p>
+        <p className="pagetitle"> {seemore ? "Reading" : "MyTopics"}</p>
         {onDelete && (
           <div className="delete-popup">
             <div className="selection-container" onClick={handleToggle}>
@@ -193,7 +208,7 @@ const TeacherTopics = () => {
             <span className="selected-count">{selectedCount} Selected</span>
           </div>
         )}
-        {activeTab === SUBMITTED && (
+        {activeTab === SUBMITTED && !seemore && (
           <div className="pageheaderbuttons">
             <button className="btnd" onClick={handleButtons}>
               <p className="managebtns-text">Delete Topics</p>
@@ -212,29 +227,43 @@ const TeacherTopics = () => {
             </button>
           </div>
         )}
+        {seemore && (
+          <button
+            className="btna-on-cancel"
+            onClick={() => {
+              setSeeMore(false);
+              console.log("Back clicked — should show PFEList", seemore);
+            }}
+          >
+            <p className="txt-on-cancel">Back</p>
+          </button>
+        )}
       </div>
-      <div className="tabs-container">
-        <div className="tabs">
-          <button
-            className={`tab-item ${activeTab === SUBMITTED ? "active" : ""}`}
-            onClick={() => setActiveTab(SUBMITTED)}
-          >
-            {SUBMITTED}
-          </button>
-          <button
-            className={`tab-item ${activeTab === VALIDATED ? "active" : ""}`}
-            onClick={() => setActiveTab(VALIDATED)}
-          >
-            {VALIDATED}
-          </button>
-          <button
-            className={`tab-item ${activeTab === DECLINED ? "active" : ""}`}
-            onClick={() => setActiveTab(DECLINED)}
-          >
-            {DECLINED}
-          </button>
+
+      {!seemore && (
+        <div className="tabs-container">
+          <div className="tabs">
+            <button
+              className={`tab-item ${activeTab === SUBMITTED ? "active" : ""}`}
+              onClick={() => setActiveTab(SUBMITTED)}
+            >
+              {SUBMITTED}
+            </button>
+            <button
+              className={`tab-item ${activeTab === VALIDATED ? "active" : ""}`}
+              onClick={() => setActiveTab(VALIDATED)}
+            >
+              {VALIDATED}
+            </button>
+            <button
+              className={`tab-item ${activeTab === DECLINED ? "active" : ""}`}
+              onClick={() => setActiveTab(DECLINED)}
+            >
+              {DECLINED}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {showConfirmation && (
         <Popup
@@ -252,17 +281,36 @@ const TeacherTopics = () => {
       {success && <Popup poproud={2} onOkey={onOkey} />}
 
       <div className="content-area-mytopics">
-        {error && <div className="error-message">{error}</div>}
-
         {loading ? (
           <div className="loading-indicator">Loading</div>
+        ) : seemore ? (
+          <Teacherpfetopicseemore
+            reason={selectedTopic?.reason}
+            reasonFile={selectedTopic?.reasonFile}
+            topic={selectedTopic}
+            ondeclined={selectedTopic?.status === "REJECTED"}
+          />
         ) : (
           <PFEList
+            setSeeMore={setSeeMore}
             filteredCards={currentCards}
             onDelete={onDelete}
             selectedIds={selectedIds}
             setSelectedIds={setSelectedIds}
             setSelectedCount={setSelectedCount}
+            setSelectedTopic={setSelectedTopic}
+            userid={user.id}
+            setToastMessage={setToastMessage}
+            setShowToast={setShowToast}
+            activeTab={activeTab}
+          />
+        )}
+        {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => {
+              setShowToast(false);
+            }}
           />
         )}
       </div>
@@ -271,11 +319,17 @@ const TeacherTopics = () => {
 };
 
 const PFEList = ({
+  setSeeMore,
   filteredCards,
   onDelete,
   selectedIds,
   setSelectedIds,
   setSelectedCount,
+  setSelectedTopic,
+  userid,
+  setToastMessage,
+  setShowToast,
+  activeTab,
 }) => {
   useEffect(() => {
     setSelectedIds([]);
@@ -302,11 +356,39 @@ const PFEList = ({
             key={card.id || index}
             card={card}
             isSelected={selectedIds.includes(card.id)}
-            toggleSelect={() => handleCardClick(card.id)}
+            toggleSelect={() => {
+              if (userid === card.creator.id) {
+                handleCardClick(card.id);
+              } else {
+                setToastMessage(
+                  "You can't delete a topic that you didn't create"
+                );
+                setShowToast(true);
+              }
+            }}
+            onExplore={() => {
+              setSelectedTopic(card);
+              setSeeMore(true);
+            }}
           />
         ))
       ) : (
-        <p className="no-results-text">No projects found.</p>
+        <p
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontSize: "1.5rem",
+            color: "#777",
+            textAlign: "center",
+            zIndex: 1000,
+          }}
+        >
+          {activeTab === SUBMITTED && "No submitted topics"}
+          {activeTab === VALIDATED && "No validated topics"}
+          {activeTab === DECLINED && "No declined topics"}
+        </p>
       )}
     </div>
   );

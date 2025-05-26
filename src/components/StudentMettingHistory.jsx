@@ -6,11 +6,25 @@ import Toast from "./modals/Toast";
 import axios from "axios";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 import Module from "../styles/TeamFormationPage.module.css";
+import Teacherseemore from "../components/teacherseemore";
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const StudentMeetingHistory = ({ MeetingHistoryList }) => {
+const StudentMeetingHistory = ({
+  MeetingHistoryList,
+  review,
+  setSeeMore,
+  myMeet,
+  setMeet,
+  historyseemore,
+  setHistorySeeMore,
+  stages,
+  setStages,
+  refreshKey,
+  setRefreshKey,
+}) => {
+  const user = JSON.parse(localStorage.getItem("user"));
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const containerRef = useRef(null);
@@ -31,10 +45,19 @@ const StudentMeetingHistory = ({ MeetingHistoryList }) => {
   }, []);
   const SeeMoreHandle = (e, Item) => {
     e.stopPropagation();
-    // pass both the clicked item and the full currentItems list
-    navigate("/StudentMeetingsPage/SeeMore", {
-      state: { item: Item, currentItems },
-    });
+
+    if (user?.role === "teacher") {
+      setStages("3");
+      setSeeMore(true);
+      setRefreshKey((prev) => prev + 1);
+      setMeet(Item);
+      setHistorySeeMore(true);
+    } else {
+      // Navigate only if the user is not a teacher
+      navigate("/StudentMeetingsPage/SeeMore", {
+        state: { item: Item, currentItems },
+      });
+    }
   };
   const { currentItems, totalPages } = getPaginatedData(
     MeetingHistoryList,

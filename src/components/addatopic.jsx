@@ -7,10 +7,13 @@ import Iconup from "../assets/arrow-up.svg";
 import Icondown from "../assets/arrow-down.svg";
 import searchicon from "../assets/Search.svg";
 import axios from "axios";
+import Toast from "../components/modals/Toast";
 
 const Addatopic = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [title, setTitle] = useState("");
+  const [pdfcheck, setpdfcheck] = useState(false);
+  const [imagecheck, setimagecheck] = useState(false);
   const [description, setDescription] = useState("");
   const [grade, setGrade] = useState("2CS");
   const [speciality, setSpeciality] = useState([]);
@@ -20,10 +23,15 @@ const Addatopic = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [supervisorsList, setsupervisorsList] = useState([]);
-
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const presentationRef = useRef(null);
   const techSheetRef = useRef(null);
-
+  const [invalidFields, setInvalidFields] = useState({
+    title: false,
+    description: false,
+    speciality: false,
+  });
   const specialityList = ["ISI", "SIW", "IASD"];
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +42,7 @@ const Addatopic = () => {
 
         if (response.data) {
           setsupervisorsList(response.data);
+          console.log("heres the teachers", response.data);
         }
       } catch (err) {
         console.error(
@@ -56,7 +65,8 @@ const Addatopic = () => {
     if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
       setPresentationFile(file);
     } else {
-      alert("Please upload a valid JPG or PNG image.");
+      setToastMessage("Please upload a valid JPG or PNG image.");
+      setShowToast(true);
     }
   };
 
@@ -65,7 +75,8 @@ const Addatopic = () => {
     if (file?.type === "application/pdf") {
       setTechSheetFile(file);
     } else {
-      alert("Please upload a valid PDF file.");
+      setToastMessage("Please upload a valid PDF file.");
+      setShowToast(true);
     }
   };
   const handleSpecialityToggle = (name) => {
@@ -77,21 +88,48 @@ const Addatopic = () => {
     setSelectedSupervisors((prev) =>
       prev.includes(name) ? prev.filter((sup) => sup !== name) : [...prev, name]
     );
+    console.log("heres the teachers 2", supervisorsList);
   };
   const handleSubmit = async () => {
-    if (!title || !description || !presentationFile || !techSheetFile) {
-      alert("Please fill in all required fields and upload the files.");
+    const newInvalidFields = {
+      title: !title.trim(),
+      description: !description.trim(),
+      speciality:
+        user?.role === "teacher" &&
+        ["2CS", "3CS"].includes(grade) &&
+        speciality.length === 0,
+    };
+    setInvalidFields(newInvalidFields);
+    const isValid = !Object.values(newInvalidFields).some(Boolean);
+    if (!isValid) {
+      setToastMessage("Please fill in all required fields");
+      setShowToast(true);
+      return;
+    }
+
+    if (!presentationFile) {
+      setToastMessage("Please upload image file");
+      setShowToast(true);
+      setimagecheck(true);
+      return;
+    }
+    if (!techSheetFile) {
+      setToastMessage("Please upload pdf file");
+      setShowToast(true);
+      setpdfcheck(true);
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
-    if (user?.role === "teacher" && ["1CS", "2CS", "3CS"].includes(grade)) {
-      formData.append("specialization", speciality.join(","));
+    if (user?.role === "teacher" && ["2CS", "3CS"].includes(grade)) {
+      speciality.forEach((spec) => {
+        formData.append("specialization[]", spec);
+      });
     }
     if (user?.role === "teacher") {
-      selectedSupervisors.forEach((sup, index) => {
-        formData.append(`supervisors[${index}]`, sup); // makes an arrayP
+      selectedSupervisors.forEach((supId) => {
+        formData.append("supervisor[]", supId); // use the same key with []
       });
     }
 
@@ -108,13 +146,16 @@ const Addatopic = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      setToastMessage("Topic submitted succufuly");
+      setShowToast(true);
       console.log("Topic submitted:", response.data);
-      alert("Topic submitted successfully!");
-      navigate(-1);
+
+      setimagecheck(false);
+      setpdfcheck(false);
     } catch (error) {
       console.error(error);
-      alert(error);
+      setToastMessage(error.message);
+      setShowToast(true);
     }
   };
 
@@ -155,7 +196,7 @@ const Addatopic = () => {
             <div className="form-section">
               <label className="ttl-fs-at">Title</label>
               <textarea
-                className="txt-a1-at"
+                className={`txt-a1-at ${invalidFields.title ? "invalid" : ""}`}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 maxLength="70"
@@ -164,7 +205,9 @@ const Addatopic = () => {
               />
               <label className="ttl-fs-at">Description</label>
               <textarea
-                className="txt-a2-at"
+                className={`txt-a2-at ${
+                  invalidFields.description ? "invalid" : ""
+                }`}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Include a description..."
@@ -175,6 +218,7 @@ const Addatopic = () => {
                 presentationFile={presentationFile}
                 presentationRef={presentationRef}
                 handlePresentationChange={handlePresentationChange}
+                check={imagecheck}
               />
             </div>
           </div>
@@ -199,56 +243,58 @@ const Addatopic = () => {
                   <option value="2CS">2CS</option>
                   <option value="1CS">1CS</option>
                   <option value="2CP">2CP</option>
-                  <option value="1CP">1CP</option>
                 </select>
                 {isspec && <div className="space-year"></div>}{" "}
               </div>
-              {user.role === "teacher" &&
-                ["1CS", "2CS", "3CS"].includes(grade) && (
-                  <div className="form-section">
-                    <label className="ttl-fs-at">Speciality</label>
+              {user.role === "teacher" && ["2CS", "3CS"].includes(grade) && (
+                <div className="form-section">
+                  <label className="ttl-fs-at">Speciality</label>
 
-                    <div className="select-sv-at">
-                      <button
-                        className="sv-button-at"
-                        onClick={() => toggleMenu("static")}
-                      >
-                        <p className="ttl-fs-at">
-                          {speciality.length === 0
-                            ? "Select speciality"
-                            : speciality.join(", ")}
-                        </p>
-                        <img
-                          src={isOpen ? Iconup : Icondown}
-                          alt="Toggle"
-                          className="arrow-icon"
-                        />
-                      </button>
-                    </div>
-                    {isspec && (
-                      <div className="border-form-at">
-                        <div className="sv-list">
-                          {specialityList
-                            .filter((name) =>
-                              name
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            )
-                            .map((name) => (
-                              <label key={name} className="sv-item">
-                                <input
-                                  type="checkbox"
-                                  checked={speciality.includes(name)}
-                                  onChange={() => handleSpecialityToggle(name)}
-                                />
-                                {name}
-                              </label>
-                            ))}
-                        </div>
-                      </div>
-                    )}
+                  <div
+                    className={`select-sv-at ${
+                      invalidFields.speciality ? "invalid" : ""
+                    }`}
+                  >
+                    <button
+                      className="sv-button-at"
+                      onClick={() => toggleMenu("static")}
+                    >
+                      <p className="ttl-fs-at">
+                        {speciality.length === 0
+                          ? "Select speciality"
+                          : speciality.join(", ")}
+                      </p>
+                      <img
+                        src={isOpen ? Iconup : Icondown}
+                        alt="Toggle"
+                        className="arrow-icon"
+                      />
+                    </button>
                   </div>
-                )}
+                  {isspec && (
+                    <div className="border-form-at">
+                      <div className="sv-list">
+                        {specialityList
+                          .filter((name) =>
+                            name
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((name) => (
+                            <label key={name} className="sv-item">
+                              <input
+                                type="checkbox"
+                                checked={speciality.includes(name)}
+                                onChange={() => handleSpecialityToggle(name)}
+                              />
+                              {name}
+                            </label>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -266,6 +312,7 @@ const Addatopic = () => {
                 handlePresentationChange={handleTechSheetChange}
                 presentationFile={techSheetFile}
                 presentationRef={techSheetRef}
+                check={pdfcheck}
               />
             </div>
           </div>
@@ -311,6 +358,7 @@ const Addatopic = () => {
                         <img src={searchicon} alt="search-icon" />
                       </div>
                     </div>
+
                     <div className="sv-list">
                       {supervisorsList
                         .filter((teacher) =>
@@ -318,21 +366,27 @@ const Addatopic = () => {
                             .toLowerCase()
                             .includes(searchTerm.toLowerCase())
                         )
-                        .map((teacher) => {
-                          const fullName = `${teacher.firstname} ${teacher.lastname}`;
-                          return (
-                            <label key={teacher._id} className="sv-item">
-                              <input
-                                type="checkbox"
-                                checked={selectedSupervisors.includes(fullName)}
-                                onChange={() =>
-                                  handleSupervisorToggle(fullName)
+                        .map((teacher) => (
+                          <label key={teacher.id} className="sv-item">
+                            <input
+                              type="checkbox"
+                              checked={selectedSupervisors.includes(teacher.id)}
+                              onChange={() => {
+                                if (selectedSupervisors.includes(teacher.id)) {
+                                  setSelectedSupervisors((prev) =>
+                                    prev.filter((id) => id !== teacher.id)
+                                  );
+                                } else {
+                                  setSelectedSupervisors((prev) => [
+                                    ...prev,
+                                    teacher.id,
+                                  ]);
                                 }
-                              />
-                              {fullName}
-                            </label>
-                          );
-                        })}
+                              }}
+                            />
+                            {teacher.firstname} {teacher.lastname}
+                          </label>
+                        ))}
                     </div>
                   </div>
                 )}
@@ -351,6 +405,17 @@ const Addatopic = () => {
           </div>
         </div>
       </div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          onClose={() => {
+            setShowToast(false);
+            if (toastMessage === "Topic submitted succufuly") {
+              navigate(-1);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

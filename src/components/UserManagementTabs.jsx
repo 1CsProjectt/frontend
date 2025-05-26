@@ -16,7 +16,9 @@ const UserManagementTabs = () => {
   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
 
   // Which tab is active?
-  const [activeTab, setActiveTab] = useState("Students");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("activeTab") || "Students";
+  });
 
   // Pagination
   const usersPerPage = 7;
@@ -40,38 +42,51 @@ const UserManagementTabs = () => {
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
-
-  //  Fetch all users once
+  
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("/users/get-all", { withCredentials: true });
-        const usersArray = response.data.map((user) => ({
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          role: user.role,
-          createdAt: user.createdAt,
-        }));
-        setFetchedUsers(usersArray);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setConnectionError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    localStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
+  //  Fetch all users once
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/users/get-all", { withCredentials: true });
+      console.log("Fetched users: !!!!!!!!", response.data);
+      const usersArray = response.data.map((user) => ({
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        createdAt: user.createdAt,
+         // Safely pull student data only if it exists:
+        student: user.student
+        ? {
+            firstname: user.student.firstname,
+            lastname:  user.student.lastname,
+            year:      user.student.year,
+            specialite:user.student.specialite,
+          }
+        : null,
+      }));
+      setFetchedUsers(usersArray);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setConnectionError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchUsers();
   }, []);
+  
 
   // Split fetchedUsers into role-based buckets
   const allUsers = useMemo(() => {
     return {
       Students: fetchedUsers.filter((u) => u.role === "student"),
       Supervisors: fetchedUsers.filter((u) => u.role === "teacher"),
-      Externs: fetchedUsers.filter((u) => u.role === "company"),
+      Externs: fetchedUsers.filter((u) => u.role === "extern"),
       Admins: fetchedUsers.filter((u) => u.role === "admin"),
     };
   }, [fetchedUsers]);
@@ -86,7 +101,7 @@ const UserManagementTabs = () => {
     const q = searchQuery.toLowerCase();
     return usersInThisTab.filter(
       (u) =>
-        u.username.toLowerCase().includes(q) ||
+        u.username?.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q)
     );
   }, [searchQuery, usersInThisTab]);
@@ -177,6 +192,13 @@ const UserManagementTabs = () => {
             <tr>
               <th>Full Name</th>
               <th>Email Address</th>
+              {/* Add these two headers only for Students */}
+              {activeTab === "Students" && (
+                <>
+                  <th>Year</th>
+                  <th>Speciality</th>
+                </>
+              )}
               <th>Date Added</th>
               <th className={classes["last-column"]}></th>
             </tr>
@@ -216,6 +238,14 @@ const UserManagementTabs = () => {
                 <tr key={idx} style={{ height: "60px", maxHeight: "60px" }}>
                   <td>{user.username || "No Username"}</td>
                   <td>{user.email || "No Email"}</td>
+                      {/* Add these two cells only for Students */}
+                    {activeTab === "Students" && (
+                      <>
+                        <td>{user.student.year || "-"}</td>
+                        <td>{user.student.specialite || "-"}</td>
+                      </>
+                    )}
+
                   <td>{user.createdAt || "Unknown Date"}</td>
                   <td className={classes["max-cell-height"]}>
                     <button
@@ -316,6 +346,7 @@ const UserManagementTabs = () => {
         userManagementActiveTab={activeTab}
         setShowToast={setShowToast}
         setToastMessage={setToastMessage}
+        onSuccess={fetchUsers}
       />
      
      <DeleteUserModal

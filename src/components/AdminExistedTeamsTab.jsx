@@ -6,6 +6,7 @@ import JoinTeamAlert from "./modals/JoinTeamAlert";
 import Toast from "./modals/Toast";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 import DeleteUserModal from "./modals/DeleteUserModal";
+import alertIcon from "../assets/alert-icon.svg";
 
 const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -129,7 +130,18 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
   };
 
   return (
-    <div className={Module["page-container"]}>
+      <div>
+      {(currentTeams.length === 0) ? (
+        <div className={Module["alertDiv"]}>
+                    <img src={alertIcon} alt="Alert Icon" />
+                    <h3>
+                      No Teams were found . check again later to see if new Teams are
+                      added
+                    </h3>
+                  </div>
+      )
+        : (
+      <div className={Module["page-container"]}>
       <div className={Module["table-wrapper"]} ref={containerRef}>
         <table>
           <thead>
@@ -207,7 +219,9 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
             })}
           </tbody>
         </table>
+        </div>
       </div>
+        )}
 
       <div className={Module["pagination"]}>
         <button

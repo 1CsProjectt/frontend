@@ -10,10 +10,9 @@ const session = {
   title: "TOPIC_SELECTION",
   targetDate: {
     start: new Date("2025-03-29T00:00:00"),
-    end: new Date("2025-04-29T23:59:59")
-  }
+    end: new Date("2025-04-29T23:59:59"),
+  },
 };
-
 
 let sessionTitle;
 
@@ -53,14 +52,17 @@ const Seemorepage = ({
         try {
           const response = await axios.get(`/student/${myTeamNumber}/students`);
 
-          const fetchedStudents = response.data.students.map((student) => ({
-            fullName: `${student.firstname} ${student.lastname}`,
-            email: student.user.email,
-            group: student.year,
-            role: student.roleINproject,
-          }));
+          const fetchedStudents =
+            response.data.team?.members.map((student) => ({
+              fullName: `${student.firstname} ${student.lastname}`,
+              email: student.user.email,
+              group: student.year,
+              role: student.roleINproject,
+            })) || [];
+
           setStudents(fetchedStudents);
           console.log("students", fetchedStudents);
+
           const mlFromTeam = response.data.team?.preflists?.[0]?.ML || null;
           setMlFile(mlFromTeam);
           console.log("ML:", mlFromTeam);
@@ -218,13 +220,15 @@ const Seemorepage = ({
             Back
           </button>
 
-        {sessionTitle === "Group formation session" &&  <button
-            className={Module["JoinSeeMoreBtn"]}
-            onClick={handleJoinClick}
-            disabled={myTeamNumber !== null}
-          >
-            Join
-          </button>}
+          {sessionTitle === "Group formation session" && (
+            <button
+              className={Module["JoinSeeMoreBtn"]}
+              onClick={handleJoinClick}
+              disabled={myTeamNumber !== null}
+            >
+              Join
+            </button>
+          )}
         </div>
       )}
 

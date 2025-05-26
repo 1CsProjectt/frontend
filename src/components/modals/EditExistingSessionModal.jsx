@@ -2,7 +2,7 @@ import React, { useState ,useEffect } from "react";
 import classes from "../../styles/StartNewSessionModal.module.css";
 import axios from "axios";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
-const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessionToUpdate , setShowToast ,setToastMessage}) => {
+const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessionToUpdate , setShowToast ,setToastMessage ,setToastError}) => {
   
 
   
@@ -43,6 +43,16 @@ const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessi
         alert("Please fill out all fields before updating the session.");
         return;
       }
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+    
+      if (start > end) {
+        setToastMessage("Start date cannot be after end date.");
+        setToastError(true);
+        setShowToast(true);
+        return;
+      }
+      
 
     const updateEvent = async () => {
       try {

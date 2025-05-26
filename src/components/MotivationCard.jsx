@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
-import upload from '../assets/upload.svg';
-import add from '../assets/addUpload.svg';
-import Style from '../styles/StudentPrefrencesTab.module.css';
+import React, { useState, useRef } from "react";
+import upload from "../assets/upload.svg";
+import add from "../assets/addUpload.svg";
+import Style from "../styles/StudentPrefrencesTab.module.css";
 
 export default function MotivationCard({ onFileSelect }) {
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null); // Create a ref for the hidden input :contentReference[oaicite:0]{index=0}
 
   const handleFileChange = (event) => {
@@ -22,29 +22,34 @@ export default function MotivationCard({ onFileSelect }) {
   };
 
   return (
-    <div className={Style['motivation-card']}>
-      <div className={Style['left-side']}>
-        <div className={Style['motivation-header']}>
+    <div className={Style["motivation-card"]}>
+      <div className={Style["left-side"]}>
+        <div className={Style["motivation-header"]}>
           <h3>Motivation Letter</h3>
         </div>
-        <p className={Style['motivation-text']}>
-          Upload the Motivation letter to increase your chances to be accepted by the supervisors
+        <p className={Style["motivation-text"]}>
+          Upload the Motivation letter to increase your chances to be accepted
+          by the supervisors
         </p>
       </div>
-      <div className={Style['right-side']}>
+      <div className={Style["right-side"]}>
         <div
-          className={Style['upload-area']}
+          className={Style["upload-area"]}
           onClick={handleUploadClick}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: "pointer" }}
         >
-          <img src={upload} alt="upload" className={Style['upload-icon']} />
-          <span className={Style['upload-label']}>
+          <img src={upload} alt="upload" className={Style["upload-icon"]} />
+          <span className={Style["upload-label"]}>
             {fileName
               ? fileName
-              : 'Browse and choose the file you want to upload from your computer'}
+              : "Browse and choose the file you want to upload from your computer"}
           </span>
           {!fileName && (
-            <img src={add} alt="add" style={{ height: '2.4rem', marginTop: '1rem' }} />
+            <img
+              src={add}
+              alt="add"
+              style={{ height: "2.4rem", marginTop: "1rem" }}
+            />
           )}
         </div>
         <input
@@ -52,9 +57,9 @@ export default function MotivationCard({ onFileSelect }) {
           accept=".pdf,.doc,.docx"
           ref={fileInputRef}
           onChange={handleFileChange}
-          style={{ display: 'none' }} // hide the real input
+          style={{ display: "none" }} // hide the real input
         />
       </div>
     </div>
-);
+  );
 }
