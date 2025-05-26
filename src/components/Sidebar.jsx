@@ -198,32 +198,7 @@ const Sidebar = () => {
             </button>
           </li>
         )}
-        {!role && (
-          <li className={Module["menu-item"]}>
-            <button
-              className={`${Module["menu-btn"]} ${
-                activeMenu === "meetings" ? Module["active"] : ""
-              }`}
-              onClick={() => {
-                role
-                  ? toggleMenu("/teachermeetingspage")
-                  : toggleMenu("/StudentMeetingsPage");
-              }}
-            >
-              <img
-                src={CheckCircleIcon}
-                alt="Loremres"
-                className={Module["icon"]}
-              />
-              Meetings
-              <img
-                src={ChevronRightIcon}
-                alt="Arrow"
-                className={Module["row-icon"]}
-              />
-            </button>
-          </li>
-        )}
+       
 
         {!role && (
           <li className={Module["menu-item"]}>
@@ -248,42 +223,8 @@ const Sidebar = () => {
             </button>
           </li>
         )}
-        {!role && (
-          <li className={Module["menu-item"]}>
-            <button
-              className={`${Module["menu-btn"]} ${
-                activeMenu === "lovers" ? Module["active"] : ""
-              }`}
-              onClick={() => toggleMenu("/lovers")}
-            >
-              <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
-              Lovers
-              <img
-                src={ChevronRightIcon}
-                alt="Arrow"
-                className={Module["row-icon"]}
-              />
-            </button>
-          </li>
-        )}
-        {!role && (
-          <li className={Module["menu-item"]}>
-            <button
-              className={`${Module["menu-btn"]} ${
-                activeMenu === "export" ? Module["active"] : ""
-              }`}
-              onClick={() => toggleMenu("/export")}
-            >
-              <img src={ExportIcon} alt="Export" className={Module["icon"]} />
-              Export
-              <img
-                src={ChevronRightIcon}
-                alt="Arrow"
-                className={Module["row-icon"]}
-              />
-            </button>
-          </li>
-        )}
+        
+       
       </ul>
 
       {/* Bottom Menu */}

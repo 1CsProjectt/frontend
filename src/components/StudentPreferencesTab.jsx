@@ -95,6 +95,12 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, ta
 };
 
 const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
+  const [user] = useState(() => {
+    const json = localStorage.getItem("user");
+    return json ? JSON.parse(json) : {};
+  });
+
+  const team_id = user.team_id;
   const location = useLocation();
   const { addedTopic, removedTopic } = location.state || {};
   const [motivationFile, setMotivationFile] = useState(null);
@@ -163,102 +169,180 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
   // Toast & Modals
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [isToasterror, setIsToasterror] = useState(null);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  const handleConfirmSubmit = () => {
-    setShowSubmitModal(false);
-
-    (async () => {
+  /*   const handleConfirmSubmit = () => {
+      setShowSubmitModal(false);
+  
+      (async () => {
+        if (!motivationFile) {
+          return setToastMessage("Please upload your motivation letter first.");
+        }
+  
+        const formData = new FormData();
+        const pfeIdsArray = items.map((item) => item.card_info.id);
+  
+        //  Append each ID as an array element
+        pfeIdsArray.forEach((id) => formData.append("pfeIds[]", id));
+  
+        formData.append("ML", motivationFile);
+        console.log("Form data prepared:***********************************", motivationFile);
+  
+        try {
+          const resp = await axios.post(
+            "/preflist/approve",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              },
+              withCredentials: true
+            }
+          );
+  
+          // (clear local storage)
+          localStorage.removeItem("preferencesList");
+  
+          setPreferencesList([]);
+          setItems([]);
+          //   (refresh the page)
+          window.location.reload();
+        } catch (err) {
+          setIsToasterror(true);
+  
+          setToastMessage(err.response?.data?.message || " failed. Please try again.");
+          setShowToast(true);
+        }
+      })();
+    };
+  
+  
+    const handleSaveSubmit = async () => {
+      // 1. Make sure a file was selected
       if (!motivationFile) {
-        return setToastMessage("Please upload your motivation letter first.");
+        setIsToasterror(null);
+  
+        setToastMessage("Please upload your motivation letter first.");
+        setShowToast(true);
+        return;
       }
-
-      const formData = new FormData();
-      const pfeIdsArray = items.map((item) => item.card_info.id);
-
-      //  Append each ID as an array element
-      pfeIdsArray.forEach((id) => formData.append("pfeIds[]", id));
-
-      formData.append("ML", motivationFile);
-      console.log("Form data prepared:***********************************", motivationFile);
-
+  
       try {
+        // 2. Build FormData
+        const formData = new FormData();
+        items.forEach(item => {
+          formData.append("pfeIds[]", item.card_info.id);
+        });
+        formData.append("ML", motivationFile);  // motivationFile is a single File object
+  
+        console.log("Form data prepared:", motivationFile);
+  
+        // 3. Send to server
         const resp = await axios.post(
-          "/preflist/approve",
+          "/preflist/create",
           formData,
           {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            },
+            headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true
           }
         );
-
-        // (clear local storage)
-        localStorage.removeItem("preferencesList");
-
-        setPreferencesList([]);
-        setItems([]);
-        //   (refresh the page)
-        window.location.reload();
+  
+        // 4. On success
+        console.log("Server Save response:", resp.data);
+        setIsToasterror(null);
+  
+        setToastMessage("Your list has been saved successfully.");
+        setShowToast(true);
+  
+        // 5. Save local copy
+        const storedPrefs = items.map((item, idx) => ({
+          ...item,
+          order: String(idx + 1).padStart(2, "0"),
+        }));
+        localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
+  
       } catch (err) {
-        console.error("Upload error:", err);
-        setToastMessage("Submission failed. Please try again.");
+        setIsToasterror(true);
+  
+        setToastMessage(err.response?.data?.message || " failed. Please try again.");
         setShowToast(true);
       }
-    })();
-  };
-
-
+    };
+   */
+  // 1. Make handleSaveSubmit return a Promise that resolves on success or rejects on error
   const handleSaveSubmit = async () => {
-    // 1. Make sure a file was selected
     if (!motivationFile) {
+      setIsToasterror(true);
       setToastMessage("Please upload your motivation letter first.");
       setShowToast(true);
-      return;
+      throw new Error("No motivation file"); // reject so confirm won't run
     }
 
+    const formData = new FormData();
+    items.forEach(item => formData.append("pfeIds[]", item.card_info.id));
+    formData.append("ML", motivationFile);
+
+    console.log("Form data prepared:", motivationFile);
+
+    const resp = await axios.post("/preflist/create", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true
+    });
+
+    console.log("Server Save response:", resp.data);
+    setIsToasterror(false);
+    setToastMessage("Your list has been saved successfully.");
+    setShowToast(true);
+
+    const storedPrefs = items.map((item, idx) => ({
+      ...item,
+      order: String(idx + 1).padStart(2, "0")
+    }));
+    localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
+
+    return resp.data; // resolve with server response
+  };
+
+  // 2. Make handleConfirmSubmit call handleSaveSubmit first
+  const handleConfirmSubmit = async () => {
+    setShowSubmitModal(false);
+
     try {
-      // 2. Build FormData
+      // wait for the save to finish
+      await handleSaveSubmit();
+
+      if (!motivationFile) {
+        // this case is already handled in save, but just in case
+        return setToastMessage("Please upload your motivation letter first.");
+      }
+
+      // now run original confirm (approve) logic
       const formData = new FormData();
-      items.forEach(item => {
-        formData.append("pfeIds[]", item.card_info.id);
+      items.forEach(item => formData.append("pfeIds[]", item.card_info.id));
+      formData.append("ML", motivationFile);
+
+      console.log("Form data prepared for approve:", motivationFile);
+
+      const resp = await axios.post("/preflist/approve", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true
       });
-      formData.append("ML", motivationFile);  // motivationFile is a single File object
 
-      console.log("Form data prepared:", motivationFile);
+      console.log("Server Approve response:", resp.data);
 
-      // 3. Send to server
-      const resp = await axios.post(
-        "/preflist/create",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true
-        }
-      );
+      localStorage.removeItem("preferencesList");
+      setPreferencesList([]);
+      setItems([]);
 
-      // 4. On success
-      console.log("Server Save response:", resp.data);
-      setToastMessage("Your list has been saved successfully.");
-      setShowToast(true);
-
-      // 5. Save local copy
-      const storedPrefs = items.map((item, idx) => ({
-        ...item,
-        order: String(idx + 1).padStart(2, "0"),
-      }));
-      localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
-
+      window.location.reload();
     } catch (err) {
-      // On error
-      console.error("Save error:", err);
-      setToastMessage("Save failed. Please try again.");
+      setIsToasterror(true);
+      setToastMessage(err.response?.data?.message || err.message || " failed. Please try again.");
       setShowToast(true);
     }
   };
-
 
   const handleCloseSuccess = () => setShowSuccessModal(false);
   // DnD setup
@@ -295,11 +379,16 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
 
   return (
     <div className={Style["pagecontainer"]}>
+      <div className={Module["header-left"]}>
+        <h2>Team number</h2>
+        <p>You are currently in team number <span>{team_id}</span></p>
+      </div>
       {submit ? (
         <div
           className={Style["header"]}
           style={{ color: "#313638", fontFamily: "Manrope", marginLeft: "5px" }}
         >
+
           <p>Welcome again.</p>
           <p style={{ marginTop: "3px", fontSize: "1rem" }}>
             Here is your result for your selection.
@@ -366,6 +455,8 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
                 onClick={() => {
                   if (items.length === 5) setShowSubmitModal(true);
                   else {
+                    setIsToasterror(null);
+
                     setToastMessage("You must select exactly 5 topics before submitting.");
                     setShowToast(true);
                   }
@@ -386,7 +477,13 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
             show={showSuccessModal}
           />
         )}
-        {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
+        {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+            isError={isToasterror}
+          />
+        )}
       </div>
     </div>
   );

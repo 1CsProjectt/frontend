@@ -17,6 +17,7 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
   const containerRef = useRef(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [isToasterror , setIsToasterror] = useState(null);
   const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
 
@@ -34,6 +35,8 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
   const handleCancel = () => {
 
     setShowJoinAlert(false);
+    setIsToasterror(null);
+
     setToastMessage("Join request was cancelled.");
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
@@ -47,14 +50,20 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
       if (response.data.success) {
       
               console.log("Join confirmed!");
-     
+              setIsToasterror(null);
+
                setShowJoinAlert(false);                          // close modal
                setToastMessage("Team joining was successful.");  // show toast
                setShowToast(true);
                setTimeout(() => setShowToast(false), 3000);      // auto‐hide after 3s
       }
-    } catch (error) {
-      console.error("Error sending join request:", error);
+    } catch (err) {
+      setIsToasterror(true);
+
+      setToastMessage(  err.response?.data?.message || " failed. Please try again.");
+      setShowToast(true
+
+      );
     }
   };
 
@@ -138,7 +147,8 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                   <td style={{ marginLeft: "200px" }}>
                     {session === "Select topics session" ? (
                       <span className={Module["status-in-team"]}>
-                        {team.status}
+                        {team.status } 
+                      
                       </span>
                     ) : team.status === "Open" ? (
                       <span className={Module["status-available"]}>
@@ -236,9 +246,13 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
         onCancel={handleCancel}
         onConfirm={handleConfirm}
       />
-      {showToast && (
-        <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />
-      )}
+    {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+            isError ={ isToasterror }
+          />
+        )}
     </div>
   );
 };
