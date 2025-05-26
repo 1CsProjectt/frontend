@@ -12,6 +12,7 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
   const [showSetRoleModal, setShowSetRoleModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [isToasterror, setIsToasterror] = useState(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   // add this mapping above or in scope
   const roleMap = {
@@ -35,6 +36,8 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
   const handleModalClose = (message) => {
     setShowSetRoleModal(false);
     if (message) {
+      setIsToasterror(null);
+
       setToastMessage(message);
       setShowToast(true);
     }
@@ -47,10 +50,14 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
       );
       console.log(response.data);
       /* window.location.reload(); */
+      setIsToasterror(null);
+
       setToastMessage(`Accept Invite with ID: ${inviteId}`);
       setShowToast(true);
       await reloadMyTeam();
     } catch (error) {
+      setIsToasterror(true);
+
       console.error("Error:", error);
       setToastMessage(error);
       setShowToast(true);
@@ -62,11 +69,15 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
       const response = await axios.post('/jointeam/accepteJoinRequests', { requestId: reqId }
       );
       console.log(response.data);
+      setIsToasterror(null);
+
       setToastMessage(`Accept req with ID: ${reqId}`);
       setShowToast(true);
       await reloadMyTeam();
 
     } catch (error) {
+      setIsToasterror(true);
+
       console.error("Error:", error);
       setToastMessage(error);
       setShowToast(true);
@@ -78,11 +89,15 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
       const response = await axios.post('/jointeam/rejectJoinRequests', { requestId: reqId });
       console.log(`Declined req with ID: ${reqId}`);
       console.log(response.data);
+      setIsToasterror(null);
+
       setToastMessage(`Declined req with ID: ${reqId}`);
       setShowToast(true);
       await reloadMyTeam();
 
     } catch (error) {
+      setIsToasterror(true);
+
       console.error("Error:", error);
       setToastMessage(error);
       setShowToast(true);
@@ -92,6 +107,8 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
   const handleDeclineInvite = async (inviteId) => {
     console.log(`Declined invite with ID: ${inviteId}`);
     axios.post('/invitation/declineInvitation', { invitationId: inviteId });
+    setIsToasterror(null);
+
     setToastMessage(`Declined invite with ID: ${inviteId}`);
     setShowToast(true);
     await reloadMyTeam();
@@ -103,13 +120,15 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
     })
       .then(async () => {
         console.log(`Cancelled invite with ID: ${inviteId}`);
+        setIsToasterror(null);
+
         setToastMessage(`Cancelled invite with ID: ${inviteId}`);
         setShowToast(true);
         await reloadMyTeam();
       })
-      .catch((error) => {
-        console.error('Error cancelling invitation:', error);
-        setToastMessage('Failed to cancel invite.');
+      .catch((err) => {
+        setIsToasterror(true);
+        setToastMessage(err.response?.data?.message || 'Failed to cancel invite.');
         setShowToast(true);
       });
   };
@@ -174,6 +193,13 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
             </table>
           </div>
         </div>
+        {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+            isError={isToasterror}
+          />
+        )}
       </div>
     );
   }
@@ -330,7 +356,13 @@ const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites
         }
 
       />
-      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+          isError={isToasterror}
+        />
+      )}
     </div>
 
   );

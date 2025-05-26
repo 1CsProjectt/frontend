@@ -5,7 +5,7 @@ import schoolIcon from "../assets/school-icon.svg";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import Toast from "../components/modals/Toast";
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
@@ -16,6 +16,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [isToasterror , setIsToasterror] = useState(null);
 
   const navigate = useNavigate();
 
@@ -59,7 +62,8 @@ const Login = () => {
       setError(
         err.response?.data?.message || "Login failed. Please try again."
       );
-      alert("Login failed !");
+     
+   
     } finally {
       setLoading(false);
     }
@@ -132,6 +136,13 @@ const Login = () => {
           </form>
         </div>
       </div>
+      {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+            isError ={ isToasterror }
+          />
+        )}
     </div>
   );
 };

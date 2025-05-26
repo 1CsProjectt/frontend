@@ -200,7 +200,7 @@ const Sidebar = () => {
           </li>
         )}
 
-        <li className={Module["menu-item"]}>
+        {/* <li className={Module["menu-item"]}>
           <button
             className={`${Module["menu-btn"]} ${
               activeMenu === "meetings" ? Module["active"] : ""
@@ -223,7 +223,7 @@ const Sidebar = () => {
               className={Module["row-icon"]}
             />
           </button>
-        </li>
+        </li> */}
         <li className={Module["menu-item"]}>
           <button
             /* className={Module[`menu-btn ${activeMenu === "Soutenance" ? "active" : ""}`]} */
@@ -246,38 +246,8 @@ const Sidebar = () => {
           </button>
         </li>
 
-        <li className={Module["menu-item"]}>
-          <button
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "lovers" ? Module["active"] : ""
-            }`}
-            onClick={() => toggleMenu("/lovers")}
-          >
-            <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
-            Lovers
-            <img
-              src={ChevronRightIcon}
-              alt="Arrow"
-              className={Module["row-icon"]}
-            />
-          </button>
-        </li>
-        <li className={Module["menu-item"]}>
-          <button
-            className={`${Module["menu-btn"]} ${
-              activeMenu === "export" ? Module["active"] : ""
-            }`}
-            onClick={() => toggleMenu("/export")}
-          >
-            <img src={ExportIcon} alt="Export" className={Module["icon"]} />
-            Export
-            <img
-              src={ChevronRightIcon}
-              alt="Arrow"
-              className={Module["row-icon"]}
-            />
-          </button>
-        </li>
+    
+   
       </ul>
 
       {/* Bottom Menu */}

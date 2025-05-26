@@ -17,9 +17,9 @@ function StudentMeetingPage() {
     // onglet actif (active tab)
     const [activeTab, setActiveTab] = useState("My meetings");
     const navigate = useNavigate();
-
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
+    const [isToasterror , setIsToasterror] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [currentSessions, setCurrentSessions] = useState([]);
@@ -49,28 +49,43 @@ function StudentMeetingPage() {
         return `${month}/${day}`;
     }
 
-    // Chargement des données au montage
     useEffect(() => {
-        setLoading(true);
-        // fetch all meetings
-        axios
-            .get(`/mettings/getAllMeetings/${teamId}`)
-            .then((res) => {
-                setMeetings(res.data.data.meetings);
-                if (res.data.currentSessions) {
-                    const processed = formatSessions(res.data.currentSessions);
+        const fetchMeetings = async () => {
+            try {
+                setLoading(true);
+    
+                // Fetch all meetings
+                const allMeetingsRes = await axios.get(`/mettings/getAllMeetings/${teamId}`);
+                setMeetings(allMeetingsRes.data.data.meetings);
+    
+                if (allMeetingsRes.data.currentSessions) {
+                    const processed = formatSessions(allMeetingsRes.data.currentSessions);
                     setCurrentSessions(processed);
                 }
-            })
-            .catch(() => setError("Failed to load meeting history"))
-            .finally(() => setLoading(false));
+    
+                // Fetch next meeting
+                const nextMeetingRes = await axios.get(`/mettings/getNextMeet/${teamId}`);
+                setNextMeeting(nextMeetingRes.data.data.nextMeeting);
+                setIsToasterror(null);
+                setToastMessage("fetching meetings data successfully");
+                setShowToast(true);
+            } catch (error) {
+                console.error("Error fetching meetings:", error);
+              
 
-        // fetch next meeting
-        axios
-            .get(`/mettings/getNextMeet/${teamId}`)
-            .then((res) => setNextMeeting(res.data.data.nextMeeting))
-            .catch(() => { });
+
+                setIsToasterror(true);
+                setToastMessage(error?.response?.data?.message || error?.message || "Failed to load meeting data");
+
+                setShowToast(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchMeetings();
     }, [teamId]);
+    
 
     // Fonction pour afficher le contenu selon l’onglet sélectionné
     const renderTabContent = () => {
@@ -210,10 +225,13 @@ function StudentMeetingPage() {
 
                     {/* Contenu de l’onglet actif */}
                     {renderTabContent()}
-
                     {showToast && (
-                        <Toast message={toastMessage} onClose={() => setShowToast(false)} />
-                    )}
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+            isError ={ isToasterror }
+          />
+        )}
                 </div>
             </div>
             
