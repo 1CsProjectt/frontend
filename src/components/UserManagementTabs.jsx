@@ -165,7 +165,7 @@ useEffect(() => {
                     <td colSpan="5">
                       <div className={classes.loaderContainer}>
                         <div className={classes.loader}>
-                          <PulseLoader color="#07cad4" loading={loading} size={25} />
+                          <PulseLoader color="#077fd4" loading={loading} size={20} />
                         </div>
                       </div>
                     </td>
@@ -192,11 +192,11 @@ useEffect(() => {
                     </td>
                   </tr>
                 ) : displayedUsers.map((user, index) => ( 
-                  <tr key={index}>
-                    <td className={classes["max-cell-height"]}> {user.username || "No Username"}</td>
-                    <td className={classes["max-cell-height"]}>{user.email || "No Email"}</td>
-                    <td className={classes["max-cell-height"]}>{user.createdAt || "Unknown Date"}</td>
-                    <td className={classes["max-cell-height"]}
+                  <tr  style={{ height: "60px", maxHeight: "60px", minHeight: "60px" }} key={index}>
+                    <td > {user.username || "No Username"}</td>
+                    <td >{user.email || "No Email"}</td>
+                    <td >{user.createdAt || "Unknown Date"}</td>
+                    <td 
                       /* className={
                         user.status === "active"
                           ? classes["status-active"]
@@ -238,7 +238,7 @@ useEffect(() => {
       <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
         
       <div className={classes["pagination"]}>
-        <p>{currentPage}/{totalPages}</p>
+       {/*  <p>{currentPage}/{totalPages}</p> */}
   
         {totalPages <= 10 ? (
           [...Array(totalPages)].map((_, i) => (

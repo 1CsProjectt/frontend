@@ -13,7 +13,7 @@ import errorIcon from "../assets/error-icon.svg";
 import DeleteUserModal from "./modals/DeleteUserModal.jsx";
 import { Outlet } from "react-router-dom";
 const SessionsManagementTabs = () => {
-  const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState("Topic Submission Session");
+  const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState();
   const navigate = useNavigate();
   const [sessionsArray,setSessionsArray] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,7 +62,7 @@ const SessionsManagementTabs = () => {
       "Topic Submission Session": "PFE_SUBMISSION",
       "Team Formation Session": "TEAM_CREATION",  
       "Select Topics Session": "PFE_ASSIGNMENT",
-      "Project Realization Session": "PROJECT_REALIZATION",
+      "Project Realization Session": "WORK_STARTING",
     };
 
   useEffect(() => {
@@ -141,7 +141,7 @@ const SessionsManagementTabs = () => {
       <td colSpan={3}>
         <div className={classes.loaderContainer}>
           <div className={classes.loader}>
-            <PulseLoader color="#07cad4" loading={loading} size={25} />
+            <PulseLoader color="#077fd4" loading={loading} size={20} />
           </div>
         </div>
       </td>
@@ -179,6 +179,7 @@ const SessionsManagementTabs = () => {
               className={classes["edit-btn"]}
               onClick={() => {
                 console.log(session);
+                session.year = "1CS";
                 setSessionToUpdate(session);
                 setIsEditModalOpen(true);
               }}
@@ -246,7 +247,7 @@ const SessionsManagementTabs = () => {
                           <td colSpan={4}>
                             <div className={classes.loaderContainer}>
                               <div className={classes.loader}>
-                                <PulseLoader color="#07cad4" loading={loading} size={25} />
+                                <PulseLoader color="#077fd4" loading={loading} size={20} />
                               </div>
                             </div>
                           </td>
@@ -345,7 +346,7 @@ const SessionsManagementTabs = () => {
                     <td colSpan={3}>
                       <div className={classes.loaderContainer}>
                         <div className={classes.loader}>
-                          <PulseLoader color="#07cad4" loading={loading} size={25} />
+                          <PulseLoader color="#077fd4" loading={loading} size={20} />
                         </div>
                       </div>
                     </td>
@@ -415,12 +416,96 @@ const SessionsManagementTabs = () => {
           </div>
           )}
 
-          {sessionsPageActiveTab === "Project Realization Session" && (
-            <div>
-              <h2>Project Realization</h2>
-              <p>Manage project execution...</p>
+         
+            {sessionsPageActiveTab === "Project Realization Session" && (
+              <div className={classes["main-container"]}>
+              {/* Start New Session Section */}
+              <div className={classes["upper-section-container"]}>
+                <div className={classes["text-container"]}>
+                  <h2>Start new session</h2>
+                  <p>
+                    Easily create and customize new sessions with full<br/>
+                    controlover settings. Tailor each session to meet<br/>
+                    your needs and ensure a seamless experience.
+                  </p>
+                </div>
+                <div className={classes["inner-flexbox"]}>
+                <div className={classes["table-container"]}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Grade</th>
+                      {/* <th>Max members</th> */}
+                      <th>From-To</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={3}>
+                        <div className={classes.loaderContainer}>
+                          <div className={classes.loader}>
+                            <PulseLoader color="#077fd4" loading={loading} size={20} />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : error ? (
+                    <tr>
+                      <td colSpan={3}>
+                        <div className={classes.alertDiv}>
+                          <img src={errorIcon} alt="Error Icon" />
+                          <h3>Error connecting to the server</h3>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : sessionsArray.filter(session => session.name === tabToSessionType[sessionsPageActiveTab]).length === 0 ? (
+                    <tr>
+                      <td colSpan={3}>
+                        <div className={classes.alertDiv}>
+                          <img src={alertIcon} alt="Alert Icon" />
+                          <h3>No Sessions were founds</h3>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    sessionsArray
+                    .filter(session => session.name === tabToSessionType[sessionsPageActiveTab])
+                    .map((session, index) => (
+                      <tr key={index}>
+                        <td>{session.year}</td>
+                     {/*    <td>{session.maxNumber ?? "N/A"}</td> */}
+                        <td>
+                          {new Date(session.startTime).toLocaleDateString()} -{" "}
+                          {new Date(session.endTime).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <button className={classes["edit-btn"]} onClick={() => {
+                  console.log(session);
+                  setSessionToUpdate(session);
+                  
+                  setIsEditModalOpen(true);
+                }}>Edit</button>
+                          <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
+                            setSessionIDtoDelete(session.id);
+                          
+                              setDeleteUserModalOpen(true);}}>Cancel</button>
+                        </td>
+                      </tr>
+                  )))}
+                  </tbody>
+                </table>
+              </div>
+              <button className={classes["primary-btn"]}  onClick={() => {console.log("current operation " + sessionsPageActiveTab);setIsModalOpen(true)}}>Start new session</button>
+               
+                </div>
+              </div>
+  
+              {/* Validate and Control Topics Section */}
+             
             </div>
-          )}
+            )}
         </div>
       </div>
       <Outlet />

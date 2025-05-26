@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import formatSessions from '../utils/formatSessions';
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/NavBar";
@@ -30,41 +31,42 @@ function TeamFormationPage() {
   const [collaborationInvites, setCollaborationInvites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // ▶️ change to state + effect
+  //  change to state + effect
   const [user, setUser] = useState(() => {
     const json = localStorage.getItem("user");
     return json ? JSON.parse(json) : {};
   });
-
-  // ▶️ whenever `user` changes, save it
+  const [currentSessions, setCurrentSessions] = useState([]);
+  //  whenever `user` changes, save it
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
   // Use session date from real version
-  const session = {
-    title: "TOPIC_SELECTION",
-    targetDate: {
-      start: new Date("2025-03-29T00:00:00"),
-      end: new Date("2025-04-29T23:59:59")
+
+
+
+  const fetchStudentData = async () => {
+    const { data } = await axios.get("/student/liststudents", { withCredentials: true });
+    const currentSessions = data.currentSessions;
+    if (currentSessions) {
+      const processedSessions = formatSessions(currentSessions);
+      setCurrentSessions(processedSessions);
+      console.log("Processed current sessions:", processedSessions);
+    }
+    if (data && Array.isArray(data.students)) {
+      setStudents(data.students);
+      console.log("Students data:", data);
+    } else {
+      console.error("Unexpected API Response Format for students:", data);
     }
   };
-
-  let sessionTitle;
-
-  if (session.title === "TEAM_CREATION") {
-    sessionTitle = "Group formation session";
-  } else if (session.title === "TOPIC_SELECTION") {
-    sessionTitle = "Select topics session";
-  } else {
-    sessionTitle = "Unknown session";
-  }
   const fetchexistedTeamData = async () => {
     const { data } = await axios.get("/teams/allgroups", { withCredentials: true });
     console.log("API Response (Listed Teams):", data);
     const teamsWithStatus = data.teams.map(team => ({
       ...team,
       status:
-        sessionTitle === "select topics session"
+      currentSessions[0]?.sessionTitle === "select topics session"
           ? "Full"
           : team.members && team.maxNumber && team.members.length >= team.maxNumber
             ? "Full"
@@ -73,22 +75,13 @@ function TeamFormationPage() {
 
     setExistedTeams(teamsWithStatus);
   };
-  const fetchStudentData = async () => {
-    const { data } = await axios.get("/student/liststudents", { withCredentials: true });
-    console.log("API Response (Students List):", data);
-    if (data && Array.isArray(data.students)) {
-      setStudents(data.students);
-    } else {
-      console.error("Unexpected API Response Format for students:", data);
-    }
-  };
 
   const fetchMyTeamData = async () => {
     try {
       const { data: teamData } = await axios.get("/teams/myteam", { withCredentials: true });
       console.log("API Response (My Team):", teamData);
       setMyTeam(teamData.team);
-      if (sessionTitle === "Group formation session") {
+      if (currentSessions[0]?.sessionTitle === "Group formation session") {
         if (teamData?.team?.id) {
           const { data: pendingInvites } = await axios.get("/invitation/getallmyinvitations", { withCredentials: true });
           setMyTeamPendingInvites(pendingInvites);
@@ -140,7 +133,7 @@ function TeamFormationPage() {
       setLoading(true);
       setError("");
       try {
-        if (activeTab === "Students List" && sessionTitle === "Group formation session") {
+        if (activeTab === "Students List") {
           fetchStudentData();
         } else if (activeTab === "Existed Teams") {
           fetchexistedTeamData();
@@ -220,7 +213,7 @@ function TeamFormationPage() {
     if (activeTab === "Students List") {
       return (
         <>
-          {sessionTitle === "Group formation session" ? (
+          {currentSessions[0]?.sessionTitle === "Group formation session" ? (
             <StudentsListTab
               user={user}
               students={filteredStudents}
@@ -245,8 +238,8 @@ function TeamFormationPage() {
           user={user}
           existedTeams={filteredTeams}
           navigate={navigate}
-          session={session.title}
-          
+          session={currentSessions[0]?.sessionTitle}
+
         />
       );
     } else if (activeTab === "My Team") {
@@ -257,9 +250,9 @@ function TeamFormationPage() {
           myTeamPendingInvites={myTeamPendingInvites}
           collaborationInvites={collaborationInvites}
           reqInvites={MyTeamteamReq}
-          session={sessionTitle}
+          session={currentSessions[0]?.sessionTitle}
           reloadMyTeam={fetchMyTeamData}
-         
+
         />
       );
     }
@@ -270,8 +263,8 @@ function TeamFormationPage() {
       <Sidebar />
       <div style={{ marginLeft: "16vw" }}>
         <Navbar
-          title={sessionTitle}
-          targetDate={session.targetDate}
+          title={currentSessions[0]?.sessionTitle}
+          targetDate={currentSessions[0]?.targetDate}
           onSearchChange={handleSearchChange}
           suggestions={suggestionsList}
         />
@@ -280,7 +273,7 @@ function TeamFormationPage() {
           <div className={Style["header-row"]}>
             <h1>Team formation</h1>
 
-            {sessionTitle === "Group formation session" && (
+            {currentSessions[0]?.sessionTitle === "Group formation session" && (
               <>
                 {(activeTab === "Existed Teams") && (
                   <button

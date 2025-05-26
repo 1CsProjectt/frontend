@@ -32,8 +32,9 @@ import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage";
 import ReadTopicPage from "./Pages/ReadTopicPage";
+import SoutenanceStudentPage from "./Pages/SoutenanceStudentPage";
 import DeclinedTopicsExplorePage from "./Pages/DeclinedTopicsExplorePage";
-
+import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
 function App() {
   return (
     <Router>
@@ -71,7 +72,10 @@ function App() {
           <Route path="/pfe-student" element={<PFEStudentPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route
+            path="/SoutenanceStudentPage"
+            element={<SoutenanceStudentPage />}
+          />
           <Route
             path="/StudentMeetingsPage"
             element={<StudentMeetingsPage />}
@@ -106,7 +110,7 @@ function App() {
             />
             <Route
               path="sessions/topic-validation/published-topic-explore"
-              element={<SubmittedTopicsExplorePage />}
+              element={<PublishedTopicsExplorePage />}
             />
             <Route
               path="sessions/topic-validation/declined-topic-explore"

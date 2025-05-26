@@ -39,8 +39,8 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
       
       name : "PFE_SUBMISSION",
       startTime: startDate,
-      endTime: endDate,
-      year: grade,
+      endTime: endDate
+      
     };
 
     try {
@@ -82,8 +82,8 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
       onClose(); // close modal after successcreate
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error("❌ Error creating session:", msg);
-      alert("❌ Error: " + msg);
+      console.error(" Error creating session:", msg);
+      alert("Error: " + msg);
     }
   };
   
@@ -106,6 +106,33 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
       });
 
       alert(" Submission session created: " + res.data.message);
+      onClose();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      console.error(" Error creating session:", msg);
+      alert(" Error: " + msg);
+    }
+  };
+
+  const handleCreateProjectRealizationSession = async () => {
+   
+    const payload = {
+      
+      name : "WORK_STARTING",
+      startTime: startDate,
+      endTime: endDate,
+      year: grade,
+    };
+
+    try {
+      const res = await axios.post("/session/setsessoin", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // include credentials if required
+      });
+
+      alert(" Project Realization session created: " + res.data.message);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
@@ -184,6 +211,9 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
               handleCreateTeamFormationSession();
             }else if (sessionsPageActiveTab === "Select Topics Session"){
               handleCreateTopicSelectionSession();
+
+            }else if (sessionsPageActiveTab === "Project Realization Session"){
+              handleCreateProjectRealizationSession();
             
           }else{
             alert("please select a valid operation");

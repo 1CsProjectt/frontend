@@ -116,6 +116,8 @@ useEffect(() => {
         onClose={() => setShowAddMembersModal(false)}
         students={students}
         selectedTeamID={myTeamNumber}
+        year={myTeamMembers[0]?.year}
+        specialite={myTeamMembers[0]?.specialite}
       />
       {showToast && (
         <Toast

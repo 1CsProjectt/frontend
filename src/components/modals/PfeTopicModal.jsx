@@ -15,12 +15,41 @@ const PfeTopicModal = ({
   selectedcardsid,
   validatedcardid,
   setCardsArray,
+  role,
+  specialite,
+  supervisorToAssign,
 }) => {
   // the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] =
     useState(false);
   const [showModal, setShowModal] = useState(true);
   const navigate = useNavigate();
+   const addSupervisorsToPFE = async (pfeId, supervisorIds) => {
+      try {
+        const response = await axios.post(`/pfe/${pfeId}/add-supervisor`, {
+          supervisors: supervisorIds
+        });
+        
+        console.log("Supervisors added:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Failed to add supervisors:", error.response?.data || error.message);
+        throw error;
+      }
+    };
+    const addSpecializationToPFE = async (pfeId, specialization) => {
+      try {
+        const response = await axios.post(`/pfe/${pfeId}/add-specialization`, {
+          specialization: specialization
+        });
+        console.log("Specialization added:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Failed to add specialization:", error.response?.data || error.message);
+        throw error;
+      }
+    };
+    
   if (!isOpen) return null;
 
   const handleDelete = async () => {
@@ -94,6 +123,11 @@ const PfeTopicModal = ({
 
   const handleDecline = () => {};
   const handleValidate = async () => {
+    if (role === "company") {
+      addSupervisorsToPFE(validatedcardid, [supervisorToAssign]);
+      //the supervisorToAssign is the id of the supervisor to assign and it must be passed as an array
+      addSpecializationToPFE(validatedcardid, specialite);
+    }
     try {
       const response = await axios.patch(
         `/pfe/${validatedcardid}/validate`,

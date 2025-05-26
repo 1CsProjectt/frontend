@@ -124,23 +124,22 @@ th {
   color: #f76659cc;
   font-weight: 500;
 }
-
+.button-container{
+  display: flex;
+  flex-direction: row;
+}
 /* Invite button (bordered style) */
 .invite-button {
   background-color: #f1f1f1;
   border: 1px solid #d0d5dd;
   color: #344054;
-
   font-weight: 600;
-
   letter-spacing: -0.6%;
-
   padding: 8px 14px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.85rem;
   transition: background-color 0.2s ease, color 0.2s ease;
-  width: 7vw;
 }
 
 .invite-button:hover {
@@ -152,10 +151,12 @@ th {
   background-color: #f5f0f0;
   border: 1px solid #d0d5dd;
   color: #ffffff;
-  padding: 8px 14px;
   border-radius: 4px;
-  width: 7vw;
+  cursor: not-allowed;
   font-size: 0.85rem;
+  display: inline-block; /* allow width/height/padding to be applied */
+  box-sizing: border-box; /* include padding and border in the width */
+  padding: 8px 14px;
 }
 
 /* Pagination container */
@@ -164,9 +165,9 @@ th {
   justify-content: space-between;
   align-items: center;
   margin: 16px 0;
-  gap: 8px;
+  
+ padding: 3px;
   position: relative;
-  /* margin-top: 4vh; */
 }
 
 /* Style for the Previous button (top-left) */

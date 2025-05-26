@@ -106,6 +106,8 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
       fullName: `${member.firstname} ${member.lastname}`,
       email: member.user?.email || "N/A",
       role: member.role || "Member", // Default to "Member" if role isn't provided
+      year: member.year || "N/A",
+      specialite: member.specialite || "N/A",
     }));
 
     return (
@@ -134,6 +136,8 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
             <tr>
               <th>Team Number</th>
               <th>Team Creator</th>
+              <th>Grade</th>
+              <th>Speciality</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -148,6 +152,8 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
                 <tr key={idx}>
                   <td>{team.id || "N/A"}</td>
                   <td>{teamCreator}</td>
+                  <td>{team.members[0]?.year || "N/A"}</td>
+                  <td>{team.members[0]?.specialite || ""}</td>
                   <td>
                     {team.status === "open" ? (
                       <span className={Module["status-available"]}>

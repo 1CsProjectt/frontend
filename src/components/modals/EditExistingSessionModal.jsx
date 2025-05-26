@@ -44,11 +44,11 @@ const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessi
           maxNumber: maxMembers
         });
     
-        console.log('✅ Success:', response.data);
+        console.log('Success:', response.data);
         
         setIsSuccessModalOpen(true);
       } catch (error) {
-        console.error('❌ Error:', error.response?.data || error.message);
+        console.error(' Error:', error.response?.data || error.message);
       }
     };
     

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Style from "../styles/CardComponent.module.css";
 
-const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
+const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessionTitle,targetDate,year }) => {
   //the buttonText is an optional prop when wanting to override the default buttonText (Explore)
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,11 +14,11 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
       .join(" ") // Join with space
       .trim() || // Remove any extra whitespace
     "Unknown";
-  console.log(username);
+ 
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-    navigate("/pfe-student/explore", { state: { card } });
+    navigate("/pfe-student/explore", { state: { card , sessionTitle,targetDate } });
   };
 
   // If onExplore prop is not passed, fallback to defaultHandleExplore
@@ -33,23 +33,35 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText }) => {
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
-          {Array.isArray(card.specialization) ? (
-            card.specialization.map((spec, i) => (
-              <span key={i} className={Style.category}>
-                {spec}
-              </span>
-            ))
-          ) : (
-            <span className={Style.category}>{card.specialization}</span>
-          )}
+{/*           added by khedim youcef for the display of the year in the card}
+ */}          {[
+            ...(Array.isArray(card.specialization)
+              ? card.specialization
+              : card.specialization
+              ? [card.specialization]
+              : []),
+            ...(year &&
+            !(
+              Array.isArray(card.specialization)
+                ? card.specialization
+                : [card.specialization]
+            ).includes(year)
+              ? [year]
+              : []),
+          ].map((spec, i) => (
+            <span key={i} className={Style.category}>
+              {spec}
+            </span>
+          ))}
         </div>
+
         <p className={Style["card-description"]}>{card.description}</p>
         <p className={Style["card-author"]}>By {username}</p>
         <button
           className={Style["card-button"]}
           onClick={(e) => handleExplore(e, card)} // Use handleExplore here
         >
-          {buttonText || "Explore"}
+          {buttonText || "Explore"}By
         </button>
       </div>
     </div>

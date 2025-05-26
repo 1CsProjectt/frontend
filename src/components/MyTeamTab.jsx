@@ -13,7 +13,12 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-
+   // add this mapping above or in scope
+   const roleMap = {
+     back_end:    "Back-end Developer",
+     front_end:   "Front-end Developer",
+     design:      "UI/UX Designer"
+   };
   const invites = (collaborationInvites && collaborationInvites.length > 0)
     ? collaborationInvites
     : [{
@@ -73,17 +78,27 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
   }
   const handleDeclineInvite = (inviteId) => {
     console.log(`Declined invite with ID: ${inviteId}`);
-    axios.patch('/invitation/declineInvitation', { invitationId: inviteId });
+    axios.post('/invitation/declineInvitation', { invitationId: inviteId });
     setToastMessage(`Declined invite with ID: ${inviteId}`);
     setShowToast(true);
   };
 
   const handleCancelInvite = (inviteId) => {
-    axios.patch('/invitation/cancelInvitation', { invitationId: inviteId });
-    console.log(`Cancelled invite with ID: ${inviteId}`);
-    setToastMessage(`Cancelled invite with ID: ${inviteId}`);
-    setShowToast(true);
+    axios.delete('/invitation/cancelInvitation', {
+      data: { invitationId: inviteId },
+    })
+    .then(() => {
+      console.log(`Cancelled invite with ID: ${inviteId}`);
+      setToastMessage(`Cancelled invite with ID: ${inviteId}`);
+      setShowToast(true);
+    })
+    .catch((error) => {
+      console.error('Error cancelling invitation:', error);
+      setToastMessage('Failed to cancel invite.');
+      setShowToast(true);
+    });
   };
+  
 
   if (!myTeamNumber && session === "Group formation session") {
     return (
@@ -176,7 +191,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
               <tr key={index}>
                 <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"}</td>
                 <td>{member.user?.email || "N/A"}</td>
-                <td>{member.roleINproject|| "N/A"}  </td>
+                <td>{roleMap[member.roleINproject]|| "N/A"}  </td>
                 <td></td>
                 <td></td>
               </tr>
@@ -218,7 +233,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
                       <td>
                         <button
                           className={Module["invite-button"]}
-                          onClick={() => handleCancelInvite(invite.sender.team_id)}//to change later when the backend is ready
+                          onClick={() => handleCancelInvite(invite.id)}//to change later when the backend is ready
                         >
                           Cancel invite
                         </button>
@@ -288,7 +303,10 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
       <SetRoleModal
        show={showSetRoleModal}
        onClose={handleModalClose}
-       currentRole={userRole}
+        currentRole={
+           (roleMap[userRole] || "Member")
+            
+         }
        
       />
       {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}

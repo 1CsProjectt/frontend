@@ -9,7 +9,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
 const ExistedTeamsTab = ({ user, existedTeams, session }) => {
 
-  console.log("👀 [ExistedTeamsTab] session prop:", JSON.stringify(session));
+  console.log("[ExistedTeamsTab] session prop:", JSON.stringify(session));
 
   const [currentPage, setCurrentPage] = useState(1);
   const [teamsPerPage, setTeamsPerPage] = useState(10);
@@ -157,15 +157,16 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                     ) : team.status === "Open" ? (
                       <button
                         className={Module["invite-button"]}
-                        style={{ width: "90px", marginRight: "15px" }}
+                        style={{ width: "7vw", marginRight: "15px" }}
                         onClick={() => handleJoinClick(team.id)}
                       >
                         Join
                       </button>
                     ) : (
+                      
                       <span
                         className={Module["disable-button"]}
-                        style={{ width: "90px", marginRight: "15px" }}
+                        style={{ width: "7vw", marginRight: "15px" }}
                       >
                         Join
                       </span>

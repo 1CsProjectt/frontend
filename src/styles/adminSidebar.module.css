@@ -7,7 +7,7 @@ body {
   height: 100vh;
   position: fixed;
   width: 17%; 
-  background-color: #077ED4;
+  background-color: rgb(7,126,212);
   color: white;
   display: flex;
   flex-direction: column;

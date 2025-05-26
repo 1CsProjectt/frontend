@@ -128,3 +128,11 @@
     background-color: #0069d9;
   }
   
+  .label {
+    font-weight: bold;
+    margin-right: 8px;
+  }
+  .value {
+    margin-right: 12px;
+  }
+  
