@@ -4,73 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/NavBar";
 import Toast from "../components/modals/Toast";
-import Style from "../styles/TeamFormationPage.module.css";
 import Module from "../styles/StudentMeetingPage.module.css";
-import formatSessions from "../utils/formatSessions";
 import { TeachergetUploadfile, StudentUploadfile } from "../components/Uploadfile";
-const Soutenanceschudule =
-{
-    date: "2025-06-01",
-    time: "10:00",
-    room: "Room A1"
-}
-const currentItems = [
-    {
-        id: "01",
-        Fullname: "Dr. Nadia Bensalem",
-        email: "karim.bouzid@usthb.dz",
-        work_Status: "Supervisor"
-    },
-    {
-        id: "02",
-        Fullname: "Prof. Karim Bouzid",
-        email: "nadia.bensalem@univ-msila.dz",
-        work_Status: "Co-supervisor"
-    },
-    {
-        id: "04",
-        Fullname: "Dr. Samir Haddad",
-        email: "samir.haddad@univ-oran.dz",
-        work_Status: "Extern"
-    },
-    {
-        id: "05",
-        Fullname: "Prof. Leïla Merabet",
-        email: "leila.merabet@univ-setif.dz",
-        work_Status: "Extern"
-    }
-];
-
-const marksData = [
-    {
-        team_member: "Dr. Imène Sahraoui",
-        jury1: 12,
-        jury2: 12,
-        jury3: 12,
-        jury4: 12
-    },
-    {
-        team_member: "Prof. Adel Mansouri",
-        jury1: 14,
-        jury2: 14,
-        jury3: 14,
-        jury4: 14
-    },
-    {
-        team_member: "Dr. Nacira Boumediene",
-        jury1: 13,
-        jury2: 13,
-        jury3: 13,
-        jury4: 13
-    },
-    {
-        team_member: "Prof. Sofiane Meziane",
-        jury1: 15,
-        jury2: 15,
-        jury3: 15,
-        jury4: 15
-    }
-];
 
 
 // Skip ngrok warning if you're using ngrok
@@ -108,7 +43,7 @@ function SoutenanceStudentPage() {
 
     // Fonction pour afficher le contenu selon l’onglet sélectionné
     const renderTabContent = () => {
-        if (activeTab === "soutenance informations") {
+       
             return (
                 <div style={{ overflow: "auto", maxHeight: "69vh" }}>
                     <div className={Module["Week-meeting-container"]}>
@@ -133,7 +68,7 @@ function SoutenanceStudentPage() {
                     </div>
                 </div>
             );
-        }
+      
     };
 
     return (
