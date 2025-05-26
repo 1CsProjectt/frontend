@@ -57,14 +57,23 @@ const Login = () => {
       } else {
         navigate("/teacher");
       }
-    } catch (err) {
+    }catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
-      setError(
-        err.response?.data?.message || "Login failed. Please try again."
-      );
-     
-   
-    } finally {
+    
+      if (
+        err.message === "Network Error" ||
+        err.code === "ERR_NETWORK"
+      ) {
+        setToastMessage("No internet connection. Please check your network.");
+        setIsToasterror(true);
+        setShowToast(true);
+      } else {
+        setError(
+          err.response?.data?.message || "Login failed. Please try again."
+        );
+      }
+    }
+    finally {
       setLoading(false);
     }
   };

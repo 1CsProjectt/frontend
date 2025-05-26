@@ -95,6 +95,12 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, ta
 };
 
 const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
+  const [user] = useState(() => {
+    const json = localStorage.getItem("user");
+    return json ? JSON.parse(json) : {};
+  });
+
+  const team_id = user.team_id;
   const location = useLocation();
   const { addedTopic, removedTopic } = location.state || {};
   const [motivationFile, setMotivationFile] = useState(null);
@@ -373,11 +379,16 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
 
   return (
     <div className={Style["pagecontainer"]}>
+      <div className={Module["header-left"]}>
+        <h2>Team number</h2>
+        <p>You are currently in team number <span>{team_id}</span></p>
+      </div>
       {submit ? (
         <div
           className={Style["header"]}
           style={{ color: "#313638", fontFamily: "Manrope", marginLeft: "5px" }}
         >
+
           <p>Welcome again.</p>
           <p style={{ marginTop: "3px", fontSize: "1rem" }}>
             Here is your result for your selection.

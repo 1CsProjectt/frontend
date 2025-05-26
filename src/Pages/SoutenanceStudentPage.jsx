@@ -7,7 +7,7 @@ import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import Module from "../styles/StudentMeetingPage.module.css";
 import formatSessions from "../utils/formatSessions";
-import { StudentUploadfile } from "../components/Uploadfile";
+import { TeachergetUploadfile, StudentUploadfile } from "../components/Uploadfile";
 const Soutenanceschudule =
 {
     date: "2025-06-01",
@@ -98,7 +98,7 @@ function SoutenanceStudentPage() {
         return json ? JSON.parse(json) : {};
     });
 
-    const teamId = user.team_id;
+    const role = user.role;
 
 
 
@@ -106,7 +106,35 @@ function SoutenanceStudentPage() {
 
 
 
- 
+    // Fonction pour afficher le contenu selon l’onglet sélectionné
+    const renderTabContent = () => {
+        if (activeTab === "soutenance informations") {
+            return (
+                <div style={{ overflow: "auto", maxHeight: "69vh" }}>
+                    <div className={Module["Week-meeting-container"]}>
+                        <div className={Module["Left-side"]} style={{ margin: "3vh 0" }}>
+
+                            <div className={Module["Left-side-header"]} >
+                                Soutenance schudule
+                            </div>
+                            <div className={Module["Left-side-body"]}>
+                                Stay informed about your thesis defense schedule, location and all essential soutenance details
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div>
+                        <div >
+                            <StudentUploadfile />
+                            {role === "admin" && <TeachergetUploadfile />}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+    };
 
     return (
         <div className={Module["Student-meeting-page"]}>
@@ -122,7 +150,14 @@ function SoutenanceStudentPage() {
                         <h1>Soutenance</h1>
                     </div>
 
-                  
+                    {/* Onglets (tabs) */}
+
+
+
+
+
+                    {/* Contenu de l’onglet actif */}
+                    {renderTabContent()}
 
                     {showToast && (
                         <Toast message={toastMessage} onClose={() => setShowToast(false)} />

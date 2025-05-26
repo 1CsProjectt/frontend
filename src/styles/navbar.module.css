@@ -410,10 +410,13 @@
 
 /* Icône de notification */
 .notf-icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
   transition: transform 0.2s ease;
+ margin-right: 3vw;
+ margin-left: 1vw;
+ margin-top: 0.2vw;
 }
 .notf-icon:hover {
   transform: scale(1.1);
@@ -423,8 +426,8 @@
 /* Dropdown des notifications */
 .notf-dropdown {
   position: fixed !important;
-  top: 80px !important; /* adjust to nav-bar’s bottom edge */
-  right: 16px !important;
+  top: 110px !important; /* adjust to nav-bar’s bottom edge */
+  right: 36px !important;
   width: 25vw;
   background: #f9fbfc !important;
   border: 1px solid #ccc !important; /* added border */

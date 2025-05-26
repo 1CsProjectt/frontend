@@ -113,7 +113,7 @@ const NavBar = ({
         
         
           {/* Profile section */}
-          <div className={Module["profile"]}>
+        {/*   <div className={Module["profile"]}>
             <img src={profilepic} alt="Profile" className={Module["pic"]} />
             <p className={Module["profiletext"]}>Profile</p>
             <img
@@ -121,7 +121,7 @@ const NavBar = ({
               alt="Toggle Profile"
               className={Module["arrow-icon-prfoile"]}
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
