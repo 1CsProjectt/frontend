@@ -65,6 +65,8 @@
     gap: 15px;
     margin-bottom: 5px;
     border-bottom: 2px solid #ddd;
+    margin-left:20px;
+    margin-right:20px;
   }
 
   .tabs button {
@@ -263,4 +265,18 @@
     flex-direction: row;
   }
   
+  .loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 65vh; /* Full viewport height */
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* or a fixed height like 100px if needed */
+  }
+
   

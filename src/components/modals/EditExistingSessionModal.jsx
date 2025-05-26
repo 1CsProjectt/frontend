@@ -2,7 +2,7 @@ import React, { useState ,useEffect } from "react";
 import classes from "../../styles/StartNewSessionModal.module.css";
 import axios from "axios";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
-const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessionToUpdate}) => {
+const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessionToUpdate , setShowToast ,setToastMessage}) => {
   
 
   

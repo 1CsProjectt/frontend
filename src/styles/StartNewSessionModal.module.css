@@ -72,8 +72,18 @@
     gap: 15px;
     width: 100%; /* Ensures full width for better alignment */
     border-bottom: 3px solid rgb(221,226,228);
+    padding-top: 10px;
+    
   }
-  
+  .date-container input {
+    width: 100%; /* Ensures inputs take full width */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+ 
   /* Buttons */
   .button-container {
     display: flex;
@@ -91,7 +101,7 @@
   }
   
   .create-btn {
-    background: #007bff;
+    background: rgb(7,126,212);
     color: white;
     border: none;
     padding: 10px 20px;

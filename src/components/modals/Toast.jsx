@@ -57,6 +57,7 @@ const Toast = ({ message, onClose, duration = 1500, animationDuration =500 }) =>
 
   const animatedStyle = {
     ...containerStyle,
+    backgroundColor: isError ? "#dc2626" : containerStyle.backgroundColor, 
     transition: `transform ${animationDuration}ms ease, opacity ${animationDuration}ms ease`,
     opacity: visible ? 1 : 0,
     transform: visible ? "translateY(0)" : "translateY(100%)"

@@ -8,6 +8,7 @@ import alertIcon from "../assets/alert-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
 import { useNavigate } from "react-router-dom";
 import { PulseLoader } from "react-spinners";
+import Toast from "../components/modals/Toast";
 
 const UserManagementTabs = () => {
   // Modal state
@@ -37,6 +38,8 @@ const UserManagementTabs = () => {
   const [connectionError, setConnectionError] = useState(false);
 
   const navigate = useNavigate();
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   //  Fetch all users once
   useEffect(() => {
@@ -156,7 +159,18 @@ const UserManagementTabs = () => {
         ))}
       </div>
 
-      {/* ─────────────── Table Container ─────────────── */}
+
+      {loading ? ( 
+        
+        <div className={classes["loaderContainer"]}>
+          <div className={classes["loader"]}>
+            <PulseLoader color="#077fd4" loading={loading} size={25} />
+          </div>
+        </div>)
+
+      : (
+
+    
       <div className={classes["table-container"]}>
         <table className={classes["main-table"]}>
           <thead>
@@ -168,7 +182,8 @@ const UserManagementTabs = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+{/*             {loading was moved outside the table}
+ */}           {/*  {loading ? (
               <tr>
                 <td colSpan="4">
                   <div className={classes.loaderContainer}>
@@ -176,7 +191,7 @@ const UserManagementTabs = () => {
                   </div>
                 </td>
               </tr>
-            ) : connectionError ? (
+            ) : */} { connectionError ? (
               <tr>
                 <td colSpan="4">
                   <div className={classes.alertDiv}>
@@ -228,7 +243,7 @@ const UserManagementTabs = () => {
             )}
           </tbody>
         </table>
-      </div>
+      </div> )}
 
       <div className={classes["pagination-container"]}>
         <button
@@ -299,6 +314,8 @@ const UserManagementTabs = () => {
         userObject={userToEdit}
         operation={operation}
         userManagementActiveTab={activeTab}
+        setShowToast={setShowToast}
+        setToastMessage={setToastMessage}
       />
      
      <DeleteUserModal
@@ -307,6 +324,13 @@ const UserManagementTabs = () => {
         entityType="User"
         userToDelete={userToDelete}
       />
+
+    {showToast && (
+          <Toast
+            message={toastMessage || "Test Toast"}
+            onClose={() => setShowToast(false)}
+          />
+        )}
     </div>
   );
 };

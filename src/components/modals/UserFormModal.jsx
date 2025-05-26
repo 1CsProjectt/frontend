@@ -3,7 +3,8 @@ import { Eye, EyeOff } from "lucide-react"; // Using Lucide to import the eye /e
 import classes from "../../styles/UserFormModal.module.css"; // Import the separate CSS file
 import axios from 'axios';
 
-const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementActiveTab}) => {
+
+const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementActiveTab,setShowToast,setToastMessage,}) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,7 @@ const UserFormModal = ({ isOpen, onClose ,userObject ,operation,userManagementAc
   const [admin_level, setAdminLevel] = useState("");
   const [permissions, setPermissions] = useState("");
   const [errors, setErrors] = useState({});
+ 
   const handleClose = () => {
 /*   // Clear all input fields
 // the fields are already cleared in the useEffect hook (removed the operation prop)
@@ -246,14 +248,15 @@ useEffect(() => {
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || "Something went wrong");
 
-      console.log("✅ User created:", result);
-      alert("User created successfully!");
-
+      console.log(" User created:", result);
+      setToastMessage("User created successfully!");
+      setShowToast(true);
       handleClose();
     } catch (err) {  setFirstName("");
 
-      console.error("❌ Error:", err.message);
-      alert("Error creating the user: " + err.message);
+      console.error(" Error:", err.message);
+      setToastMessage(err.message || "Something went wrong");
+      setShowToast(true);
       handleClose();
     }
   };
@@ -261,7 +264,7 @@ useEffect(() => {
   
 const handleUpdateUser = async (formData) => {
   console.log("Updating user with ID:", formData.id);
-  alert("updating user that has the email : " + userObject.email);
+  
   const payload = {
     email: userObject.email, // old email
     newEmail: formData.email, // new email to set that is being set by the text field input (state variable)
@@ -299,13 +302,15 @@ const handleUpdateUser = async (formData) => {
       },
     });
 
-    console.log("✅ User Updated:", res.data);
-    alert("User updated successfully!");
+    console.log(" User Updated:", res.data);
+    setToastMessage("User Updated successfully!");
+    setShowToast(true);
     handleClose();
   } catch (err) {
     const message = err.response?.data?.message || err.message || "Something went wrong";
-    console.error("❌ Error updating user:", message);
-    alert("Error updating the user: " + message);
+    console.error(" Error updating user:", message);
+    setToastMessage(message || "Something went wrong");
+    setShowToast(true);
     handleClose();
   }
 };
@@ -485,6 +490,9 @@ const handleUpdateUser = async (formData) => {
           </div>
         </form>
       </div>
+
+
+
     </div>
   );
 };

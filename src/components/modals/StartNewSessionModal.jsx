@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import classes from "../../styles/StartNewSessionModal.module.css";
 import axios from "axios";
-const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
+import { on } from "ws";
+const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab, setShowToast ,setToastMessage}) => {
   
 
   // State for form fields
@@ -51,12 +52,18 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // include credentials if required
       });
 
-      alert(" Submission session created: " + res.data.message);
+      
+      setToastMessage(res.data.message);
+      setShowToast(true);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert(" Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastMessage(msg);
+      setShowToast(true);
+    
+      
     }
   };
 
@@ -78,12 +85,17 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // in case cookies/token needed
       });
   
-      alert("Team Formation Session created: " + res.data.message);
+     
+      setToastMessage("Team Formation Session created: " + res.data.message);
+      setShowToast(true);
       onClose(); // close modal after successcreate
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert("Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastMessage(msg);
+      setShowToast(true);
+     
     }
   };
   
@@ -105,12 +117,17 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // include credentials if required
       });
 
-      alert(" Submission session created: " + res.data.message);
+      
+      setToastMessage("Topic Submission Session created: " + res.data.message);
+      setShowToast(true);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert(" Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastMessage(msg);
+      setShowToast(true);
+     
     }
   };
 
@@ -132,12 +149,17 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // include credentials if required
       });
 
-      alert(" Project Realization session created: " + res.data.message);
+      
+      setToastMessage("Project Realization Session created: " + res.data.message);
+      setShowToast(true);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert(" Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastMessage(msg);
+      setShowToast(true);
+    
     }
   };
 
