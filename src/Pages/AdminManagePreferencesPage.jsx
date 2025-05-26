@@ -24,7 +24,12 @@ const ExistedTeamsTab = ({ user, students }) => {
   const [showAutoOrganizeModal, setShowAutoOrganizeModal] = useState(false);
   const [loading, setLoading] = useState(true);
   // Filter state (specialities)
-  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState({
+    Grade: ["1CS", "2CS", "3CS", "2CP"],
+    Speciality: ["ISI", "SIW", "IASD"],
+    Other: [],
+  });
+  
 
   const navigate = useNavigate();
 
@@ -36,6 +41,7 @@ const ExistedTeamsTab = ({ user, students }) => {
           withCredentials: true,
         });
         setTeamsArray(response.data.teams);
+        console.log("Fetched teams !!!!!!!!!!!!:", response.data.teams);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching teams:", err);
@@ -63,23 +69,36 @@ const ExistedTeamsTab = ({ user, students }) => {
 
   // Called when NavBar’s filter is applied
   const handleFilterApply = (filters) => {
-    setSelectedFilters(filters || []);
+    setSelectedFilters(filters || { Grade: [], Speciality: [], Other: [] });
     setCurrentPage(1);
   };
+  
 
   // Filter teamsArray by speciality if the first member’s year is 2CS or 3CS
   const filteredTeamsArray = useMemo(() => {
     if (!Array.isArray(teamsArray)) return [];
+    
     return teamsArray.filter((team) => {
-      const firstMember = team.members && team.members[0];
+      const firstMember = team.members?.[0];
       if (!firstMember) return false;
-      const { year, specialite } = firstMember;
-      if ((year === "2CS" || year === "3CS") && selectedFilters.length > 0) {
-        return selectedFilters.includes(specialite);
-      }
-      return true;
+  
+      // Grade filter
+      const gradeFilterPassed = selectedFilters.Grade.length === 0 || 
+        selectedFilters.Grade.includes(firstMember.year);
+        
+      // Speciality filter (only for 2CS/3CS)
+      const specialityFilterPassed = 
+        !["2CS", "3CS"].includes(firstMember.year) || 
+        selectedFilters.Speciality.length === 0 ||
+        selectedFilters.Speciality.includes(firstMember.specialite);
+  
+      // Other filters (add additional filter logic here if needed)
+      const otherFilterPassed = true; // Modify if implementing "Other" filters
+  
+      return gradeFilterPassed && specialityFilterPassed && otherFilterPassed;
     });
   }, [teamsArray, selectedFilters]);
+  
 
   const { currentItems: currentTeams, totalPages } = getPaginatedData(
     filteredTeamsArray,

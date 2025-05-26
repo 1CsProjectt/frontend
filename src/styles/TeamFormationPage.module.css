@@ -627,3 +627,17 @@ th {
   width: 114px;
   height: 41px;
 }
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 65vh; /* Full viewport height */
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* or a fixed height like 100px if needed */
+}
+
