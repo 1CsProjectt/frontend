@@ -13,7 +13,7 @@ function formatSessions(sessions) {
         } else if (session.name === "PFE_ASSIGNMENT") {
             sessionTitle = "Select topics session";
         } else if (session.name === "WORK_STARTING") {
-            sessionTitle = "WORK STARTING session";
+            sessionTitle = "Project Realization Session";
         }else { 
             sessionTitle =  "Normal session";}
            

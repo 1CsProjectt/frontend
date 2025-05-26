@@ -6,7 +6,10 @@ import Module from "../styles/AdminManagePreferencesPage.module.css";
 import axios from "axios";
 import PFECard from "../components/CardComponent";
 import Toast from "../components/modals/Toast";
-
+import alertIcon from "../assets/alert-icon.svg";
+import errorIcon from "../assets/error-icon.svg";
+import PfeTopicModal from "../components/modals/PfeTopicModal";
+import { PulseLoader } from "react-spinners";
 
 const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selectedTeam }) => {
   //selected team is the entire team object
@@ -24,6 +27,8 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selec
   const [connectionError,setConnectionError] = useState(false);
   const [prefList,setPrefList] = useState([]);
   const [filteredCards,setFilteredCards] = useState([]);
+  const [cardIdToAssign,setCardIdToAssign] = useState(null);
+  const [pfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchPrefList = async (teamId) => {
@@ -42,24 +47,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selec
   };
 
 
-const changePfeForTeam = async (teamId, newPfeId) => {
-  try {
-    const response = await axios.post('/pfe/changePfeForTeam', {
-      teamId,
-      newPfeId
-    });
-    
-    console.log('Success:', response.data);
-  } catch (error) {
-    if (error.response) {
-      // The server responded with a status code outside of the 2xx range
-      console.error('Error:', error.response.data.message);
-    } else {
-      // The request was made but no response was received
-      console.error('Error:', error.message);
-    }
-}
-  }
+
 
 
 
@@ -161,32 +149,58 @@ useEffect(() => {
 
   // Use passed team members if available; otherwise, static data.
   const membersToDisplay = myTeamMembers.length > 0 ? myTeamMembers : staticTeamMembers;
-  if (showAssignTopicPage){
-    return(
-      
-      
-    <div className={Module["cards-container"]}>
-       {/* <div><p>{"showing pfes for year " + selectedTeam?.members[0]?.year}
-        <br/>
-      {"showing pfes for speciality " + selectedTeam?.members[0]?.specialite}
-      
-      </p>
-      </div> */}
-      {filteredCards.map((card) => (
-        <PFECard
-          key={card.id}
-          card={card}
-          toggleSelect={() => {}}
-          onExplore={(e) => {
-            e.stopPropagation();
-            changePfeForTeam(myTeamNumber,card.id);
-          }}
-          buttonText={"Assign"}
-          year={card.year}
-        />
-      ))}
-    </div>);
+  if (showAssignTopicPage) {
+    return (
+      <>
+        {filteredCards.length === 0 ? (
+          
+            
+              <div className={Module["alertDiv"]}>
+                <img src={alertIcon} alt="Alert Icon" />
+                <h3>
+                  No projects were found matching{" "}
+                  {selectedTeam.members[0]?.year} and {selectedTeam.members[0]?.specialite}
+                </h3>
+              </div>
+           
+        ) : (
+          <div>
+          <div className={Module["cards-container"]}>
+            {filteredCards.map((card) => (
+              <PFECard
+                key={card.id}
+                card={card}
+                toggleSelect={() => {}}
+                onExplore={(e) => {
+                  e.stopPropagation();
+                  console.log("Assigning card:", card);
+                  setCardIdToAssign(card.id);
+                  setPfeTopicModalOpen(true);
+                  console.log(pfeTopicModalOpen);
+
+                  /* navigate("/admin/sessions/manage-preferences/read-topic", { state: { card } }); */
+                  /* changePfeForTeam(myTeamNumber, card.id); */
+                }}
+                buttonText={"Assign"}
+                year={card.year}
+               
+              />
+            ))}
+          </div>
+           <PfeTopicModal
+           isOpen={pfeTopicModalOpen}
+           onClose={() => setPfeTopicModalOpen(false)}
+           operation="assign"
+           myTeamNumber={myTeamNumber}
+           cardIdToAssign={cardIdToAssign}
+         
+         />
+         </div>
+        )}
+      </>
+    );
   }
+  
   return (
     <div className={Module["admin-see-more-container"]}>
       <div className={Module["my-team-header"]}>
@@ -307,8 +321,8 @@ useEffect(() => {
             
               <tr >
               <td>
-                        {selectedTeam?.supervisor?.firstname && selectedTeam?.supervisor?.lastname
-                          ? `${selectedTeam.supervisor.firstname} ${selectedTeam.supervisor.lastname}`
+                        {selectedTeam?.supervisor[0]?.firstname && selectedTeam?.supervisor[0]?.lastname
+                          ? `${selectedTeam.supervisor[0].firstname} ${selectedTeam.supervisor[0].lastname}`
                           : "No supervisor assigned yet"}
                       </td>
                 <td>{selectedTeam.assignedPFE ? (selectedTeam.assignedPFE.title || "No topic assigned yet") : "No topic assigned yet"}</td>
@@ -317,7 +331,7 @@ useEffect(() => {
           </tbody>
         </table>
       </div>
-      
+     
       {showToast && (
         <Toast
           message={toastMessage || "Test Toast"}

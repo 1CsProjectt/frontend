@@ -1,86 +1,63 @@
-import React, { useState ,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Style from '../../styles/AdminManagePreferencesPage.module.css';
-import Toast from './Toast';
+import PFESummaryModal from "./PFESummaryModal";
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const AutoOrganizeTeamsModal = ({ show, onClose ,operation}) => {
-
-  //operation can either be "assign or organize"
+const AutoOrganizeTeamsModal = ({ show, onClose, operation }) => {
   const [year, setYear] = useState("");
   const [specialite, setSpecialite] = useState("");
-  const [loading, setLoading] = useState(false); // For loading state
-  const [error, setError] = useState(""); // For error handling
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [summaryData, setSummaryData] = useState(null);
 
   useEffect(() => {
     if (show) {
-      setError("");     // Clear previous error
-      setYear("");      // Optional: reset form
-      setSpecialite(""); // Optional: reset form
+      setError("");
+      setYear("");
+      setSpecialite("");
+      setSummaryData(null);
     }
   }, [show]);
-  
 
   const handleConfirm = async () => {
-    if (operation.toLowerCase() === "organize"){
-    setLoading(true); // Start loading state
-    setError(""); // Reset error state
-    try {
-      const response = await axios.post('/teams/autoOrganizeTeams', {
-        year,
-        specialite
-      }, {
-        withCredentials: true
-      });
+    setLoading(true);
+    setError("");
 
-      console.log(response.data);
-      onClose(); // Close the modal on success
-    } catch (error) {
-      console.error(error.response?.data?.message || "An error occurred");
-      setError("An error occurred while organizing teams. Please try again."); // Set error message
-    } finally {
-      setLoading(false); // End loading state
-    }
-  }else if (operation.toLowerCase() ==="assign"){
-
-  
     try {
-      const response = await axios.post('/pfe/autoAssignPfesToTeamsWithoutPfe', {
-        year,
-        specialite,
-      },{ withCredentials: true });
-  
-      console.log('Success:', response.data);
-    } catch (error) {
-      if (error.response) {
-        console.error('Error:', error.response.data.message);
-      } else {
-        console.error('Error:', error.message);
+      let response;
+
+      if (operation.toLowerCase() === "organize") {
+        response = await axios.post('/teams/autoOrganizeTeams', { year, specialite }, { withCredentials: true });
+      } else if (operation.toLowerCase() === "assign") {
+        response = await axios.post('/pfe/autoAssignPfesToTeamsWithoutPfe', { year, specialite }, { withCredentials: true });
       }
-    }
 
-  }
+      setSummaryData(response.data);
+      setSummaryModalOpen(true);
+    } catch (err) {
+      console.error(err.response?.data?.message || "An error occurred");
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!show) return null;
 
-  
-
   return (
     <div className={Style["modal-overlay"]}>
       <div className={`${Style["modal-content"]} ${Style["create-team-modal"]}`}>
-        {operation === "organize" ? (<div><h2>Auto Organize Teams</h2>
-         <p className={Style["create-team-subtitle"]}>
-
-          Automatically organize and assign teams to students without ones
-        </p></div>)
-        :(<div><h2>Auto Assign Projects</h2>
-         <p className={Style["create-team-subtitle"]}>
-          Automatically assign projects to Teams without ones
-        </p>
-        </div>) }
-       
+        <div>
+          <h2>{operation === "organize" ? "Auto Organize Teams" : "Auto Assign Projects"}</h2>
+          <p className={Style["create-team-subtitle"]}>
+            {operation === "organize"
+              ? "Automatically organize and assign teams to students without ones"
+              : "Automatically assign projects to Teams without ones"}
+          </p>
+        </div>
 
         <div className={Style["admin-container"]}>
           <label htmlFor="year">Student Year</label>
@@ -115,10 +92,8 @@ const AutoOrganizeTeamsModal = ({ show, onClose ,operation}) => {
           </div>
         )}
 
-        {/* Error Message */}
         {error && <div className={Style["error-message"]}>{error}</div>}
 
-        {/* Action buttons */}
         <div className={Style["modal-actions"]}>
           <button className={Style["cancel-button"]} onClick={onClose}>
             Cancel
@@ -126,12 +101,24 @@ const AutoOrganizeTeamsModal = ({ show, onClose ,operation}) => {
           <button
             className={`${Style["create-button"]} ${loading ? Style["loading"] : ""}`}
             onClick={handleConfirm}
-            disabled={loading} // Disable button while loading
+            disabled={loading}
           >
             {loading ? "Processing..." : "Confirm"}
           </button>
         </div>
       </div>
+
+      {/* Unified modal for both "assign" and "organize" */}
+      <PFESummaryModal
+        isOpen={summaryModalOpen}
+        onClose={() => {
+          setSummaryModalOpen(false);
+          onClose(); // Close parent modal after summary
+        }}
+        PFEdata={operation === "assign" ? summaryData : null}
+        teamData={operation === "organize" ? summaryData : null}
+        operation={operation}
+      />
     </div>
   );
 };

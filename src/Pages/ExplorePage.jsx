@@ -13,7 +13,7 @@ export default function ExplorePage({ topic, ondeclined = false }) {
   const navigate = useNavigate();
   const location = useLocation();
   const safeState = user.role !== "teacher" ? location.state : {};
-  const { card, sessionTitle, targetDate } = safeState;
+  const { card, sessionTitle, targetDate, submit } = safeState;
   const [inList, setInList] = useState(false);
 
   useEffect(() => {
@@ -126,21 +126,22 @@ export default function ExplorePage({ topic, ondeclined = false }) {
                 >
                   Back
                 </button>
-                {inList ? (
-                  <button
-                    className={Module["Remove-button"]}
-                    onClick={handleRemoveFromList}
-                  >
-                    Remove
-                  </button>
-                ) : (
-                  <button
-                    className={Module["AddBtn"]}
-                    onClick={handleAddToList}
-                  >
-                    Add to my List
-                  </button>
-                )}
+                {!submit &&
+                  (inList ? (
+                    <button
+                      className={Module["Remove-button"]}
+                      onClick={handleRemoveFromList}
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      className={Module["AddBtn"]}
+                      onClick={handleAddToList}
+                    >
+                      Add to my List
+                    </button>
+                  ))}
               </div>
             )}
           </div>

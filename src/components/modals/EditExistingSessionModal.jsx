@@ -2,7 +2,7 @@ import React, { useState ,useEffect } from "react";
 import classes from "../../styles/StartNewSessionModal.module.css";
 import axios from "axios";
 import SuccessConfirmationModal from "./SuccessConfirmationModal";
-const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessionToUpdate}) => {
+const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessionToUpdate , setShowToast ,setToastMessage ,setToastError}) => {
   
 
   
@@ -26,23 +26,50 @@ const EditExistingSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab,sessi
 
 
   if (!isOpen) return null;
-
+  // If success modal is open, hide the edit modal and render only the success modal
+  if (isSuccessModalOpen) {
+    return (
+      <SuccessConfirmationModal
+        message={"The session has been updated successfully"}
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          onClose(); // also close the parent when success modal is dismissed
+        }}
+      />
+    );
+  }
   const hanldeEditSession = (sessionToUpdate) =>{
     if (!startDate || !endDate || (sessionsPageActiveTab === "Team Formation Session" && !maxMembers)) {
         alert("Please fill out all fields before updating the session.");
         return;
       }
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+    
+      if (start > end) {
+        setToastMessage("Start date cannot be after end date.");
+        setToastError(true);
+        setShowToast(true);
+        return;
+      }
+      
 
     const updateEvent = async () => {
       try {
-        const response = await axios.patch("/session/update", {
-          //the sessions are identified by the name + year (these 2 keys compose the primary key )
-          name: sessionToUpdate.name,
-          year: sessionToUpdate.year,
-          startTime: startDate,
-          endTime: endDate,
-          maxNumber: maxMembers
-        });
+        const response = await axios.patch(
+          `/session/update/${sessionToUpdate.id}`, 
+          {
+            // send only what the controller expects:
+            startTime: startDate,
+            endTime: endDate,
+            maxNumber: maxMembers
+          },
+          {
+            // include credentials if your protect/restricted middleware
+            // expects a cookie or session token
+            withCredentials: true
+          }
+        );
     
         console.log('Success:', response.data);
         

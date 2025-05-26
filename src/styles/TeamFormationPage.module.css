@@ -168,6 +168,7 @@ th {
   
  padding: 3px;
   position: relative;
+  margin-bottom: 1vh;
 }
 
 /* Style for the Previous button (top-left) */
@@ -300,7 +301,10 @@ th {
   margin-right: 15px;
   margin-top: 10px;
 }
-
+.go-back-button:hover{
+  transition: 0.2s;
+  background-color: rgb(239, 239, 239);
+}
 /* The "Create a team" button styling */
 .create-team-button {
   background-color: #0284c7;
@@ -627,3 +631,17 @@ th {
   width: 114px;
   height: 41px;
 }
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 65vh; /* Full viewport height */
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* or a fixed height like 100px if needed */
+}
+

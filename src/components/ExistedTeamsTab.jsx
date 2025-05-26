@@ -32,7 +32,11 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
 
 
   const handleCancel = () => {
+
     setShowJoinAlert(false);
+    setToastMessage("Join request was cancelled.");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
   const handleConfirm = async () => {
     try {
@@ -41,13 +45,13 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
       }, { withCredentials: true });
 
       if (response.data.success) {
-        setShowJoinAlert(false);
-        console.log("Join confirmed!");
-        setToastMessage("Team joining was successful.");
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 3000);
+      
+              console.log("Join confirmed!");
+     
+               setShowJoinAlert(false);                          // close modal
+               setToastMessage("Team joining was successful.");  // show toast
+               setShowToast(true);
+               setTimeout(() => setShowToast(false), 3000);      // auto‐hide after 3s
       }
     } catch (error) {
       console.error("Error sending join request:", error);
@@ -132,9 +136,9 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                   <td>{teamCreator}</td>
 
                   <td style={{ marginLeft: "200px" }}>
-                    {session === "TOPIC_SELECTION" ? (
+                    {session === "Select topics session" ? (
                       <span className={Module["status-in-team"]}>
-                           {team.status}
+                        {team.status}
                       </span>
                     ) : team.status === "Open" ? (
                       <span className={Module["status-available"]}>
@@ -150,7 +154,7 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                   <td></td>
                   <td></td>
                   <td className={Module["button-container"]}>
-                    {session === "TOPIC_SELECTION" ? (
+                    {session === "Select topics session" ? (
                       <div>
 
                       </div>
@@ -163,7 +167,7 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                         Join
                       </button>
                     ) : (
-                      
+
                       <span
                         className={Module["disable-button"]}
                         style={{ width: "7vw", marginRight: "15px" }}

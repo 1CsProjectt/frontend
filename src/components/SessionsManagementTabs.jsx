@@ -12,6 +12,8 @@ import alertIcon from "../assets/alert-icon.svg";
 import errorIcon from "../assets/error-icon.svg";
 import DeleteUserModal from "./modals/DeleteUserModal.jsx";
 import { Outlet } from "react-router-dom";
+import Toast from "../components/modals/Toast";
+
 const SessionsManagementTabs = () => {
   const {sessionsPageActiveTab, setSessionsPageActiveTab} = useSharedState();
   const navigate = useNavigate();
@@ -23,7 +25,9 @@ const SessionsManagementTabs = () => {
   const [loading, setLoading] = useState(true);
   const [isDeleteUserModalOpen,setDeleteUserModalOpen] = useState(false);
   const [sessionIDtoDelete,setSessionIDtoDelete] = useState(null);
-
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [isToastError, setToastError] = useState(null);
   const tabs = [
     "Topic Submission Session",
     "Team Formation Session",
@@ -93,7 +97,7 @@ const SessionsManagementTabs = () => {
     <div className={classes["main-wrapper"]}>
 
       <NavBar />
-      <StartNewSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab}/>
+      
       <div className={classes["tabs-container"]}>
         
         <h1>Sessions Management</h1>
@@ -119,8 +123,8 @@ const SessionsManagementTabs = () => {
                 <div className={classes["text-container"]}>
                   <h2>Start new session</h2>
                   <p>
-                    Easily create and customize new sessions with full<br/>
-                    controlover settings. Tailor each session to meet<br/>
+                    Easily create and customizenew sessions with full
+                    controlover settings. Tailor each session to meet
                     your needs and ensure a seamless experience.
                   </p>
                 </div>
@@ -189,7 +193,7 @@ const SessionsManagementTabs = () => {
             <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                           setSessionIDtoDelete(session.id);
                         
-                            setDeleteUserModalOpen(true);}}>Cancel</button>
+                            setDeleteUserModalOpen(true);}}>Delete</button>
           </td>
         </tr>
       ))
@@ -291,7 +295,7 @@ const SessionsManagementTabs = () => {
                           <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                           setSessionIDtoDelete(session.id);
                         
-                            setDeleteUserModalOpen(true);}}>Cancel</button>
+                            setDeleteUserModalOpen(true);}}>Delete</button>
                         </td>
                       </tr>
                   )))}
@@ -390,7 +394,7 @@ const SessionsManagementTabs = () => {
                         <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                           setSessionIDtoDelete(session.id);
                         
-                            setDeleteUserModalOpen(true);}}>Cancel</button>
+                            setDeleteUserModalOpen(true);}}>Delete</button>
                       </td>
                     </tr>
                 )))}
@@ -490,7 +494,7 @@ const SessionsManagementTabs = () => {
                           <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                             setSessionIDtoDelete(session.id);
                           
-                              setDeleteUserModalOpen(true);}}>Cancel</button>
+                              setDeleteUserModalOpen(true);}}>Delete</button>
                         </td>
                       </tr>
                   )))}
@@ -510,7 +514,17 @@ const SessionsManagementTabs = () => {
       </div>
       <Outlet />
       <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose ={() => {setDeleteUserModalOpen(false)}} entityType={"session"} sessionIDtoDelete={sessionIDtoDelete} />
-      <EditExistingSessionModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} sessionToUpdate={sessionToUpdate}/>
+      <StartNewSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} setShowToast={setShowToast} setToastMessage={setToastMessage} setToastError={setToastError}/>
+      <EditExistingSessionModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} sessionsPageActiveTab={sessionsPageActiveTab} sessionToUpdate={sessionToUpdate} setShowToast={setShowToast}setToastMessage={setToastMessage} setToastError={setToastError}/>
+      {showToast && (
+          <Toast
+            duration={4000}
+            message={toastMessage || "Test Toast"}
+            onClose={() => setShowToast(false)}
+            isError={isToastError}
+            
+          />
+        )}
     </div>
   );
 };

@@ -86,7 +86,7 @@ const CreateTeamModal = ({ show, onClose, onTeamCreated, onInviteSent, user }) =
           Create your own team and kickstart your journey! You can start solo and invite members later, or send invitations right away to build your dream team.
         </p>
 
-
+        <h3>Max Members</h3>
         {/* Input for adding members */}
         <div className={Style["add-member-row"]}>
           <input

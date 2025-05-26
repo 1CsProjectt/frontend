@@ -26,7 +26,7 @@ import SuccessConfirmationModal from "./modals/SuccessConfirmationModal";
 axios.defaults.withCredentials = true;
 
 // A single sortable row component
-const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,targetDate  }) => {
+const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, targetDate }) => {
   const navigate = useNavigate();
 
   const handleRemoveClick = () => {
@@ -35,7 +35,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,tar
 
   const handleReadClick = (e, card) => {
     e.stopPropagation();
-    navigate("/pfe-student/explore", { state: { card, sessionTitle,targetDate  } });
+    navigate("/pfe-student/explore", { state: { card, sessionTitle, targetDate } });
   };
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -52,7 +52,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,tar
         {...listeners}
         style={{ cursor: submit ? "default" : "grab", pointerEvents: submit ? "none" : "auto" }}
       >
-        {!submit &&   <span className={Module["drag-handle"]}>⋮⋮</span>}
+        {!submit && <span className={Module["drag-handle"]}>⋮⋮</span>}
       </td>
       <td>{item.order}</td>
       <td>{item.topic_title}</td>
@@ -61,7 +61,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,tar
         {submit ? (
           <span
             style={{
-              color:  
+              color:
                 item.status === "REJECTED"
                   ? "#F9857A"
                   : item.status === "ACCEPTED"
@@ -69,7 +69,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,tar
                     : "inherit",
             }}
           >
-            {item.card_info.supervisionRequests?.[0]?.status || "- - - - -"} 
+            {item.card_info.supervisionRequests?.[0]?.status || "- - - - -"}
           </span>
         ) : (
           <>
@@ -94,7 +94,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,tar
   );
 };
 
-const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
+const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
   const location = useLocation();
   const { addedTopic, removedTopic } = location.state || {};
   const [motivationFile, setMotivationFile] = useState(null);
@@ -168,20 +168,20 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
 
   const handleConfirmSubmit = () => {
     setShowSubmitModal(false);
-  
+
     (async () => {
       if (!motivationFile) {
         return setToastMessage("Please upload your motivation letter first.");
       }
-  
+
       const formData = new FormData();
       const pfeIdsArray = items.map((item) => item.card_info.id);
-  
-      // ✅ Append each ID as an array element
+
+      //  Append each ID as an array element
       pfeIdsArray.forEach((id) => formData.append("pfeIds[]", id));
-  
+
       formData.append("ML", motivationFile);
-      console.log("Form data prepared:***********************************",  motivationFile);
+      console.log("Form data prepared:***********************************", motivationFile);
 
       try {
         const resp = await axios.post(
@@ -194,10 +194,14 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
             withCredentials: true
           }
         );
-        console.log("Server response:", resp.data);
-        setShowSuccessModal(true);
-        setToastMessage("The list submitted successfully.");
-        setShowToast(true);
+
+        // (clear local storage)
+        localStorage.removeItem("preferencesList");
+
+        setPreferencesList([]);
+        setItems([]);
+        //   (refresh the page)
+        window.location.reload();
       } catch (err) {
         console.error("Upload error:", err);
         setToastMessage("Submission failed. Please try again.");
@@ -205,7 +209,7 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
       }
     })();
   };
-  
+
 
   const handleSaveSubmit = async () => {
     // 1. Make sure a file was selected
@@ -214,7 +218,7 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
       setShowToast(true);
       return;
     }
-  
+
     try {
       // 2. Build FormData
       const formData = new FormData();
@@ -222,9 +226,9 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
         formData.append("pfeIds[]", item.card_info.id);
       });
       formData.append("ML", motivationFile);  // motivationFile is a single File object
-  
+
       console.log("Form data prepared:", motivationFile);
-  
+
       // 3. Send to server
       const resp = await axios.post(
         "/preflist/create",
@@ -234,19 +238,19 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
           withCredentials: true
         }
       );
-  
+
       // 4. On success
       console.log("Server Save response:", resp.data);
       setToastMessage("Your list has been saved successfully.");
       setShowToast(true);
-  
+
       // 5. Save local copy
       const storedPrefs = items.map((item, idx) => ({
         ...item,
         order: String(idx + 1).padStart(2, "0"),
       }));
       localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
-  
+
     } catch (err) {
       // On error
       console.error("Save error:", err);
@@ -254,7 +258,7 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
       setShowToast(true);
     }
   };
-  
+
 
   const handleCloseSuccess = () => setShowSuccessModal(false);
   // DnD setup
@@ -338,7 +342,7 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
                       onRemove={handleRemove}
                       preferencesList={preferencesList}
                       sessionTitle={sessionTitle}
-                      targetDate={targetDate} 
+                      targetDate={targetDate}
                     />
                   ))}
                 </tbody>
@@ -377,7 +381,7 @@ const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
         <SubmitModal show={showSubmitModal} onCancel={() => setShowSubmitModal(false)} onConfirm={handleConfirmSubmit} />
         {showSuccessModal && (
           <SuccessConfirmationModal
-            message="Your list has been successfully submitted! You able to modify the pending ones."
+            message="Your list has been successfully submitted!."
             onClose={handleCloseSuccess}
             show={showSuccessModal}
           />

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import classes from "../../styles/StartNewSessionModal.module.css";
 import axios from "axios";
-const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
+import { on } from "ws";
+const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab, setShowToast ,setToastMessage , setToastError}) => {
   
 
   // State for form fields
@@ -34,7 +35,15 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
  */
 //later add the check for the session name (type) based on the current tab
   const handleCreateTopicSubmissionSession = async () => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
   
+    if (start > end) {
+      setToastMessage("Start date cannot be after end date.");
+      setToastError(true);
+      setShowToast(true);
+      return;
+    }
     const payload = {
       
       name : "PFE_SUBMISSION",
@@ -51,17 +60,33 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // include credentials if required
       });
 
-      alert(" Submission session created: " + res.data.message);
+      setToastError(null);
+      setToastMessage(res.data.message);
+      setShowToast(true);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert(" Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastError(true);
+
+      setToastMessage(msg);
+      setShowToast(true);
+    
+      
     }
   };
 
   const handleCreateTeamFormationSession = async () => {
-    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    if (start > end) {
+      setToastMessage("Start date cannot be after end date.");
+      setToastError(true);
+      setShowToast(true);
+      return;
+    }
     const payload = {
       name: "TEAM_CREATION", // or change this dynamically later
       startTime: startDate,
@@ -78,17 +103,33 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // in case cookies/token needed
       });
   
-      alert("Team Formation Session created: " + res.data.message);
+      setToastError(null);
+
+      setToastMessage("Team Formation Session created: " + res.data.message);
+      setShowToast(true);
       onClose(); // close modal after successcreate
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert("Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastError(true);
+
+      setToastMessage(msg);
+      setShowToast(true);
+     
     }
   };
   
   const handleCreateTopicSelectionSession = async () => {
-   
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    if (start > end) {
+      setToastMessage("Start date cannot be after end date.");
+      setToastError(true);
+      setShowToast(true);
+      return;
+    }
     const payload = {
       
       name : "PFE_ASSIGNMENT",
@@ -104,18 +145,34 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         },
         withCredentials: true, // include credentials if required
       });
+      setToastError(null);
 
-      alert(" Submission session created: " + res.data.message);
+      
+      setToastMessage("Topic Submission Session created: " + res.data.message);
+      setShowToast(true);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert(" Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastError(true);
+
+      setToastMessage(msg);
+      setShowToast(true);
+     
     }
   };
 
   const handleCreateProjectRealizationSession = async () => {
-   
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    if (start > end) {
+      setToastMessage("Start date cannot be after end date.");
+      setToastError(true);
+      setShowToast(true);
+      return;
+    }
     const payload = {
       
       name : "WORK_STARTING",
@@ -132,12 +189,20 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         withCredentials: true, // include credentials if required
       });
 
-      alert(" Project Realization session created: " + res.data.message);
+      setToastError(null);
+
+      setToastMessage("Project Realization Session created: " + res.data.message);
+      setShowToast(true);
       onClose();
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      console.error(" Error creating session:", msg);
-      alert(" Error: " + msg);
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastError(true);
+
+      setToastMessage(msg);
+      setShowToast(true);
+    
     }
   };
 
@@ -151,6 +216,7 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         </p>
 
         {/* Grade Dropdown */}
+        { sessionsPageActiveTab !== "Topic Submission Session" ? (
         <div className={classes["form-group"]}>
           <label>Grade</label>
           <select value={grade} onChange={(e) => setGrade(e.target.value)}>
@@ -161,7 +227,7 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
             <option>3CS</option>
           </select>
         </div>
-
+        ): null}
         {/* Max Members Input */}
         {sessionsPageActiveTab === "Team Formation Session" ? (
           <div className={classes["form-group"]}>
