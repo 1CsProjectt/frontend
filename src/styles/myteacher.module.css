@@ -31,6 +31,7 @@
   border: 2px solid #dde2e4;
   border-left: none;
   border-right: none;
+  border-top: none;
 }
 .Left-side {
   display: flex;

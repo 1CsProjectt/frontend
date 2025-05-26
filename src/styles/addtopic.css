@@ -462,3 +462,36 @@ textarea {
   color: inherit;
   cursor: pointer;
 }
+.nonextmeet {
+  padding: 1.4rem;
+  align-items: center;
+  height: 73px;
+  margin: 1.4em;
+  display: flex;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  justify-content: space-between;
+  border-radius: 5px;
+}
+.review-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #313638;
+}
+.invalid {
+  border: 2px solid #ff4444 !important;
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}

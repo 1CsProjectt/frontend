@@ -3,62 +3,110 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import Uploadfile from "../components/modals/uploadbox";
+import Teacherseemore from "../components/teacherseemore";
 import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import Module from "../styles/myteacher.module.css";
 import Popup from "../components/modals/popup";
+import StudentMeetingHistory from "../components/StudentMettingHistory";
+
 // Skip ngrok warning if you're using ngrok
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-function TeacherMeetingPage(teamid) {
-  console.log("hna haha", teamid.teamid);
-  const [formData, setFormData] = useState({
-    startDate: "2025-03-23",
-    startTime: "13:30",
+function TeacherMeetingPage({
+  teamid,
+  stages,
+  setStages,
+  seemore,
+  setSeeMore,
+  historyseemore,
+  setHistorySeeMore,
+}) {
+  console.log("team id", teamid);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const defaultFormData = {
+    startDate: tomorrow.toISOString().split("T")[0],
+    startTime: "14:00",
     salleName: "tp06",
     presentationFile: null,
-  });
+  };
+
+  const [formData, setFormData] = useState(defaultFormData);
+
   const [weekmeeting, setWeekMeeting] = useState(null);
+  const [weekmeetinghiss, setWeekMeetinghiss] = useState(null);
+
+  const [MeetingHistoryList, setMeetingHistoryList] = useState([]);
   const [oncancel, setoncancel] = useState(null);
-  const [hasNextMeeting, setHasNextMeeting] = useState(false);
+
+  const [hasNextMeeting, setHasNextMeeting] = useState(null);
   const presentationRef = useRef(null);
   const [selectedSalle, setSelectedSalle] = useState("tp06");
-
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [onEdit, setOnEdit] = useState(null);
+  const [objfile, setObjectFile] = useState(null);
+  const [supportfile, setSupportFile] = useState(null);
+  const [reviewFile, setReviewFile] = useState(null);
   useEffect(() => {
-    if (!teamid) return;
+    if (!teamid || historyseemore) return;
 
     const getData = async () => {
       try {
-        const response = await axios.get(
-          `/mettings/getNextMeet/${teamid.teamid}`
-        );
+        const response = await axios.get(`/mettings/getNextMeet/${teamid}`);
+        const nextMeeting = response?.data?.data?.nextMeeting;
+        console.log("heda howa", nextMeeting);
 
-        if (response.data.status === "success" && response.data.data) {
-          const nextMeeting = response.data.data.nextMeeting;
-
-          if (nextMeeting) {
-            setWeekMeeting(nextMeeting);
-            setFormData((prev) => ({
-              ...prev,
-              date: response.data.data.date,
-              time: response.data.data.time,
-              room: response.data.data.room,
-            }));
-            setHasNextMeeting(false); // There is a next meeting
-          } else {
-            setHasNextMeeting(true); // No next meeting
-          }
+        if (
+          response.data.status === "success" &&
+          nextMeeting &&
+          !nextMeeting.work_Status
+        ) {
+          setHasNextMeeting(true);
+          setWeekMeeting(nextMeeting);
+          setFormData({
+            startDate: response.data.date ?? null,
+            startTime: response.data.time ?? null,
+            salleName: response.data.room ?? null,
+            presentationFile: response.data.Meeting_objectives_files ?? null,
+          });
         } else {
-          setHasNextMeeting(true); // No valid data
+          setHasNextMeeting(false);
         }
-      } catch (error) {
-        console.error("Error fetching meeting:", error);
-        setHasNextMeeting(true); // Error means we assume no next meeting
+      } catch (err) {
+        console.error(err);
+        setHasNextMeeting(false);
       }
     };
 
     getData();
-  }, [teamid]);
+  }, [refreshKey, teamid, historyseemore]);
+
+  useEffect(() => {
+    if (weekmeeting && weekmeeting.work_Status === null) {
+      setFormData((prev) => ({
+        ...prev,
+        startDate: weekmeeting.date?.slice(0, 10) ?? prev.startDate,
+        startTime: weekmeeting.time ?? prev.startTime,
+        salleName: weekmeeting.room ?? prev.salleName,
+      }));
+    }
+  }, [weekmeeting, refreshKey]);
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const response = await axios.get(`/mettings/getAllMeetings/${teamid}`);
+        const meetings = response.data?.data?.meetings ?? [];
+        setMeetingHistoryList(meetings);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+        setMeetingHistoryList([]); // fallback to empty array
+      }
+    };
+
+    fetchMeetings();
+  }, [teamid, refreshKey]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,19 +115,100 @@ function TeacherMeetingPage(teamid) {
       [name]: value,
     }));
   };
-  const handleCancelMeeting = async () => {
-    if (!weekmeeting || !weekmeeting._id) return;
+  const handleEditMeeting = async () => {
+    try {
+      setLoading(true);
 
+      // 🚫 Check if date is today or in the past
+      const selectedDate = new Date(formData.startDate.split("T")[0]);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Remove time from today
+
+      if (selectedDate <= today) {
+        setToastMessage(
+          "You cannot schedule or edit a meeting to today or a past date."
+        );
+        setShowToast(true);
+        setLoading(false);
+        return;
+      }
+
+      console.log("after change file ", objfile);
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("date", formData.startDate.split("T")[0]);
+      formDataToSend.append(
+        "time",
+        formData.startTime.includes(":00:00")
+          ? formData.startTime
+          : `${formData.startTime}:00`
+      );
+      formDataToSend.append("room", formData.salleName);
+
+      // Append file if exists
+      if (objfile instanceof File) {
+        formDataToSend.append("Meeting_objectives_files", objfile);
+        formDataToSend.append("Support_files", supportfile);
+      } else if (typeof objfile === "string") {
+        formDataToSend.append("Meeting_objectives_files", objfile);
+        formDataToSend.append("Support_files", supportfile);
+      }
+
+      const response = await axios.patch(
+        `/mettings/updateMeeting/${weekmeeting.id}`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data?.status === "success") {
+        const updatedMeeting = response.data.data.meeting;
+
+        setFormData({
+          startDate: updatedMeeting.date,
+          startTime: updatedMeeting.time.split(":").slice(0, 2).join(":"),
+          salleName: updatedMeeting.room,
+          presentationFile: null,
+        });
+
+        setObjectFile(updatedMeeting.Meeting_objectives_files || null);
+        setSupportFile(updatedMeeting.Support_files || null);
+
+        setRefreshKey((prev) => prev + 1);
+        setmeetingpopup(false);
+        setOnEdit(false);
+        setToastMessage("Meeting updated successfully!");
+      }
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+      setToastMessage(
+        err.response?.data?.message || "Failed to update meeting"
+      );
+    } finally {
+      setLoading(false);
+      setShowToast(true);
+    }
+  };
+
+  const handleCancelMeeting = async () => {
+    console.log("0");
+    if (!weekmeeting || !weekmeeting.id) return;
+    console.log("1");
     try {
       setLoading(true);
       const response = await axios.delete(
-        `/mettings/cancelMeeting/${weekmeeting._id}`
+        `/mettings/cancelMeeting/${weekmeeting.id}`
       );
+      console.log("2");
       if (response.data.status === "success") {
         setToastMessage("Meeting cancelled successfully.");
         setWeekMeeting(null);
         setHasNextMeeting(false);
         setSuccess(true);
+        setRefreshKey((prev) => prev + 1);
       } else {
         setToastMessage("Failed to cancel meeting.");
       }
@@ -92,24 +221,53 @@ function TeacherMeetingPage(teamid) {
       setLoading(false);
     }
   };
-  const handleFileUpload = (file) => {
-    setFormData((prev) => ({
-      ...prev,
-      presentationFile: file,
-    }));
+
+  const handleTechSheetChange = (event) => {
+    const file = event.target.files[0];
+    if (file?.type === "application/pdf") {
+      setFormData((prev) => ({
+        ...prev,
+        presentationFile: file,
+      }));
+    } else {
+      alert("Please upload a valid PDF file.");
+    }
   };
   const oncancelverf = () => {
     setoncancel(true);
   };
-  const handleStartMeeting = async (e) => {
-    e.preventDefault();
+  const handleStartMeeting = async () => {
     if (!formData.startDate || !formData.startTime) {
       setToastMessage("Please select date and time");
       setShowToast(true);
       return;
     }
+
     if (!formData.presentationFile) {
       setToastMessage("Please upload a presentation file");
+      setShowToast(true);
+      return;
+    }
+
+    if (!formData.salleName) {
+      setToastMessage("Please select a room");
+      setShowToast(true);
+      return;
+    }
+
+    if (!teamid) {
+      setToastMessage("Team ID is missing");
+      setShowToast(true);
+      return;
+    }
+
+    // 🚫 Check if date is today or in the past
+    const selectedDate = new Date(formData.startDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
+
+    if (selectedDate.getTime() === today.getTime() || selectedDate < today) {
+      setToastMessage("You cannot start a meeting today or in the past.");
       setShowToast(true);
       return;
     }
@@ -117,13 +275,14 @@ function TeacherMeetingPage(teamid) {
     const meetingData = new FormData();
     meetingData.append("date", formData.startDate);
     meetingData.append("time", formData.startTime);
-    meetingData.append("salle", formData.salleName);
-    meetingData.append("file", formData.presentationFile);
+    meetingData.append("room", formData.salleName);
+    meetingData.append("Meeting_objectives_files", formData.presentationFile);
 
     try {
       setLoading(true);
+      console.log("reni dakhl", teamid);
       const response = await axios.post(
-        `/mettings/startNewMeeting/${teamid.teamid}`,
+        `/mettings/startNewMeeting/${teamid}`,
         meetingData,
         {
           headers: {
@@ -135,19 +294,33 @@ function TeacherMeetingPage(teamid) {
       setToastMessage("Meeting started successfully!");
       setShowToast(true);
       setmeetingpopup(false);
-      // Refresh meetings list or redirect
+      setRefreshKey((prev) => prev + 1);
     } catch (err) {
-      setError(err.response?.data?.message || "Error starting meeting");
-      setToastMessage(error);
+      const errMsg = err.response?.data?.message || "Error starting meeting";
+      setError(errMsg);
+      setToastMessage(errMsg);
       setShowToast(true);
     } finally {
       setLoading(false);
     }
   };
+
   const handleCancel = () => {
     setmeetingpopup(false);
+    setOnEdit(false);
   };
+  const [isUpcoming, setIsUpcoming] = useState(false);
+  useEffect(() => {
+    if (weekmeeting?.date) {
+      const today = new Date();
+      const meetingDate = new Date(weekmeeting.date);
 
+      meetingDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
+      setIsUpcoming(meetingDate > today);
+    }
+  }, [weekmeeting]);
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
   const [meetingpopup, setmeetingpopup] = useState(false);
@@ -157,13 +330,6 @@ function TeacherMeetingPage(teamid) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const SeeMoreHandle = (e, Item) => {
-    e.stopPropagation();
-    // pass both the clicked item and the full currentItems list
-    navigate("/StudentMeetingsPage/SeeMore", {
-      state: { item: Item },
-    });
-  };
   const session = {
     title: "TOPIC_SELECTION",
     targetDate: {
@@ -177,236 +343,7 @@ function TeacherMeetingPage(teamid) {
     const day = date.getDate().toString().padStart(2, "0");
     return `${month}/${day}`;
   }
-
-  const MeetingHistoryList = [
-    {
-      id: "01",
-      date: "2025-03-21T00:00:00",
-      time: "13:30",
-      salle: "TP06",
-      work: "unfinished",
-      status: "unfinished",
-      pdf: "qwertyuioqeqweqwe",
-      note: "10/10",
-    },
-    {
-      id: "02",
-      date: "2025-03-29T00:00:00",
-      time: "19:00",
-      salle: "TP6",
-      work: "approved",
-      status: "unfinished",
-    },
-    {
-      id: "03",
-      date: "2025-03-16T00:00:00",
-      time: "13:30",
-      salle: "TP06",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "04",
-      date: "2025-03-15T00:00:00",
-      time: "13:30",
-      salle: "TP06",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "05",
-      date: "2025-03-10T00:00:00",
-      time: "13:30",
-      salle: "TP06",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "06",
-      date: "2025-03-08T00:00:00",
-      time: "13:30",
-      salle: "TP06",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "07",
-      date: "2025-03-08T00:00:00",
-      time: "13:30",
-      salle: "TP06",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "08",
-      date: "2025-03-05T00:00:00",
-      time: "14:00",
-      salle: "TP07",
-      work: "in progress",
-      status: "unfinished",
-    },
-    {
-      id: "09",
-      date: "2025-03-04T00:00:00",
-      time: "15:00",
-      salle: "TP08",
-      work: "in progress",
-      status: "unfinished",
-    },
-    {
-      id: "10",
-      date: "2025-03-03T00:00:00",
-      time: "16:00",
-      salle: "TP09",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "11",
-      date: "2025-03-02T00:00:00",
-      time: "17:00",
-      salle: "TP10",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "12",
-      date: "2025-03-01T00:00:00",
-      time: "18:00",
-      salle: "TP11",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "13",
-      date: "2025-02-28T00:00:00",
-      time: "19:00",
-      salle: "TP12",
-      work: "in progress",
-      status: "unfinished",
-    },
-    {
-      id: "14",
-      date: "2025-02-27T00:00:00",
-      time: "20:00",
-      salle: "TP13",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "15",
-      date: "2025-02-26T00:00:00",
-      time: "21:00",
-      salle: "TP14",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "16",
-      date: "2025-02-25T00:00:00",
-      time: "22:00",
-      salle: "TP15",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "17",
-      date: "2025-02-24T00:00:00",
-      time: "23:00",
-      salle: "TP16",
-      work: "in progress",
-      status: "unfinished",
-    },
-    {
-      id: "18",
-      date: "2025-02-23T00:00:00",
-      time: "12:00",
-      salle: "TP17",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "19",
-      date: "2025-02-22T00:00:00",
-      time: "11:00",
-      salle: "TP18",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "20",
-      date: "2025-02-21T00:00:00",
-      time: "10:00",
-      salle: "TP19",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "21",
-      date: "2025-02-20T00:00:00",
-      time: "09:00",
-      salle: "TP20",
-      work: "in progress",
-      status: "unfinished",
-    },
-    {
-      id: "22",
-      date: "2025-02-19T00:00:00",
-      time: "08:00",
-      salle: "TP21",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "23",
-      date: "2025-02-18T00:00:00",
-      time: "07:00",
-      salle: "TP22",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "24",
-      date: "2025-02-17T00:00:00",
-      time: "06:00",
-      salle: "TP23",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "25",
-      date: "2025-02-16T00:00:00",
-      time: "05:00",
-      salle: "TP24",
-      work: "in progress",
-      status: "unfinished",
-    },
-    {
-      id: "26",
-      date: "2025-02-15T00:00:00",
-      time: "04:00",
-      salle: "TP25",
-      work: "approved",
-      status: "approved",
-    },
-    {
-      id: "27",
-      date: "2025-02-14T00:00:00",
-      time: "03:00",
-      salle: "TP26",
-      work: "unfinished",
-      status: "unfinished",
-    },
-    {
-      id: "28",
-      date: "2025-02-13T00:00:00",
-      time: "02:00",
-      salle: "TP27",
-      work: "approved",
-      status: "approved",
-    },
-  ];
-
+  console.log("meeting list", MeetingHistoryList);
   let sessionTitle;
 
   if (session.title === "TEAM_CREATION") {
@@ -421,28 +358,33 @@ function TeacherMeetingPage(teamid) {
     <div className={Module["Student-meeting-container"]}>
       {oncancel && (
         <Popup
-          confirmMessage={"are your u want to cancel meeting"}
+          confirmMessage={"are you sure want to cancel the meeting"}
           confirmTitle={"cancel meeting"}
           poproud={1}
           onConfirm={() => {
             handleCancelMeeting();
-            setoncancel(false); // Hide popup after action
+            setoncancel(false);
+            setSeeMore(false);
+            setStages("1");
+            setFormData(defaultFormData);
+            // Hide popup after action
           }}
+          onCancel={() => setoncancel(false)}
         />
       )}
-      {success && <Popup poproud={2} onOkey={setSuccess(false)} />}
-      <div className={Module["header-row"]}>
-        <h1>Meetings</h1>
-      </div>
-      {meetingpopup && (
+
+      {(meetingpopup || onEdit) && (
         <div className={Module["modal-overlay"]}>
           <div className={Module["start-meeting-container"]}>
-            <h2 className={Module["meeting-header"]}>Start new meeting</h2>
+            <h2 className={Module["meeting-header"]}>
+              {onEdit ? "Edit meeting information" : "Start new meeting"}
+            </h2>
 
             <div className={Module["meeting-description"]}>
               <p>
-                Schedule a New Meeting: Set the date, time, objectives, and room
-                to plan your next supervision session.
+                {onEdit
+                  ? "Update the date, time, objectives, and room for this supervision session."
+                  : "Schedule a New Meeting: Set the date, time, objectives, and room to plan your next supervision session."}
               </p>
             </div>
 
@@ -455,17 +397,14 @@ function TeacherMeetingPage(teamid) {
                     width: "100%",
                   }}
                 >
-                  {" "}
                   <div
                     className={Module["form-group"]}
-                    style={{
-                      width: "45%",
-                    }}
+                    style={{ width: "45%" }}
                   >
                     <label>Start date</label>
                     <input
                       type="date"
-                      name="startDate" // Add name attribute
+                      name="startDate"
                       className={Module["date-input"]}
                       value={formData.startDate}
                       onChange={handleInputChange}
@@ -473,14 +412,12 @@ function TeacherMeetingPage(teamid) {
                   </div>
                   <div
                     className={Module["form-group"]}
-                    style={{
-                      width: "45%",
-                    }}
+                    style={{ width: "45%" }}
                   >
                     <label>Time</label>
                     <input
                       type="time"
-                      name="startTime" // Add name attribute
+                      name="startTime"
                       className={Module["time-input"]}
                       value={formData.startTime}
                       onChange={handleInputChange}
@@ -503,33 +440,47 @@ function TeacherMeetingPage(teamid) {
                   ))}
                 </select>
               </div>
-
-              <div className={Module["form-group"]}>
-                <label>Objectives</label>
-                <Uploadfile
-                  handlePresentationChange={handleFileUpload}
-                  presentationFile={formData.presentationFile}
-                  presentationRef={presentationRef}
-                  type="pdf"
-                />
-              </div>
+              {!onEdit && (
+                <div className={Module["form-group"]}>
+                  <label>Objectives</label>
+                  <Uploadfile
+                    handlePresentationChange={handleTechSheetChange}
+                    presentationFile={formData.presentationFile}
+                    presentationRef={presentationRef}
+                    type="pdf"
+                  />
+                </div>
+              )}
 
               <div className={Module["form-buttons"]}>
-                <button className={Module["cancel-btn"]} onClick={handleCancel}>
+                <button
+                  className={Module["cancel-btn"]}
+                  onClick={() => {
+                    handleCancel();
+                  }}
+                >
                   Cancel
                 </button>
                 <button
                   className={Module["start-btn"]}
-                  onClick={handleStartMeeting}
-                  disabled={loading || hasNextMeeting}
+                  onClick={() => {
+                    onEdit ? handleEditMeeting() : handleStartMeeting();
+                  }}
                 >
-                  {loading ? "Starting..." : "Start"}
+                  {loading
+                    ? onEdit
+                      ? "Updating..."
+                      : "Starting..."
+                    : onEdit
+                    ? "Update"
+                    : "Start"}
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
       <div className={Module["Week-meeting-container"]}>
         <div className={Module["Left-side"]}>
           <div className={Module["Left-side-header"]}>This week meeting</div>
@@ -553,45 +504,110 @@ function TeacherMeetingPage(teamid) {
                 </tr>
               </thead>
               <tbody>
-                {weekmeeting ? (
-                  <tr>
-                    <td style={{ paddingRight: "50px" }}>
-                      {formatDateToMMDD(weekmeeting.date)}
-                    </td>
-                    <td style={{ paddingRight: "50px" }}>{weekmeeting.time}</td>
-                    <td>{weekmeeting.room}</td>
-                    <td
-                      className={Module.W500}
-                      style={{
-                        textAlign: "center",
-                        verticalAlign: "middle",
-                      }}
-                    >
-                      <button
-                        className={Module["SeeBtn"]}
-                        style={{
-                          width: "85px",
-                          height: "39px",
-                          marginRight: "50px",
-                        }}
-                        onClick={SeeMoreHandle}
-                      >
-                        see
-                      </button>
-                      <button
-                        className={Module["SeeBtn"]}
-                        style={{
-                          width: "85px",
-                          height: "39px",
-                          background: "#F76659",
-                          color: "white",
-                        }}
-                        onClick={oncancelverf}
-                      >
-                        cancel
-                      </button>
-                    </td>
-                  </tr>
+                {weekmeeting && (historyseemore || hasNextMeeting) ? (
+                  (() => {
+                    const isDisabled =
+                      (seemore && !isUpcoming) || historyseemore;
+                    const seeBtnLabel = isUpcoming
+                      ? seemore
+                        ? "edit"
+                        : "see"
+                      : seemore
+                      ? "edit"
+                      : "review";
+
+                    const seeBtnStyle = {
+                      width: "85px",
+                      height: "39px",
+                      background: isDisabled
+                        ? "#ccc" // grey background when disabled
+                        : !isUpcoming
+                        ? seemore
+                          ? "#F1F1F1" // original: grey when not upcoming and see more
+                          : "#077ED4" // original: blue when not upcoming and not see more
+                        : undefined,
+                      color: isDisabled
+                        ? "#888" // grey text when disabled
+                        : !isUpcoming
+                        ? seemore
+                          ? "#344054" // original: grey text
+                          : "white" // original: white text
+                        : undefined,
+                      cursor: isDisabled ? "not-allowed" : "pointer",
+                    };
+
+                    return (
+                      <tr>
+                        <td style={{ paddingRight: "50px" }}>
+                          {formatDateToMMDD(weekmeeting.date)}
+                        </td>
+                        <td style={{ paddingRight: "5px" }}>
+                          {weekmeeting.time}
+                        </td>
+                        <td>{weekmeeting.room}</td>
+                        <td
+                          className={Module.W500}
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          <button
+                            className={Module["SeeBtn"]}
+                            style={seeBtnStyle}
+                            disabled={seemore && !isUpcoming && historyseemore}
+                            onClick={
+                              isUpcoming
+                                ? seemore
+                                  ? () => setOnEdit(true)
+                                  : () => {
+                                      setSeeMore(true);
+                                      setStages("2");
+                                    }
+                                : () => {
+                                    setSeeMore(true);
+                                    setStages("2");
+                                  } // always open review
+                            }
+                          >
+                            {seeBtnLabel}
+                          </button>
+
+                          <button
+                            disabled={
+                              !isUpcoming ||
+                              historyseemore ||
+                              seeBtnLabel === "review"
+                            }
+                            className={Module["SeeBtn"]}
+                            style={{
+                              width: "85px",
+                              height: "39px",
+                              background:
+                                !isUpcoming ||
+                                historyseemore ||
+                                seeBtnLabel === "review"
+                                  ? "#ccc"
+                                  : "#F76659", // Grey when disabled
+                              color: "white",
+                              cursor:
+                                !isUpcoming ||
+                                historyseemore ||
+                                seeBtnLabel === "review"
+                                  ? "not-allowed"
+                                  : "pointer", // Optional UX enhancement
+                            }}
+                            onClick={() => {
+                              oncancelverf();
+                              // Reset to initial values
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })()
                 ) : (
                   <tr>
                     <td colSpan="4" style={{ textAlign: "center" }}>
@@ -602,7 +618,7 @@ function TeacherMeetingPage(teamid) {
               </tbody>
             </table>
           </div>
-          {hasNextMeeting && (
+          {!hasNextMeeting && !historyseemore && (
             <button
               className={Module["SeeBtn"]}
               style={{
@@ -620,9 +636,42 @@ function TeacherMeetingPage(teamid) {
           )}
         </div>
       </div>
-      <div className={Module["MeetingsHistory"]} style={{ padding: "20px" }}>
-        <div className={Module["MeetingsHistory-header"]}>Meetings History</div>
-      </div>
+
+      {seemore && (
+        <Teacherseemore
+          review={!isUpcoming}
+          setSeeMore={setSeeMore}
+          myMeet={weekmeeting}
+          objfile={objfile}
+          setObjectFile={setObjectFile}
+          supportfile={supportfile}
+          setSupportFile={setSupportFile}
+          refreshKey={refreshKey}
+          setRefreshKey={setRefreshKey}
+          reviewfile={reviewFile}
+          setReviewFile={setReviewFile}
+        />
+      )}
+      {!seemore && (
+        <div className={Module["MeetingsHistory"]} style={{ padding: "20px" }}>
+          <div className={Module["MeetingsHistory-header"]}>
+            Meetings History
+          </div>
+          <StudentMeetingHistory
+            MeetingHistoryList={MeetingHistoryList}
+            setMeet={setWeekMeeting}
+            review={!isUpcoming}
+            setSeeMore={setSeeMore}
+            myMeet={weekmeeting}
+            refreshKey={refreshKey}
+            setRefreshKey={setRefreshKey}
+            historyseemore={historyseemore}
+            setHistorySeeMore={setHistorySeeMore}
+            stages={stages}
+            setStages={setStages}
+          />
+        </div>
+      )}
       {showToast && (
         <Toast message={toastMessage} onClose={() => setShowToast(false)} />
       )}

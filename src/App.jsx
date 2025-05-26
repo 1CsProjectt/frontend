@@ -32,7 +32,7 @@ import TeacherPfePage from "./components/teacherpfepage";
 import TeamSelectionTeacher from "./Pages/teamselectionteacher";
 import AdminManagePreferencesPage from "./Pages/AdminManagePreferencesPage";
 import ReadTopicPage from "./Pages/ReadTopicPage";
-import SoutenanceStudentPage from "./Pages/SoutenanceStudentPage"
+import SoutenanceStudentPage from "./Pages/SoutenanceStudentPage";
 import DeclinedTopicsExplorePage from "./Pages/DeclinedTopicsExplorePage";
 import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
 function App() {
@@ -72,7 +72,10 @@ function App() {
           <Route path="/pfe-student" element={<PFEStudentPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/SoutenanceStudentPage" element={<SoutenanceStudentPage />} />
+          <Route
+            path="/SoutenanceStudentPage"
+            element={<SoutenanceStudentPage />}
+          />
           <Route
             path="/StudentMeetingsPage"
             element={<StudentMeetingsPage />}
