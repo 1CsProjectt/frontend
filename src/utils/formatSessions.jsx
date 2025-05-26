@@ -10,12 +10,12 @@ function formatSessions(sessions) {
         let sessionTitle;
         if (session.name === "TEAM_CREATION") {
             sessionTitle = "Group formation session";
-        } else if (session.name === "TOPIC_SELECTION") {
+        } else if (session.name === "PFE_ASSIGNMENT") {
             sessionTitle = "Select topics session";
         } else if (session.name === "WORK_STARTING") {
             sessionTitle = "WORK STARTING session";
         }else { 
-            sessionTitle = session.name || "Unkown session";}
+            sessionTitle =  "Normal session";}
            
         
 

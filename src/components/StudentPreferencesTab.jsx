@@ -26,7 +26,7 @@ import SuccessConfirmationModal from "./modals/SuccessConfirmationModal";
 axios.defaults.withCredentials = true;
 
 // A single sortable row component
-const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
+const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle,targetDate  }) => {
   const navigate = useNavigate();
 
   const handleRemoveClick = () => {
@@ -35,7 +35,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
 
   const handleReadClick = (e, card) => {
     e.stopPropagation();
-    navigate("/pfe-student/explore", { state: { card, } });
+    navigate("/pfe-student/explore", { state: { card, sessionTitle,targetDate  } });
   };
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -62,9 +62,9 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
           <span
             style={{
               color:  
-                item.status === "rejected"
+                item.status === "REJECTED"
                   ? "#F9857A"
-                  : item.status === "Accepted"
+                  : item.status === "ACCEPTED"
                     ? "#68CD54"
                     : "inherit",
             }}
@@ -94,7 +94,7 @@ const SortableRow = ({ item, submit, onRemove, preferencesList }) => {
   );
 };
 
-const StudentPreferences = ({ submit }) => {
+const StudentPreferences = ({ submit, sessionTitle,targetDate  }) => {
   const location = useLocation();
   const { addedTopic, removedTopic } = location.state || {};
   const [motivationFile, setMotivationFile] = useState(null);
@@ -168,18 +168,20 @@ const StudentPreferences = ({ submit }) => {
 
   const handleConfirmSubmit = () => {
     setShowSubmitModal(false);
+  
     (async () => {
       if (!motivationFile) {
         return setToastMessage("Please upload your motivation letter first.");
       }
-
-      // 1) Build a FormData (container for fields + files) :contentReference[oaicite:0]{index=0}
+  
       const formData = new FormData();
       const pfeIdsArray = items.map((item) => item.card_info.id);
-
-      // 2) Append fields: pfeIds as a comma-separated string, stringML as the binary file :contentReference[oaicite:1]{index=1}
-      formData.append("pfeIds", pfeIdsArray.join(","));
-      formData.append("stringML", motivationFile);
+  
+      // ✅ Append each ID as an array element
+      pfeIdsArray.forEach((id) => formData.append("pfeIds[]", id));
+  
+      formData.append("ML", motivationFile);
+      console.log("Form data prepared:***********************************",  motivationFile);
 
       try {
         const resp = await axios.post(
@@ -187,7 +189,7 @@ const StudentPreferences = ({ submit }) => {
           formData,
           {
             headers: {
-              "Content-Type": "multipart/form-data" // tells the server it’s a file upload
+              "Content-Type": "multipart/form-data"
             },
             withCredentials: true
           }
@@ -203,51 +205,56 @@ const StudentPreferences = ({ submit }) => {
       }
     })();
   };
+  
 
- const handleSaveSubmit = () => {
-  // 1) Vérifier la présence du fichier de motivation (motivationFile)
-  if (!motivationFile) {
-    return setToastMessage("Please upload your motivation letter first.");
-  }
-
-  (async () => {
-    const formData = new FormData();
-
-    // 2) Construire la chaîne CSV : "101,202,303"
-    const pfeIdsArray = items.map(item => item.card_info.id);
-    const pfeIdsCsv = pfeIdsArray.join(",");
-
-    // 3) Ajouter au FormData
-    formData.append("pfeIds", pfeIdsCsv);
-    formData.append("stringML", motivationFile);
-
+  const handleSaveSubmit = async () => {
+    // 1. Make sure a file was selected
+    if (!motivationFile) {
+      setToastMessage("Please upload your motivation letter first.");
+      setShowToast(true);
+      return;
+    }
+  
     try {
+      // 2. Build FormData
+      const formData = new FormData();
+      items.forEach(item => {
+        formData.append("pfeIds[]", item.card_info.id);
+      });
+      formData.append("ML", motivationFile);  // motivationFile is a single File object
+  
+      console.log("Form data prepared:", motivationFile);
+  
+      // 3. Send to server
       const resp = await axios.post(
         "/preflist/create",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
+          withCredentials: true
         }
       );
+  
+      // 4. On success
       console.log("Server Save response:", resp.data);
       setToastMessage("Your list has been saved successfully.");
       setShowToast(true);
-
-      // 4) Optionnel : persister localement dans localStorage (stockage local)
+  
+      // 5. Save local copy
       const storedPrefs = items.map((item, idx) => ({
         ...item,
         order: String(idx + 1).padStart(2, "0"),
       }));
       localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
-
+  
     } catch (err) {
+      // On error
       console.error("Save error:", err);
       setToastMessage("Save failed. Please try again.");
       setShowToast(true);
     }
-  })();
-};
+  };
+  
 
   const handleCloseSuccess = () => setShowSuccessModal(false);
   // DnD setup
@@ -330,6 +337,8 @@ const StudentPreferences = ({ submit }) => {
                       submit={submit}
                       onRemove={handleRemove}
                       preferencesList={preferencesList}
+                      sessionTitle={sessionTitle}
+                      targetDate={targetDate} 
                     />
                   ))}
                 </tbody>

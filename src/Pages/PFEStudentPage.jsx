@@ -8,7 +8,7 @@ import PFECard from "../components/CardComponent";
 import Style from "../styles/PFEPage.module.css";
 import StudentPreferencesTab from "../components/StudentPreferencesTab";
 import formatSessions from '../utils/formatSessions';
-
+import deriveOverallStatus from '../utils/deriveStatus';
 
 //dummy PreferenecesList
 
@@ -54,10 +54,11 @@ const PFEPage = () => {
             id: item.PFE.id,  // identifiant unique (ID)
             order: String(item.order).padStart(2, "0"),  // ordre (order)
             topic_title: item.PFE.title,  // titre du PFE (PFE title)
+            submit: item.approved,
             main_supervisor: item.PFE.supervisors?.[0]
               ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
               : "Unknown",                // superviseur principal (main supervisor)
-            // statut (status)
+              // statut (status)
             card_info: {
               ...item.PFE,
               description: item.PFE.description,
@@ -65,12 +66,12 @@ const PFEPage = () => {
               specialization: item.PFE.specialization,
               pdfFile: item.PFE.pdfFile,
               photo: item.PFE.photo,
-              status: item.PFE.status[0],
 
 
             }
           }));
           setPreferencesList(fetched);
+          console.log("********************Fetched preferences list:*****************", fetched);
 
         })
         .catch(err => {
@@ -80,7 +81,46 @@ const PFEPage = () => {
         });
     }
   }, []); //  runs once on mount 
-
+ /*  useEffect(() => {
+    if (preferencesList.length === 0) {
+      axios.get('/preflist/my', { withCredentials: true })
+        .then(res => {
+          const data = res.data.data;
+          // 1. Get raw statuses in order
+          const statuses = data.map(item =>
+            item.PapprovedFE.supervisionRequests?.[0]?.status || null
+          );
+          // 2. Compute overall
+          const overall = deriveOverallStatus(statuses);
+  
+          // 3. Map into your preferencesList
+          const fetched = data.map((item, idx) => ({
+            id: item.PFE.id,
+            order: String(item.order).padStart(2, '0'),
+            topic_title: item.PFE.title,
+            main_supervisor: item.PFE.supervisors?.[0]
+              ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
+              : 'Unknown',
+            card_info: {
+              ...item.PFE,
+              // individual status:
+              status: statuses[idx] || 'PENDING',
+              // team-level status:
+              overallStatus: overall
+            }
+          }));
+  
+          setPreferencesList(fetched);
+        })
+        .catch(err => {
+          if (err.response?.status !== 404) {
+            console.error('Fetch error:', err);
+          }
+        });
+    }
+  }, []);  */// runs once on mount
+  
+  
 
   // Add new topic when coming from ExplorePage, preventing duplicates
   useEffect(() => {
@@ -133,6 +173,8 @@ const PFEPage = () => {
 
 
           if (currentSessions) {
+            console.log("Processed current sessions:", currentSessions);
+
             const processedSessions = formatSessions(currentSessions);
             setCurrentSessions(processedSessions);
             console.log("Processed current sessions:", processedSessions);
@@ -211,7 +253,7 @@ const PFEPage = () => {
                 card={card}
                 isSelected={null}
                 toggleSelect={() => { }}
-                sessionTitle={currentSessions[0]?.sessionTitle || "No session"}
+                sessionTitle={currentSessions[0]?.sessionTitle}
                 targetDate={currentSessions[0]?.targetDate || null}
               />
             ))
@@ -225,9 +267,11 @@ const PFEPage = () => {
       return (
         <div className={Style["preferences-container"]} style={{ marginTop: "1rem", padding: "1rem" }}>
           <StudentPreferencesTab PreferenecesList={preferencesList}
-            session={currentSessions[0]?.sessionTitle || "No session"}
+            session={currentSessions[0]?.sessionTitle}
             setPreferencesList={setPreferencesList}
-            submit={preferencesList[0].status === 'approved'}
+            submit={preferencesList[0]?.submit || false}
+            sessionTitle={currentSessions[0]?.sessionTitle}  
+            targetDate={currentSessions[0]?.targetDate || null} 
 
           />
 
@@ -248,7 +292,7 @@ const PFEPage = () => {
         }}
       >
         <Navbar
-          title={currentSessions[0]?.sessionTitle || "No session"}
+          title={currentSessions[0]?.sessionTitle}
           selectedFilters={selectedFilters}
           onFilterApply={handleFilterApply}
           onSearchChange={handleSearchChange}
