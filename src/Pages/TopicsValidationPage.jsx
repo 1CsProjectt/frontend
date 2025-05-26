@@ -12,7 +12,10 @@ import { useSharedState } from '../contexts/SharedStateContext'; // Import the c
 import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 
 const TopicsValidationPage = () => {
-  const {topicsPageAtiveTab, setTopicsPageActiveTab} = useSharedState(); // Default active tab
+  /* const {topicsPageActiveTab, setTopicsPageActiveTab} = useSharedState(); // Default active tab */
+  const [topicsPageActiveTab, setTopicsPageActiveTab] = useState(() => {
+    return localStorage.getItem("topicsPageActiveTab") || "tab1";
+  });
   const [isChecked, setIsChecked] = useState(false); // for the select all checkbox
   const [selectedCards, setSelectedCards] = useState([]); // Moved state here
   const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
@@ -32,7 +35,9 @@ const TopicsValidationPage = () => {
     tab3: "/admin/sessions/topic-validation/declined-topic-explore",
   };
   const navigate = useNavigate();
-
+  useEffect(() => {
+    localStorage.setItem("topicsPageActiveTab", topicsPageActiveTab);
+  }, [topicsPageActiveTab]);
   const HandleBackButton = () => {
     /*  if the user has some cards selected it will undo the selection 
         else if nothing is selected it will go back to the previous page */
@@ -58,7 +63,7 @@ const TopicsValidationPage = () => {
   };
 
   useEffect(() => {
-    if (topicsPageAtiveTab === "tab1") {
+    if (topicsPageActiveTab === "tab1") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
       const fetchPublishedCards = async () => {
@@ -84,7 +89,7 @@ const TopicsValidationPage = () => {
       console.log("cardsArray:", cardsArray, Array.isArray(cardsArray));
 
       /*  setCardsArray(publishedCardsArray); */
-    } else if (topicsPageAtiveTab === "tab2") {
+    } else if (topicsPageActiveTab === "tab2") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
       const fetchSubmittedCards = async () => {
@@ -111,7 +116,7 @@ const TopicsValidationPage = () => {
 
       /*  setCardsArray(submittedCardsArray); */
     }
-    else if (topicsPageAtiveTab === "tab3") {
+    else if (topicsPageActiveTab === "tab3") {
       setSelectedCards([]); // Reset selected cards when switching tabs
       setIsChecked(false); // Reset the "Select All" checkbox when switching tabs
       const fetchDeclinedCards = async () => {
@@ -137,7 +142,7 @@ const TopicsValidationPage = () => {
 
       /*  setCardsArray(submittedCardsArray); */
     }
-  }, [topicsPageAtiveTab]);
+  }, [topicsPageActiveTab]);
 
   return (
     <div>
@@ -188,31 +193,38 @@ const TopicsValidationPage = () => {
         </div>
       </div>
 
-      <div className={classes.tabs}>
-        <button
-          className={topicsPageAtiveTab === "tab1" ? classes.active : ""}
-          onClick={() => setTopicsPageActiveTab("tab1")}
-          disabled={loading}
-        >
-          Published Topics
-        </button>
-        <button
-          className={topicsPageAtiveTab === "tab2" ? classes.active : ""}
-          onClick={() => setTopicsPageActiveTab("tab2")}
-          disabled={loading}
-        >
-          Submitted Topics
-        </button>
-        <button
-          className={topicsPageAtiveTab === "tab3" ? classes.active : ""}
-          onClick={() => setTopicsPageActiveTab("tab3")}
-          disabled={loading}
-        >
-          Declined Topics
-        </button>
-      </div>
+              <div className={classes.tabs}>
+          <button
+            className={`${classes.tabButton} ${
+              topicsPageActiveTab === "tab1" ? classes.active : ""
+            }`}
+            onClick={() => setTopicsPageActiveTab("tab1")}
+            disabled={loading}
+          >
+            Published Topics
+          </button>
+          <button
+            className={`${classes.tabButton} ${
+              topicsPageActiveTab === "tab2" ? classes.active : ""
+            }`}
+            onClick={() => setTopicsPageActiveTab("tab2")}
+            disabled={loading}
+          >
+            Submitted Topics
+          </button>
+          <button
+            className={`${classes.tabButton} ${
+              topicsPageActiveTab === "tab3" ? classes.active : ""
+            }`}
+            onClick={() => setTopicsPageActiveTab("tab3")}
+            disabled={loading}
+          >
+            Declined Topics
+          </button>
+        </div>
 
-      <div key={topicsPageAtiveTab} className={classes["tab-content"]}>
+
+      <div key={topicsPageActiveTab} className={classes["tab-content"]}>
         {loading ? (
           <div className={classes.loaderContainer}>
             <div className={classes.loader}>
@@ -242,7 +254,7 @@ const TopicsValidationPage = () => {
                 toggleSelect={selectionMode ? toggleSelect : () => {}}
                 onExplore={(e) => {
                   e.stopPropagation();
-                  navigate(pathMap[topicsPageAtiveTab], { state: { card } });
+                  navigate(pathMap[topicsPageActiveTab], { state: { card } });
 
                 }}
                 

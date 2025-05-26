@@ -20,8 +20,9 @@ export default function SubmittedTopicsExplorePage() {
   const [modalOperation, setModalOperation] = useState("");
   const [isDeclineModalOpen, setDeclineModalOpen] = useState(false);
   const [supervisors, setSupervisors] = useState([]);
-  const [selectedSupervisor, setSelectedSupervisor] = useState();
-  const [specialite,setSpecialite] = useState("ISI");
+  const [selectedSupervisors, setSelectedSupervisors] = useState([]);
+  
+  const [specializationArray,setSpecializationArray] = useState(["ISI"]);
   const fetchTeachers = async () => {
     try {
       const response = await axios.get('/users/teachers');
@@ -32,7 +33,8 @@ export default function SubmittedTopicsExplorePage() {
       throw error;
     }
   };
- 
+
+
   useEffect(() => {
     if (card?.creator?.role) {
       console.log("this PFE was submitted by a ", card.creator.role);
@@ -45,10 +47,10 @@ export default function SubmittedTopicsExplorePage() {
   }
   , [card]);
   useEffect(() => {
-    console.log("Selected supervisor:", selectedSupervisor);
+    console.log("Selected supervisor:", selectedSupervisors);
     
   }
-  , [selectedSupervisor]);
+  , [selectedSupervisors]);
 
 
   if (!card) {
@@ -108,14 +110,15 @@ export default function SubmittedTopicsExplorePage() {
                 operation={modalOperation}
                 validatedcardid={card.id}
                 role={card?.creator?.role}
-                specialite={specialite}
-                supervisorToAssign={selectedSupervisor}
+                
+                supervisorsToAssign={selectedSupervisors}
+                specializationArray={specializationArray}
               />
 
               {/* Modal de raison de refus */}
               <DeclineModal
                 isOpen={isDeclineModalOpen}
-                onClose={() => setDeclineModalOpen(false)}
+                onClose={() => {setDeclineModalOpen(false);navigate(-1)}}
                 pfeId={card.id}
               />
             </div>
@@ -143,40 +146,127 @@ export default function SubmittedTopicsExplorePage() {
                 <li>No supervisors are assigned</li>
               )}
             </ul>
-            {card.creator.role === "company" && (
-            <div className={Module.formRow}>
-              {/* Supervisors */}
-              <div className={Module.formField}>
-                <h2 className={Module["section-heading"]}>Assign a Supervisor</h2>
-                <label className={Module.label}>Supervisors</label>
-                <select
-                    className={Module.select}
-                    value={selectedSupervisor}
-                    onChange={(e) => setSelectedSupervisor(e.target.value)}
-                  >
-                    <option value="">Select supervisors</option>
-                    {supervisors.map((sup) => (
-                      <option key={sup.id} value={sup.id}>
-                         {sup.firstname || ""} {sup.lastname || ""} ({sup.user?.email || `Supervisor #${sup.id}`})
-                      </option>
-                    ))}
-                  </select>
-              </div>
+            {card.creator.role === "extern" && (
+  <div className={Module.formRow}>
+    {/* Supervisors */}
+    {/* Supervisor Multi-Select */}
+<div className={Module.formField}>
+  <h2 className={Module["section-heading"]}>Assign Supervisors</h2>
+  <label className={Module.label}>Select Supervisors</label>
+  <select
+    className={Module.select}
+    onChange={(e) => {
+      const selectedId = e.target.value;
+      const selected = supervisors.find((s) => s.id.toString() === selectedId);
+      if (
+        selected &&
+        !selectedSupervisors.some((sup) => sup.id === selected.id) &&
+        selectedSupervisors.length < 3
+      ) {
+        setSelectedSupervisors([...selectedSupervisors, selected]);
+      }
+    }}
+    value=""
+  >
+    <option value="">Select a supervisor</option>
+    {supervisors.map((sup) => (
+      <option
+        key={sup.id}
+        value={sup.id}
+        disabled={selectedSupervisors.some((s) => s.id === sup.id)}
+      >
+        {sup.firstname || ""} {sup.lastname || ""} ({sup.user?.email || `#${sup.id}`})
+      </option>
+    ))}
+  </select>
 
-              {/* Speciality */}
-              <div className={Module.formField}>
-                <h2 className={Module["section-heading"]}>Speciality</h2>
-                <label className={Module.label}>Speciality</label>
-                <select className={Module.select}
-                value={specialite}
-                onChange={(e) => setSpecialite(e.target.value)}>
-                  <option value="ISI">ISI</option>
-                  <option value="SIW">SIW</option>
-                  <option value="IASD">IASD</option>
-                </select>
-              </div>
-            </div>
-            )}
+  {/* Display selected supervisors */}
+  <ul className={Module.selectedList}>
+    {selectedSupervisors.length === 0 ? (
+      <li>No supervisors selected.</li>
+    ) : (
+      selectedSupervisors.map((sup) => (
+        <li key={sup.id} className={Module.selectedItem}>
+          {sup.firstname} {sup.lastname} ({sup.user?.email || `#${sup.id}`})
+          <button
+            className={Module.removeButton}
+            onClick={() =>
+              setSelectedSupervisors(
+                selectedSupervisors.filter((s) => s.id !== sup.id)
+              )
+            }
+            style={{ marginLeft: "10px" }}
+          >
+            ✕
+          </button>
+        </li>
+      ))
+    )}
+  </ul>
+</div>
+
+
+    {/* Speciality */}
+   
+    {/* (card.year === "2SC" || card.year === "3SC") */ true && (
+  <div className={Module.formField}>
+    <h2 className={Module["section-heading"]}>Specializations</h2>
+    <label className={Module.label}>Add a Specialization</label>
+    <select
+      className={Module.select}
+      onChange={(e) => {
+        const selected = e.target.value;
+        if (
+          selected &&
+          !specializationArray.includes(selected) &&
+          specializationArray.length < 3
+        ) {
+          setSpecializationArray([...specializationArray, selected]);
+        }
+      }}
+      value=""
+    >
+      <option value="">Select a specialization</option>
+      {["ISI", "SIW", "IASD"].map((spec) => (
+        <option
+          key={spec}
+          value={spec}
+          disabled={specializationArray.includes(spec)}
+        >
+          {spec}
+        </option>
+      ))}
+    </select>
+
+    {/* Display selected specializations */}
+    <ul className={Module.selectedList}>
+      {specializationArray.length === 0 ? (
+        <li>No specializations selected.</li>
+      ) : (
+        specializationArray.map((spec) => (
+          <li key={spec} className={Module.selectedItem}>
+            {spec}
+            <button
+              className={Module.removeButton}
+              onClick={() =>
+                setSpecializationArray(
+                  specializationArray.filter((s) => s !== spec)
+                )
+              }
+              style={{ marginLeft: "10px" }}
+            >
+              ✕
+            </button>
+          </li>
+        ))
+      )}
+    </ul>
+  </div>
+)}
+    
+  </div>
+)}
+
 
 
             <h2 className={Module["section-heading"]}>Technical Sheet</h2>

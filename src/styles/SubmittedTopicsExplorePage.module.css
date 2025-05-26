@@ -228,3 +228,28 @@
   font-size: 1rem;
   background-color: #fff;
 }
+.selectedList {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.selectedItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  border-bottom: 2px solid #ddd;
+}
+
+.removeButton {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  
+}
