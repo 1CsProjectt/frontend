@@ -8,7 +8,7 @@ import PFECard from "../components/CardComponent";
 import Style from "../styles/PFEPage.module.css";
 import StudentPreferencesTab from "../components/StudentPreferencesTab";
 import formatSessions from '../utils/formatSessions';
-import deriveOverallStatus from '../utils/deriveStatus';
+import Toast from "../components/modals/Toast";
 
 //dummy PreferenecesList
 
@@ -27,6 +27,7 @@ const PFEPage = () => {
   useEffect(() => {
     localStorage.setItem("preferencesList", JSON.stringify(preferencesList));
   }, [preferencesList]);
+  const [isToasterror , setIsToasterror] = useState(null);
 
 
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -34,7 +35,8 @@ const PFEPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submit, setSubmit] = useState(false);
-
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   // Set the default active tab to "PFE Topics"
   const [activeTab, setActiveTab] = useState("PFE Topics");
 
@@ -43,22 +45,23 @@ const PFEPage = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const endpoint = user?.role === "student" ? "/pfe/for-students" : "/pfe";
 
-  // inside PFEPage component
-   useEffect(() => {
-    //  Check if empty, then fetch
-    if (preferencesList.length === 0) {
-      axios.get("/preflist/my", { withCredentials: true })
+  useEffect(() => {
+    // Only fetch when list is empty AND session title matches
+    if (
+      preferencesList.length === 0 &&
+      currentSessions[0]?.sessionTitle === "Select topics session"
+    ) {
+      axios
+        .get("/preflist/my", { withCredentials: true })
         .then(res => {
-          const fetchedData = res.data.data;
-          const fetched = fetchedData.map((item, idx) => ({
-            id: item.PFE.id,  // identifiant unique (ID)
-            order: String(item.order).padStart(2, "0"),  // ordre (order)
-            topic_title: item.PFE.title,  // titre du PFE (PFE title)
+          const fetched = res.data.data.map(item => ({
+            id: item.PFE.id,
+            order: String(item.order).padStart(2, "0"),
+            topic_title: item.PFE.title,
             submit: item.approved,
             main_supervisor: item.PFE.supervisors?.[0]
               ? `${item.PFE.supervisors[0].firstname} ${item.PFE.supervisors[0].lastname}`
-              : "Unknown",                // superviseur principal (main supervisor)
-              // statut (status)
+              : "Unknown",
             card_info: {
               ...item.PFE,
               description: item.PFE.description,
@@ -66,21 +69,21 @@ const PFEPage = () => {
               specialization: item.PFE.specialization,
               pdfFile: item.PFE.pdfFile,
               photo: item.PFE.photo,
-
-
-            }
+            },
           }));
           setPreferencesList(fetched);
-          console.log("********************Fetched preferences list:*****************", fetched);
-
+          console.log("Fetched preferences list:", fetched);
         })
         .catch(err => {
-          if (err.response?.status !== 404) {
-            console.error("Erreur lors du fetch (fetch error):", err);
-          }
+          setIsToasterror(true);
+          const msg = err.response?.data?.message || "Fetch failed. Please try again.";
+          setError(msg);
+          setToastMessage(msg);
+          setShowToast(true);
         });
     }
-  }, []); //  runs once on mount 
+  }, [preferencesList, currentSessions]);
+   
  /*  useEffect(() => {
     if (preferencesList.length === 0) {
       axios.get('/preflist/my', { withCredentials: true })
@@ -181,7 +184,12 @@ const PFEPage = () => {
           }
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
+        setIsToasterror(true);
+        setError(
+          err.response?.data?.message || " failed. Please try again."
+        );
+        setToastMessage(  err.response?.data?.message || " failed. Please try again.");
+        setShowToast(true);
       } finally {
         setLoading(false);
       }
@@ -305,7 +313,7 @@ const PFEPage = () => {
             <div className={Style["header-row"]}>
               <h1>Explore PFE Topics</h1>
 
-              {(activeTab === "My Preferences List" && submit === false) && (
+              {(activeTab === "My Preferences List" && submit === true) && (
                 <>
 
                   <button
@@ -345,6 +353,13 @@ const PFEPage = () => {
         {/* Render the content for the currently active tab */}
         {renderTabContent()}
       </div>
+      {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+            isError ={ isToasterror }
+          />
+        )}
     </div>
   );
 };

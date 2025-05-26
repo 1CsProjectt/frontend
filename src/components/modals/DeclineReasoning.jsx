@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Style from "../../styles/TeamFormationPage.module.css";
 import Uploadbox from "./uploadbox";
 import axios from "axios";
-
+import { Navigate } from "react-router-dom";
 export default function DeclineModal({ isOpen, onClose, onConfirm, pfeId }) {
   // State for reason and file
   const [reason, setReason] = useState("");
@@ -29,8 +29,11 @@ export default function DeclineModal({ isOpen, onClose, onConfirm, pfeId }) {
       });
 
       console.log("Reject success:", response.data);
+      localStorage.setItem("topicsPageActiveTab", "tab3");//redirect to the rejected tab
+      
       // Optionally, handle any UI updates after the reject action
       onConfirm();  // Trigger parent callback to close modal or update UI
+     
     } catch (error) {
       console.error("Error rejecting PFE:", error);
       // Optionally show an error message to the user

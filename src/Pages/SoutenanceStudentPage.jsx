@@ -7,7 +7,7 @@ import Toast from "../components/modals/Toast";
 import Style from "../styles/TeamFormationPage.module.css";
 import Module from "../styles/StudentMeetingPage.module.css";
 import formatSessions from "../utils/formatSessions";
-import { StudentUploadfile } from "../components/Uploadfile";
+import { TeachergetUploadfile, StudentUploadfile } from "../components/Uploadfile";
 const Soutenanceschudule =
 {
     date: "2025-06-01",
@@ -98,17 +98,11 @@ function SoutenanceStudentPage() {
         return json ? JSON.parse(json) : {};
     });
 
-    const teamId = user.team_id;
+    const role = user.role;
 
 
 
 
-    function formatDateToMMDD(dateString) {
-        const date = new Date(dateString);
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${month}/${day}`;
-    }
 
 
 
@@ -124,140 +118,20 @@ function SoutenanceStudentPage() {
                                 Soutenance schudule
                             </div>
                             <div className={Module["Left-side-body"]}>
-                                tay informed about your thesis defense schedule, location and all essential soutenance details
+                                Stay informed about your thesis defense schedule, location and all essential soutenance details
                             </div>
                         </div>
-                        <div className={Module["Right-side"]} style={{ margin: "3vh 0 3vh auto" }} >
-                            <div className={Style["table-wrapper"]} style={{ width: "40vw", marginRight: '5vw' }}>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th style={{ paddingRight: "50px" }}>Date</th>
-                                            <th style={{ paddingRight: "50px" }}>Time</th>
-                                            <th style={{ paddingRight: "50px" }}>Salle</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {Soutenanceschudule ? (
-                                            <tr>
-                                                <td>{formatDateToMMDD(Soutenanceschudule.date)}</td>
-                                                <td>{Soutenanceschudule.time}</td>
-                                                <td>{Soutenanceschudule.room}</td>
-
-                                            </tr>
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={4}>No upcoming meetings.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className={Style["table-wrapper"]} style={{ margin: "3vh 15px 3vh 15px" }}>
-
-                        <div
-                            className={Style.tableWrapper}
-                            ref={containerRef}
-
-                        >
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Jury id</th>
-                                        <th>Full-name</th>
-                                        <th>Email</th>
-                                        <th>work status</th>
-
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentItems.map((m) => (
-                                        <tr key={m.id}>
-                                            <td>{m.id}</td>
-                                            <td>{m.Fullname}</td>
-                                            <td>{m.email}</td>
-
-
-                                            <td>{m.work_Status}</td>
-                                            <td>
-
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
 
                     </div>
+
+
                     <div>
                         <div >
-                            <StudentUploadfile title="Final deliverables" dic="You need to upload your final deliverables for your soutnance (zip file), this need to be uploaded before your soutnance started." />              </div>
+                            <StudentUploadfile />
+                            {role === "admin" && <TeachergetUploadfile />}
+                        </div>
                     </div>
                 </div>
-            );
-        } else if (activeTab === "reports and mark") {
-            return (
-                <>
-                    <div className={Module["Left-side"]} style={{ width: "100vw", marginTop: "-1vh" }} >
-
-                        <div className={Module["Left-side-header"]}>
-                            jury evaluation and remarks
-                        </div>
-                        <div className={Module["Left-side-body"]} style={{ textAlign: "start" }}>
-                            see your final evaluation and remarks on your presentations.
-                        </div>
-                    </div>
-                    <div className={Style["table-wrapper"]} style={{ margin: "0 15px 0 15px" }}>
-
-                        <div
-                            className={Style.tableWrapper}
-                            ref={containerRef}
-
-                        >
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>team member</th>
-                                        <th>jury 1 mark</th>
-                                        <th>jury 2 mark</th>
-                                        <th>jury 3 mark</th>
-                                        <th>jury 4 mark</th>
-                                        <th>average</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {marksData.map((m) => (
-                                        <tr key={m.id}>
-                                            <td>{m.team_member}</td>
-                                            <td>{m.jury1}</td>
-                                            <td>{m.jury2}</td>
-
-                                            <td>{m.jury3}</td>
-
-                                            <td>{m.jury4}</td>
-                                            <td>
-                                            <strong>{((m.jury1 + m.jury2 + m.jury3 + m.jury4) / 4).toFixed(0)}</strong>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-
-                    </div>
-                    <div>
-                        <div >
-                            <StudentUploadfile title="Final deliverables" dic="You need to upload your final deliverables for your soutnance (zip file), this need to be uploaded before your soutnance started." />              </div>
-                    </div>
-                </>
             );
         }
     };
@@ -278,17 +152,7 @@ function SoutenanceStudentPage() {
 
                     {/* Onglets (tabs) */}
 
-                    <div className={Style["tabs"]}>
-                        {["soutenance informations", "reports and mark"].map((tab) => (
-                            <div
-                                key={tab}
-                                className={`${Style["tab-item"]} ${activeTab === tab ? Style.active : ""}`}
-                                onClick={() => setActiveTab(tab)}
-                            >
-                                {tab}
-                            </div>
-                        ))}
-                    </div>
+
 
 
 

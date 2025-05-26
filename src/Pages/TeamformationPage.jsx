@@ -21,6 +21,7 @@ function TeamFormationPage() {
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [isToasterror , setIsToasterror] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showLeaveTeamPopup, setShowLeaveTeamPopup] = useState(false);
   const [students, setStudents] = useState([]);
@@ -47,12 +48,15 @@ function TeamFormationPage() {
 
   const fetchStudentData = async () => {
     const { data } = await axios.get("/student/liststudents", { withCredentials: true });
-    const currentSessions = data.currentSessions;
-    if (currentSessions) {
-      const processedSessions = formatSessions(currentSessions);
-      setCurrentSessions(processedSessions);
-      console.log("Processed current sessions:", processedSessions);
-    }
+       const raw = data.currentSessions;
+       const sessionsArray = Array.isArray(raw) ? raw : [raw];
+    
+       console.log("Raw currentSessions:", raw);
+       console.log("Normalized sessions array:", sessionsArray);
+    
+       const processedSessions = formatSessions(sessionsArray);
+       setCurrentSessions(processedSessions);
+       console.log("Processed sessions:", processedSessions);
     if (data && Array.isArray(data.students)) {
       setStudents(data.students);
       console.log("Students data:", data);
@@ -68,7 +72,7 @@ function TeamFormationPage() {
       status:
       currentSessions[0]?.sessionTitle === "Project Realization Session"
       ? "Closed"
-      : currentSessions[0]?.sessionTitle === "select topics session" &&
+      : currentSessions[0]?.sessionTitle === "Select topics session" &&
         team.members.length >= team.maxNumber
         ? "Full"
         : "Open",
@@ -96,8 +100,12 @@ function TeamFormationPage() {
       }
 
     } catch (err) {
-      console.error("Fetch My Team Error:", err);
-      setError(err.response?.data?.message || err.message);
+      setError(
+        err.response?.data?.message || " failed. Please try again."
+      );
+      setIsToasterror(true);
+      setToastMessage(  err.response?.data?.message || " failed. Please try again.");
+      setShowToast(true);
     }
   };
 
@@ -120,11 +128,19 @@ function TeamFormationPage() {
       console.log(response.data);
       console.log("leave confirmed!");
       fetchMyTeamData();
+      setIsToasterror(null);
       setToastMessage("Team leaving was successful.");
+
       setShowToast(true);
 
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err) {
+      setError(
+        err.response?.data?.message || " failed. Please try again."
+      );
+      setIsToasterror(true);
+      setToastMessage(  err.response?.data?.message || " failed. Please try again.");
+
+      setShowToast(true);
     }
   };
 
@@ -142,8 +158,13 @@ function TeamFormationPage() {
           fetchMyTeamData();
         }
       } catch (err) {
-        console.error("Fetch Error:", err);
-        setError(err.response?.data?.message || err.message);
+        setError(
+          err.response?.data?.message || " failed. Please try again."
+        );
+        setIsToasterror(true);
+
+        setToastMessage(  err.response?.data?.message || " failed. Please try again.");
+        setShowToast(true);
       } finally {
         setLoading(false);
       }
@@ -214,20 +235,20 @@ function TeamFormationPage() {
     if (activeTab === "Students List") {
       return (
         <>
-          {currentSessions[0]?.sessionTitle === "Group formation session" ? (
-            <StudentsListTab
-              user={user}
-              students={filteredStudents}
-              myTeamNumber={myTeam?.id || ""}
-              setUser={setUser}
-            />
+          {currentSessions[0]?.sessionTitle === "Group formation session" || currentSessions[0]?.sessionTitle === "Normal session" ? (
+        <StudentsListTab
+          user={user}
+          students={filteredStudents}
+          myTeamNumber={myTeam?.id || ""}
+          setUser={setUser}
+        />
           ) : (
-            <div className={Style["topicssession-students-list"]}>
+        <div className={Style["topicssession-students-list"]}>
 
-              <img src={Infoicon} alt="PFE Topics" className={Style["icon"]} />
-              <p>The team formation session has ended, and the teams have been created.</p>
+          <img src={Infoicon} alt="PFE Topics" className={Style["icon"]} />
+          <p>The team formation session has ended, and the teams have been created.</p>
 
-            </div>
+        </div>
           )}
         </>
       );
@@ -326,6 +347,8 @@ function TeamFormationPage() {
           onClose={() => setShowCreateTeamModal(false)}
           onTeamCreated={() => {
             fetchexistedTeamData();
+            setIsToasterror(null);
+
             setToastMessage("Team created successfully.");
             setShowToast(true);
             setTimeout(() => {
@@ -333,6 +356,8 @@ function TeamFormationPage() {
             }, 3000);
           }}
           onInviteSent={() => {
+            setIsToasterror(null);
+
             setToastMessage("Invite sent successfully.");
             setShowToast(true);
             setTimeout(() => {
@@ -351,6 +376,7 @@ function TeamFormationPage() {
           <Toast
             message={toastMessage}
             onClose={() => setShowToast(false)}
+            isError ={ isToasterror }
           />
         )}
       </div>

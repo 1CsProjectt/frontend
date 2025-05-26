@@ -12,14 +12,16 @@ axios.defaults.withCredentials = true;
 const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage, setStudentsPerPage] = useState(5);
+  const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [isToasterror, setIsToasterror] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [pendingInviteEmail, setPendingInviteEmail] = useState(null);
   const containerRef = useRef(null);
-/*   const [localUser, setLocalUser] = useState(user);
-  useEffect(() => {
-    setLocalUser(user);
-  }, [user]); */
+  /*   const [localUser, setLocalUser] = useState(user);
+    useEffect(() => {
+      setLocalUser(user);
+    }, [user]); */
 
   useEffect(() => {
     const updateStudentsPerPage = () => {
@@ -50,13 +52,16 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
         "/invitation/sendinvitation",
         { receiver_emails: [email] }
       );
-      
-        setShowToast(true);
-        const timer = setTimeout(() => setShowToast(false), 3000);
-        return () => clearTimeout(timer);
-     
+      setIsToasterror(null);
+      setToastMessage(`Invitation sent to ${email}`);
+      setShowToast(true);
+
+
     } catch (err) {
-      console.error("Invite error:", err);
+      setIsToasterror(true);
+
+      setToastMessage(err.response?.data?.message || " failed. Please try again.");
+      setShowToast(true);
     }
   }, []);
 
@@ -80,35 +85,38 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
         groupName: `Team ${Math.floor(Math.random() * 1000)}`,
       });
       console.log(" Team creation response:", res.data);
-  
+
       //  Use `status` field, not `success`
       if (res.data.status !== "success") {
         throw new Error(res.data.message || "Unknown error");
       }
-  
+
       // 1️ Extract the new team ID
       const newTeamId = res.data.group.id;
       console.log("➡️ newTeamId:", newTeamId);
-  
+
       // 2️ Update user state + localStorage
       const updatedUser = { ...user, team_id: newTeamId };
       setUser(updatedUser);
-  
+
       // 3️ Send pending invite if any
       if (pendingInviteEmail) {
         console.log("📨 Sending invite to:", pendingInviteEmail);
         await sendInvite(pendingInviteEmail);
       }
-  
+
       // 4️ Cleanup
       setPendingInviteEmail(null);
       setShowAlert(false);
     } catch (err) {
-      console.error(" Error creating team + inviting:", err);
-      alert("Could not create team. Please try again.");
+
+      setIsToasterror(true);
+
+      setToastMessage(err.response?.data?.message || " Could not create team. Please try again");
+      setShowToast(true);
     }
   }, [pendingInviteEmail, sendInvite, user, setUser]);
-  
+
 
   // Pagination control
   const handlePageChange = (newPage) => {
@@ -131,7 +139,7 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
             <tr>
               <th>Full name</th>
               <th>Email address</th>
-            
+
               <th>Status</th>
               <th></th>
             </tr>
@@ -141,7 +149,7 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
               <tr key={student.email}>
                 <td>{student.fullName}</td>
                 <td>{student.email}</td>
-               
+
                 <td>
                   {student.status === "available" ? (
                     <span className={styles["status-available"]}>
@@ -212,7 +220,11 @@ const StudentsListTab = ({ user, setUser, students, myTeamNumber }) => {
 
       {/* Toast for successful invite */}
       {showToast && (
-        <Toast message="Invite sent successfully." onClose={() => setShowToast(false)} />
+        <Toast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+          isError={isToasterror}
+        />
       )}
 
       {/* Alert modal to create team */}
