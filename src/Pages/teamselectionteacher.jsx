@@ -14,6 +14,7 @@ const ACCEPTED = "ACCEPTED";
 const REJECTED = "REJECTED";
 
 const TeamSelectionTeacher = () => {
+  const [refreshKey, setRefreshKey] = useState(0);
   const [requests, setRequests] = useState({
     [PENDING]: [],
     [ACCEPTED]: [],
@@ -42,12 +43,13 @@ const TeamSelectionTeacher = () => {
 
         setShowConfirmation(false);
         setSuccess(true);
+        setRefreshKey((prev) => prev + 1);
       } catch (err) {
         console.error(`Error ${newStatus.toLowerCase()} request:`, err);
         setError(`Failed to ${newStatus.toLowerCase()} request`);
       }
     },
-    [setRequests, setError]
+    [setRequests, setError, refreshKey]
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
   const navigate = useNavigate();
@@ -131,6 +133,8 @@ const TeamSelectionTeacher = () => {
         setConfTitle={setConfTitle}
         setConfMsg={setConfMsg}
         setConfButtonText={setConfButtonText}
+        refreshKey={refreshKey}
+        setRefreshKey={setRefreshKey}
       />
       {showConfirmation && (
         <Popup
@@ -154,6 +158,7 @@ const TeamSelectionTeacher = () => {
           onOkey={() => {
             console.log("hnayaaaaaaaaaaaaa");
             setSuccess(false);
+            setRefreshKey((prev) => prev + 1);
           }}
         />
       )}
@@ -181,6 +186,8 @@ const ReceivedRequestsTab = ({
   success,
   setSuccess,
   setConfButtonText,
+  refreshKey,
+  setRefreshKey,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [requestsPerPage, setRequestsPerPage] = useState(10);
@@ -228,7 +235,7 @@ const ReceivedRequestsTab = ({
     };
 
     fetchReceivedRequests();
-  }, []);
+  }, [refreshKey]);
 
   useEffect(() => {
     const updateRequestsPerPage = () => {

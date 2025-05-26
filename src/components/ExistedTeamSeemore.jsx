@@ -118,6 +118,7 @@ const Seemorepage = ({
     console.log("hahaha");
     setSuccess(false);
     setUserRole("teacher.teams");
+    window.history.back();
   };
 
   const staticTeamMembers = [

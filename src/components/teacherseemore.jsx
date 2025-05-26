@@ -140,6 +140,40 @@ const TeacherSeeMore = ({
   refreshKey,
   setRefreshKey,
 }) => {
+  const handleEditMeetingg = async () => {
+    try {
+      // 🚫 Check if date is today or in the past
+
+      const formDataToSend = new FormData();
+
+      // Append file if exists
+      if (objfile instanceof File) {
+        formDataToSend.append("My_review_for_deliverables_files", reviewfile);
+      } else if (typeof objfile === "string") {
+        formDataToSend.append("My_review_for_deliverables_files", reviewfile);
+      }
+
+      const response = await axios.patch(
+        `/mettings/updateMeeting/${myMeet.id}`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data?.status === "success") {
+        setToastMessage("Review file for deliverables sent successfully!");
+        setRefreshKey((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+      setToastMessage("Failed to update meeting");
+    } finally {
+      setShowToast(true);
+    }
+  };
   const [showToast, setShowToast] = useState(false);
   const handleReview = async () => {
     try {
@@ -259,31 +293,37 @@ const TeacherSeeMore = ({
             )}
           </div>
         </div>
-        {supportfile && (
-          <div
-            style={{
-              marginTop: "1.4rem",
-              display: "flex",
-              flexDirection: "row",
-              paddingLeft: "1.4rem",
-              paddingRight: "1.4rem",
-              borderBottom: "2px solid #dde2e4",
-            }}
-          >
-            <div className="form-section">
-              {review && <Uploadfile type="pdf" pdfFil={supportfile} />}
-              {!review && (
-                <Uploadfile
-                  type="pdf"
-                  handlePresentationChange={handleSupportChange}
-                  presentationFile={supportfile}
-                  presentationRef={supportRef}
-                />
-              )}
-            </div>
-          </div>
-        )}
         {/* Support Files */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            paddingLeft: "1.4rem",
+            paddingRight: "1.4rem",
+            borderBottom: "2px solid #dde2e4",
+          }}
+        >
+          <div className="info-section">
+            <p className="ttl-at">Support files</p>
+            <p className="infos-at">
+              Schedule a New Meeting: Set the date, time, objectives, and room
+              to plan your next supervision session.
+            </p>
+          </div>
+          <div className="form-section">
+            {review && supportfile && (
+              <Uploadfile type="pdf" pdfFil={supportfile} />
+            )}
+            {!review && (
+              <Uploadfile
+                type="pdf"
+                handlePresentationChange={handleSupportChange}
+                presentationFile={supportfile}
+                presentationRef={supportRef}
+              />
+            )}
+          </div>
+        </div>
 
         {/* Conditional Review Sections */}
         {review && (
@@ -356,9 +396,8 @@ const TeacherSeeMore = ({
                       handleReviewChange // <-- pass the event here
                     }
                   />
-                )}
-                :{" "}
-                {
+                )}{" "}
+                {!deliverablesFile && (
                   <div className="nonextmeet">
                     <p
                       className="review-title"
@@ -385,7 +424,7 @@ const TeacherSeeMore = ({
                       deliverables
                     </div>
                   </div>
-                }
+                )}
               </div>
             </div>
 
@@ -403,32 +442,34 @@ const TeacherSeeMore = ({
                 {reviewfile && (
                   <Uploadfile type="pdf" pdfFil={pvFile} status={false} />
                 )}{" "}
-                :{" "}
-                <div className="nonextmeet">
-                  <p
-                    className="review-title"
-                    style={{
-                      fontWeight: "bold",
-                      color: "#313638", // red tone
-                      fontSize: "18px",
-                      marginBottom: "8px",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    important!!
-                  </p>
-                  <div
-                    className="review-status"
-                    style={{
-                      padding: "10px",
-                      borderRadius: "6px",
-                      color: "#313638",
-                      fontSize: "15px",
-                    }}
-                  >
-                    no meeting pv until the required files have been uploaded .
+                {!reviewfile && (
+                  <div className="nonextmeet">
+                    <p
+                      className="review-title"
+                      style={{
+                        fontWeight: "bold",
+                        color: "#313638", // red tone
+                        fontSize: "18px",
+                        marginBottom: "8px",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      important!!
+                    </p>
+                    <div
+                      className="review-status"
+                      style={{
+                        padding: "10px",
+                        borderRadius: "6px",
+                        color: "#313638",
+                        fontSize: "15px",
+                      }}
+                    >
+                      no meeting pv until the required files have been uploaded
+                      .
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               <div
                 style={{
@@ -527,7 +568,7 @@ const TeacherSeeMore = ({
                 background:
                   !pvFile || !reviewfile || !deliverablesFile
                     ? "#ccc"
-                    : "##077ED4",
+                    : "#077ED4",
                 color: "white",
                 cursor:
                   !pvFile || !reviewfile || !deliverablesFile
@@ -537,6 +578,22 @@ const TeacherSeeMore = ({
             >
               <p className="managebtns-text-at-s">Review Meeting</p>
             </button>
+            {deliverablesFile && !pvFile && (
+              <button
+                onClick={() => {
+                  handleEditMeetingg();
+                }}
+                className="btns-giant"
+                style={{
+                  width: "349px",
+                  background: "##077ED4",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <p className="managebtns-text-at-s">Send Files</p>
+              </button>
+            )}
           </div>
         ) : (
           <div className="nonextmeet">

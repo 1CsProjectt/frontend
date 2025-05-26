@@ -149,9 +149,11 @@ function TeacherMeetingPage({
       if (objfile instanceof File) {
         formDataToSend.append("Meeting_objectives_files", objfile);
         formDataToSend.append("Support_files", supportfile);
+        formDataToSend.append("My_review_for_deliverables_files ", reviewFile);
       } else if (typeof objfile === "string") {
         formDataToSend.append("Meeting_objectives_files", objfile);
         formDataToSend.append("Support_files", supportfile);
+        formDataToSend.append("My_review_for_deliverables_files ", reviewFile);
       }
 
       const response = await axios.patch(
