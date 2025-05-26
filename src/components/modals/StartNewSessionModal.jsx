@@ -151,6 +151,7 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
         </p>
 
         {/* Grade Dropdown */}
+        { sessionsPageActiveTab !== "Topic Submission Session" ? (
         <div className={classes["form-group"]}>
           <label>Grade</label>
           <select value={grade} onChange={(e) => setGrade(e.target.value)}>
@@ -161,7 +162,7 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab}) => {
             <option>3CS</option>
           </select>
         </div>
-
+        ): null}
         {/* Max Members Input */}
         {sessionsPageActiveTab === "Team Formation Session" ? (
           <div className={classes["form-group"]}>

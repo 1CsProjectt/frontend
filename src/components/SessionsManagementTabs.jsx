@@ -189,7 +189,7 @@ const SessionsManagementTabs = () => {
             <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                           setSessionIDtoDelete(session.id);
                         
-                            setDeleteUserModalOpen(true);}}>Cancel</button>
+                            setDeleteUserModalOpen(true);}}>Delete</button>
           </td>
         </tr>
       ))
@@ -291,7 +291,7 @@ const SessionsManagementTabs = () => {
                           <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                           setSessionIDtoDelete(session.id);
                         
-                            setDeleteUserModalOpen(true);}}>Cancel</button>
+                            setDeleteUserModalOpen(true);}}>Delete</button>
                         </td>
                       </tr>
                   )))}
@@ -390,7 +390,7 @@ const SessionsManagementTabs = () => {
                         <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                           setSessionIDtoDelete(session.id);
                         
-                            setDeleteUserModalOpen(true);}}>Cancel</button>
+                            setDeleteUserModalOpen(true);}}>Delete</button>
                       </td>
                     </tr>
                 )))}
@@ -490,7 +490,7 @@ const SessionsManagementTabs = () => {
                           <button className={classes["cancel-btn"]}onClick={() => {console.log(session);
                             setSessionIDtoDelete(session.id);
                           
-                              setDeleteUserModalOpen(true);}}>Cancel</button>
+                              setDeleteUserModalOpen(true);}}>Delete</button>
                         </td>
                       </tr>
                   )))}

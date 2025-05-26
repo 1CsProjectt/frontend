@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMemo } from "react";
 import axios from "axios";
 import Module from "../styles/AdminManagePreferencesPage.module.css";
 import Seemorepage from "./AdminManagePreferencesSeeMorePage";
@@ -9,52 +8,45 @@ import Toast from "../components/modals/Toast";
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 import DeleteUserModal from "../components/modals/DeleteUserModal";
 import AutoOrganizeTeamsModal from "../components/modals/AutoOrganizeTeamsModal";
+import { PulseLoader } from "react-spinners"; // Import the spinner you want to use
 const ExistedTeamsTab = ({ user, students }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [teamsPerPage, setTeamsPerPage] = useState(10);
+  const [teamsPerPage, setTeamsPerPage] = useState(7);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const containerRef = useRef(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
   const [teamIDtoDelete, setTeamIDtoDelete] = useState(null);
   const [teamsArray, setTeamsArray] = useState([]);
   const [activeTab, setActiveTab] = useState("Teams and Their selections");
-  const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const [showAutoOrganizeModal,setShowAutoOrganizeModal] = useState(false);
+  const [showAutoOrganizeModal, setShowAutoOrganizeModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  // Filter state (specialities)
+  const [selectedFilters, setSelectedFilters] = useState([]);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    setLoading(true);
     const fetchAllTeams = async () => {
       try {
         const response = await axios.get("/teams/all-teams", {
           withCredentials: true,
         });
         setTeamsArray(response.data.teams);
-        console.log("Teams:", response.data);
+        setLoading(false);
       } catch (err) {
         console.error("Error fetching teams:", err);
+        setLoading(false);
         setError(err.response?.data?.message || err.message);
       }
     };
     fetchAllTeams();
   }, []);
-  useEffect(() => {
-    if (selectedTeam) {
-      console.log("New selected team:", selectedTeam);
-    } else {
-      console.log("No team selected");
-    }
-  }, [selectedTeam]);
-  
-  useEffect(() => {
-    console.log("teamsArray in the manage preferences page", teamsArray);
-    
-  }, [teamsArray]);
- useEffect(() => {
 
-console.log("students list is : ",students)
- },[students]);
+  // Adjust rows per page on resize
   useEffect(() => {
     const updateTeamsPerPage = () => {
       if (containerRef.current) {
@@ -69,8 +61,28 @@ console.log("students list is : ",students)
     return () => window.removeEventListener("resize", updateTeamsPerPage);
   }, []);
 
+  // Called when NavBar’s filter is applied
+  const handleFilterApply = (filters) => {
+    setSelectedFilters(filters || []);
+    setCurrentPage(1);
+  };
+
+  // Filter teamsArray by speciality if the first member’s year is 2CS or 3CS
+  const filteredTeamsArray = useMemo(() => {
+    if (!Array.isArray(teamsArray)) return [];
+    return teamsArray.filter((team) => {
+      const firstMember = team.members && team.members[0];
+      if (!firstMember) return false;
+      const { year, specialite } = firstMember;
+      if ((year === "2CS" || year === "3CS") && selectedFilters.length > 0) {
+        return selectedFilters.includes(specialite);
+      }
+      return true;
+    });
+  }, [teamsArray, selectedFilters]);
+
   const { currentItems: currentTeams, totalPages } = getPaginatedData(
-    Array.isArray(teamsArray) ? teamsArray : [],
+    filteredTeamsArray,
     currentPage,
     teamsPerPage
   );
@@ -95,22 +107,40 @@ console.log("students list is : ",students)
 
   return (
     <div className={Module["page-container"]}>
-      <NavBar />
+      <NavBar
+        title=""
+        targetDate={null}
+        onFilterApply={handleFilterApply}
+        selectedFilters={selectedFilters}
+        suggestions={Array.isArray(students) ? students.map((s) => s.fullName) : []}
+      />
+
       <div className={Module["team-formation-container"]}>
         <div className={Module["header-row"]}>
           <h1>Manage Preferences Lists</h1>
           <div className="buttons-container">
             <button
               className={Module["go-back-button"]}
-              onClick={() =>{ if(selectedTeam) {setSelectedTeam(null) }else { navigate("/admin/sessions")}}}
+              onClick={() => {
+                if (selectedTeam) {
+                  setSelectedTeam(null);
+                } else {
+                  navigate("/admin/sessions");
+                }
+              }}
             >
               go Back
             </button>
-            
-            {selectedTeam === null &&  (
-            <button className={Module["admin-auto-organize-button"]} onClick={() => setShowAutoOrganizeModal(true)}>
-              auto-assign
-            </button>)}
+            {selectedTeam === null && (
+              <button
+                className={Module["admin-auto-organize-button"]}
+                onClick={() => {
+                  setShowAutoOrganizeModal(true);
+                }}
+              >
+                auto-assign
+              </button>
+            )}
           </div>
         </div>
 
@@ -129,65 +159,72 @@ console.log("students list is : ",students)
         </div>
 
         {selectedTeam ? (
-        
-          <Seemorepage
-            myTeamNumber={selectedTeam.id}
-            myTeamMembers={mappedMembers}
-            students={students}
-            onBack={() => setSelectedTeam(null)}
-            selectedTeam={selectedTeam}
-          />
-        ) : (
-          <div className={Module["table-wrapper"]} ref={containerRef}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Team Number</th>
-                  <th>Grade</th>
-                  <th>Speciality</th>
-                  <th>Team Supervisor</th>
-                  <th>Topic title</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentTeams.map((team, idx) => {
-                  const teamCreator =
-                    team.members && team.members.length > 0
-                      ? `${team.members[0].firstname} ${team.members[0].lastname}`
-                      : "N/A";
-                  return (
-                    <tr key={idx}>
-                     <td>{team?.id || <span style={{ color: '#ff6666' }}>N/A</span>}</td>
-                    <td>{team?.members[0]?.year || <span style={{ color: '#ff6666' }}>N/A</span>}</td>
-                    <td>{team?.members[0]?.specialite || <span style={{ color: '#ff6666' }}></span>}</td>
-                    <td>
-                      {team?.supervisor?.firstname && team?.supervisor?.lastname
-                        ? `${team.supervisor.firstname} ${team.supervisor.lastname}`
-                        : <span style={{ color: '#ff6666' }}>No supervisor assigned yet</span>}
-                    </td>
-                    <td>
-                      {team.assignedPFE && team.assignedPFE.title
-                        ? team.assignedPFE.title
-                        : <span style={{ color: '#ff6666' }}>No topic assigned yet</span>}
-                    </td>
-
-                      <td className={Module["button-container"]}>
-                        <button
-                          className={Module["invite-button"]}
-                          style={{ width: "90px", marginRight: "15px" }}
-                          onClick={() => setSelectedTeam(team)}
-                        >
-                          See More
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+  <Seemorepage
+    myTeamNumber={selectedTeam.id}
+    myTeamMembers={mappedMembers}
+    students={students}
+    onBack={() => setSelectedTeam(null)}
+    selectedTeam={selectedTeam}
+  />
+) : loading ? (
+  <div className={Module["loaderContainer"]}>
+    <div className={Module["loader"]}>
+      <PulseLoader color="#077fd4" loading={loading} size={25} />
+    </div>
+  </div>
+) : (
+  <div className={Module["table-wrapper"]} ref={containerRef}>
+    <table>
+      <thead>
+        <tr>
+          <th>Team Number</th>
+          <th>Grade</th>
+          <th>Speciality</th>
+          <th>Team Supervisor</th>
+          <th>Topic title</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {currentTeams.map((team, idx) => {
+          const firstMember = team.members && team.members[0];
+          return (
+            <tr key={idx}>
+              <td>{team?.id ?? <span style={{ color: "#ff6666" }}>N/A</span>}</td>
+              <td>{firstMember?.year ?? <span style={{ color: "#ff6666" }}>N/A</span>}</td>
+              <td>{firstMember?.specialite ?? <span style={{ color: "#ff6666" }}></span>}</td>
+              <td>
+                {team.supervisor &&
+                team.supervisor[0]?.firstname &&
+                team.supervisor[0]?.lastname ? (
+                  `${team.supervisor[0].firstname} ${team.supervisor[0].lastname}`
+                ) : (
+                  <span style={{ color: "#ff6666" }}>No supervisor assigned yet</span>
+                )}
+              </td>
+              <td>
+                {team.assignedPFE && team.assignedPFE.title ? (
+                  team.assignedPFE.title
+                ) : (
+                  <span style={{ color: "#ff6666" }}>No topic assigned yet</span>
+                )}
+              </td>
+              <td className={Module["button-container"]}>
+                <button
+                  className={Module["invite-button"]}
+                  style={{ width: "90px", marginRight: "15px" }}
+                  onClick={() => setSelectedTeam(team)}
+                >
+                  See More
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+)}
 
         {selectedTeam === null && (
           <div className={Module["pagination"]}>
@@ -235,19 +272,18 @@ console.log("students list is : ",students)
             onClose={() => setShowToast(false)}
           />
         )}
+
         <DeleteUserModal
           isOpen={isDeleteUserModalOpen}
           onClose={() => setDeleteUserModalOpen(false)}
           entityType="Team"
           teamIDtoDelete={teamIDtoDelete}
         />
-        <AutoOrganizeTeamsModal 
+        <AutoOrganizeTeamsModal
           show={showAutoOrganizeModal}
           onClose={() => setShowAutoOrganizeModal(false)}
-            operation={"assign"}
-          
+          operation={"assign"}
         />
-        
       </div>
     </div>
   );
