@@ -216,61 +216,10 @@ function StudentMeetingPage() {
                     )}
                 </div>
             </div>
-            <div className={Module["Right-side"]}>
-              <div className={Style["table-wrapper"]}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th style={{ paddingRight: "50px" }}>Date</th>
-                      <th style={{ paddingRight: "50px" }}>Time</th>
-                      <th style={{ paddingRight: "50px" }}>Salle</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {nextMeeting ? (
-                      <tr>
-                        <td>{formatDateToMMDD(nextMeeting.date)}</td>
-                        <td>{nextMeeting.time}</td>
-                        <td>{nextMeeting.room}</td>
-                        <td>
-                          <button
-                            onClick={(e) => SeeMoreHandle(e, nextMeeting)}
-                            className={Module["SeeBtn"]}
-                            style={{ padding: "8px 20px" }}
-                          >
-                            see
-                          </button>
-                        </td>
-                      </tr>
-                    ) : (
-                      <tr>
-                        <td colSpan={4}>No upcoming meetings.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            
           </div>
-          <div
-            className={Module["MeetingsHistory"]}
-            style={{ padding: "20px" }}
-          >
-            <div className={Module["MeetingsHistory-header"]}>
-              Meetings History
-            </div>
-
-            {/* + pass the fetched meetings array */}
-            <StudentMeetingHistory
-              MeetingHistoryList={meetings}
-              loading={loading}
-              error={error}
-            />
-          </div>
-          {showToast && (
-            <Toast message={toastMessage} onClose={() => setShowToast(false)} />
-          )}
+          
+        
         </div>
     
   );

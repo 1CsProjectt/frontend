@@ -7,33 +7,39 @@ import { useNavigate } from "react-router-dom";
 import InviteModal from "./modals/InviteModal";
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
-const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites, session,reloadMyTeam }) => {
+const MyTeamTab = ({ userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites, collaborationInvites, reqInvites, session, reloadMyTeam }) => {
   const navigate = useNavigate();
   const [showSetRoleModal, setShowSetRoleModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-   // add this mapping above or in scope
-   const roleMap = {
-     back_end:    "Back-end Developer",
-     front_end:   "Front-end Developer",
-     design:      "UI/UX Designer"
-   };
-  const invites = (collaborationInvites && collaborationInvites.length > 0)
-    ? collaborationInvites
-    : [{
-      sender: { firstname: "No", lastname: "Invite" },
-      email: "no invites exists",
-      team_id: "xx",
-    }];
-    const handleModalClose = (message) => {
-      setShowSetRoleModal(false);
-       if (message) {
-            setToastMessage(message);
-            setShowToast(true);
-         }
-    };
-    
+  // add this mapping above or in scope
+  const roleMap = {
+    back_end: "Back-end Developer",
+    front_end: "Front-end Developer",
+    design: "UI/UX Designer"
+  };
+  const isEmpty = !collaborationInvites || collaborationInvites.length === 0;
+
+  const invites = isEmpty
+    ? [{
+      sender: { firstname: "No", lastname: "Invites" },
+      email: "No invites exist",
+      team_id: "—",
+      disabled: true,             // <-- flag to disable buttons
+    }]
+    : collaborationInvites.map(inv => ({
+      ...inv,
+      disabled: false,            // <-- real invites get buttons enabled
+    }));
+  const handleModalClose = (message) => {
+    setShowSetRoleModal(false);
+    if (message) {
+      setToastMessage(message);
+      setShowToast(true);
+    }
+  };
+
   const handleAcceptInvite = async (inviteId) => {
 
     try {
@@ -41,7 +47,9 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
       );
       console.log(response.data);
       /* window.location.reload(); */
-      reloadMyTeam();
+      setToastMessage(`Accept Invite with ID: ${inviteId}`);
+      setShowToast(true);
+      await reloadMyTeam();
     } catch (error) {
       console.error("Error:", error);
       setToastMessage(error);
@@ -54,7 +62,10 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
       const response = await axios.post('/jointeam/accepteJoinRequests', { requestId: reqId }
       );
       console.log(response.data);
-      reloadMyTeam();
+      setToastMessage(`Accept req with ID: ${reqId}`);
+      setShowToast(true);
+      await reloadMyTeam();
+
     } catch (error) {
       console.error("Error:", error);
       setToastMessage(error);
@@ -69,6 +80,8 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
       console.log(response.data);
       setToastMessage(`Declined req with ID: ${reqId}`);
       setShowToast(true);
+      await reloadMyTeam();
+
     } catch (error) {
       console.error("Error:", error);
       setToastMessage(error);
@@ -76,29 +89,31 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
     }
 
   }
-  const handleDeclineInvite = (inviteId) => {
+  const handleDeclineInvite = async (inviteId) => {
     console.log(`Declined invite with ID: ${inviteId}`);
     axios.post('/invitation/declineInvitation', { invitationId: inviteId });
     setToastMessage(`Declined invite with ID: ${inviteId}`);
     setShowToast(true);
+    await reloadMyTeam();
   };
 
   const handleCancelInvite = (inviteId) => {
     axios.delete('/invitation/cancelInvitation', {
       data: { invitationId: inviteId },
     })
-    .then(() => {
-      console.log(`Cancelled invite with ID: ${inviteId}`);
-      setToastMessage(`Cancelled invite with ID: ${inviteId}`);
-      setShowToast(true);
-    })
-    .catch((error) => {
-      console.error('Error cancelling invitation:', error);
-      setToastMessage('Failed to cancel invite.');
-      setShowToast(true);
-    });
+      .then(async () => {
+        console.log(`Cancelled invite with ID: ${inviteId}`);
+        setToastMessage(`Cancelled invite with ID: ${inviteId}`);
+        setShowToast(true);
+        await reloadMyTeam();
+      })
+      .catch((error) => {
+        console.error('Error cancelling invitation:', error);
+        setToastMessage('Failed to cancel invite.');
+        setShowToast(true);
+      });
   };
-  
+
 
   if (!myTeamNumber && session === "Group formation session") {
     return (
@@ -128,14 +143,19 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
               <tbody>
                 {invites.map((invite, index) => (
                   <tr key={index}>
-                    <td>{invite.sender.firstname} {invite.sender.lastname}</td>
-                    <td>{invite.sender.user?.email || invite.email || "N/A"}</td>
+                    <td>
+                      {invite.sender.firstname} {invite.sender.lastname}
+                    </td>
+                    <td>
+                      {invite.sender.user?.email || invite.email || "N/A"}
+                    </td>
                     <td>{invite.sender.team_id}</td>
                     <td>
                       <button
                         className={Module["invite-button"]}
                         style={{ margin: "0 10px" }}
                         onClick={() => handleAcceptInvite(invite.id)}
+                        disabled={invite.disabled}               // <-- disable when placeholder
                       >
                         Accept
                       </button>
@@ -143,6 +163,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
                         className={Module["invite-button"]}
                         style={{ margin: "0 10px" }}
                         onClick={() => handleDeclineInvite(invite.id)}
+                        disabled={invite.disabled}               // <-- disable when placeholder
                       >
                         Decline
                       </button>
@@ -191,7 +212,7 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
               <tr key={index}>
                 <td>{member.firstname && member.lastname ? `${member.firstname} ${member.lastname}` : "N/A"}</td>
                 <td>{member.user?.email || "N/A"}</td>
-                <td>{roleMap[member.roleINproject]|| "N/A"}  </td>
+                <td>{roleMap[member.roleINproject] || "N/A"}  </td>
                 <td></td>
                 <td></td>
               </tr>
@@ -297,17 +318,17 @@ const MyTeamTab = ({userRole, myTeamNumber, myTeamMembers, myTeamPendingInvites,
       <InviteModal
         show={showInviteModal}
         onClose={() => setShowInviteModal(false)}
-        user={{ team_id: myTeamNumber }} 
+        user={{ team_id: myTeamNumber }}
       />
       {/* Render the SetRoleModal, passing the state and onClose function */}
       <SetRoleModal
-       show={showSetRoleModal}
-       onClose={handleModalClose}
+        show={showSetRoleModal}
+        onClose={handleModalClose}
         currentRole={
-           (roleMap[userRole] || "Member")
-            
-         }
-       
+          (roleMap[userRole] || "Member")
+
+        }
+
       />
       {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>

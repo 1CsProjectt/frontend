@@ -66,11 +66,12 @@ function TeamFormationPage() {
     const teamsWithStatus = data.teams.map(team => ({
       ...team,
       status:
-      currentSessions[0]?.sessionTitle === "select topics session"
-          ? "Full"
-          : team.members && team.maxNumber && team.members.length >= team.maxNumber
-            ? "Full"
-            : "Open",
+      currentSessions[0]?.sessionTitle === "Project Realization Session"
+      ? "Closed"
+      : currentSessions[0]?.sessionTitle === "select topics session" &&
+        team.members.length >= team.maxNumber
+        ? "Full"
+        : "Open",
     }));
 
     setExistedTeams(teamsWithStatus);

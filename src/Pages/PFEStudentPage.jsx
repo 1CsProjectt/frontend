@@ -218,8 +218,8 @@ const PFEPage = () => {
       card.title.toLowerCase().includes(lowerQuery) ||
       (card.specialization &&
         card.specialization.toLowerCase().includes(lowerQuery)) ||
-      (card.creator?.username &&
-        card.creator.username.toLowerCase().includes(lowerQuery)) ||
+      (card.createdBy?.username &&
+        card.createdBy.username.toLowerCase().includes(lowerQuery)) ||
       (card.year && String(card.year).toLowerCase().includes(lowerQuery));
 
     const matchesFilter =
@@ -230,7 +230,7 @@ const PFEPage = () => {
   });
 
   useEffect(() => {
-    console.log("Filtered cards:", filteredCards);
+    console.log("****Filtered cards:***********", filteredCards);
 
   }, [filteredCards]);
 
@@ -292,7 +292,7 @@ const PFEPage = () => {
         }}
       >
         <Navbar
-          title={currentSessions[0]?.sessionTitle}
+          title={currentSessions[0]?.sessionTitle || "Normal session"}
           selectedFilters={selectedFilters}
           onFilterApply={handleFilterApply}
           onSearchChange={handleSearchChange}
