@@ -7,10 +7,13 @@ import Iconup from "../assets/arrow-up.svg";
 import Icondown from "../assets/arrow-down.svg";
 import searchicon from "../assets/Search.svg";
 import axios from "axios";
+import Toast from "../components/modals/Toast";
 
 const Addatopic = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [title, setTitle] = useState("");
+  const [pdfcheck, setpdfcheck] = useState(false);
+  const [imagecheck, setimagecheck] = useState(false);
   const [description, setDescription] = useState("");
   const [grade, setGrade] = useState("2CS");
   const [speciality, setSpeciality] = useState([]);
@@ -20,10 +23,15 @@ const Addatopic = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [supervisorsList, setsupervisorsList] = useState([]);
-
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const presentationRef = useRef(null);
   const techSheetRef = useRef(null);
-
+  const [invalidFields, setInvalidFields] = useState({
+    title: false,
+    description: false,
+    speciality: false,
+  });
   const specialityList = ["ISI", "SIW", "IASD"];
   useEffect(() => {
     const fetchData = async () => {
@@ -81,8 +89,32 @@ const Addatopic = () => {
     console.log("heres the teachers 2", supervisorsList);
   };
   const handleSubmit = async () => {
-    if (!title || !description || !presentationFile || !techSheetFile) {
-      alert("Please fill in all required fields and upload the files.");
+    const newInvalidFields = {
+      title: !title.trim(),
+      description: !description.trim(),
+      speciality:
+        user?.role === "teacher" &&
+        ["2CS", "3CS"].includes(grade) &&
+        speciality.length === 0,
+    };
+    setInvalidFields(newInvalidFields);
+    const isValid = !Object.values(newInvalidFields).some(Boolean);
+    if (!isValid) {
+      setToastMessage("Please fill in all required fields");
+      setShowToast(true);
+      return;
+    }
+
+    if (!presentationFile) {
+      setToastMessage("Please upload image file");
+      setShowToast(true);
+      setimagecheck(true);
+      return;
+    }
+    if (!techSheetFile) {
+      setToastMessage("Please upload pdf file");
+      setShowToast(true);
+      setpdfcheck(true);
       return;
     }
 
@@ -110,10 +142,12 @@ const Addatopic = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      setToastMessage("Topic submitted succufuly");
+      setShowToast(true);
       console.log("Topic submitted:", response.data);
-      alert("Topic submitted successfully!");
-      navigate(-1);
+
+      setimagecheck(false);
+      setpdfcheck(false);
     } catch (error) {
       console.error(error);
       alert(error);
@@ -157,7 +191,7 @@ const Addatopic = () => {
             <div className="form-section">
               <label className="ttl-fs-at">Title</label>
               <textarea
-                className="txt-a1-at"
+                className={`txt-a1-at ${invalidFields.title ? "invalid" : ""}`}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 maxLength="70"
@@ -166,7 +200,9 @@ const Addatopic = () => {
               />
               <label className="ttl-fs-at">Description</label>
               <textarea
-                className="txt-a2-at"
+                className={`txt-a2-at ${
+                  invalidFields.description ? "invalid" : ""
+                }`}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Include a description..."
@@ -177,6 +213,7 @@ const Addatopic = () => {
                 presentationFile={presentationFile}
                 presentationRef={presentationRef}
                 handlePresentationChange={handlePresentationChange}
+                check={imagecheck}
               />
             </div>
           </div>
@@ -201,7 +238,6 @@ const Addatopic = () => {
                   <option value="2CS">2CS</option>
                   <option value="1CS">1CS</option>
                   <option value="2CP">2CP</option>
-                  <option value="1CP">1CP</option>
                 </select>
                 {isspec && <div className="space-year"></div>}{" "}
               </div>
@@ -209,7 +245,11 @@ const Addatopic = () => {
                 <div className="form-section">
                   <label className="ttl-fs-at">Speciality</label>
 
-                  <div className="select-sv-at">
+                  <div
+                    className={`select-sv-at ${
+                      invalidFields.speciality ? "invalid" : ""
+                    }`}
+                  >
                     <button
                       className="sv-button-at"
                       onClick={() => toggleMenu("static")}
@@ -267,6 +307,7 @@ const Addatopic = () => {
                 handlePresentationChange={handleTechSheetChange}
                 presentationFile={techSheetFile}
                 presentationRef={techSheetRef}
+                check={pdfcheck}
               />
             </div>
           </div>
@@ -359,6 +400,17 @@ const Addatopic = () => {
           </div>
         </div>
       </div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          onClose={() => {
+            setShowToast(false);
+            if (toastMessage === "Topic submitted succufuly") {
+              navigate(-1);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

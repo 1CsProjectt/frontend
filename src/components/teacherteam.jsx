@@ -7,6 +7,7 @@ import TeacherMeetingPage from "../Pages/teachermeetingspage";
 
 const TEAM_INFORMATION = "Team Information";
 const SUPERVISION_LOGS = "Supervision Logs";
+const SOUTENANCE_CONTROL = "Soutenance control";
 
 const TeacherTeam = () => {
   const [seeMore, setSeeMore] = useState(false);
@@ -68,6 +69,14 @@ const TeacherTeam = () => {
               >
                 Supervision Logs
               </button>
+              <button
+                className={`tab-item ${
+                  activeTab === SOUTENANCE_CONTROL ? "active" : ""
+                }`}
+                onClick={() => setActiveTab(SOUTENANCE_CONTROL)}
+              >
+                Soutenance control
+              </button>
             </div>
           </div>
         )}
@@ -95,6 +104,47 @@ const TeacherTeam = () => {
             setHistorySeeMore={setHistorySeeMore}
             goingback={seeMore}
           />
+        </div>
+      )}
+      {activeTab === SOUTENANCE_CONTROL && (
+        <div
+          style={{
+            paddingTop: "1.4rem",
+            paddingLeft: "1.4rem",
+            paddingRight: "1.4rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+
+            maxWidth: "50rem",
+          }}
+        >
+          <p className="ttl-at" style={{ fontWeight: "bold" }}>
+            Must be read
+          </p>
+          <p className="infos-at" style={{}}>
+            Welcome to soutnace control section where you can confirm that this
+            project team is ready for the soutenance. Teams confirmed earlier
+            will be given scheduling priority. the place, time, and jury
+            assignments will be set after this sessions ends, you and your team
+            will be notified. your team need to upload their final deliverables
+            before the soutnace starts. This action can only be performed once
+            and cannot be undone
+          </p>
+          <button
+            style={{
+              marginTop: "1.4rem",
+              background: "#077ED4",
+              width: "25rem",
+              height: "55px",
+              border: "none", // ✅ removes border
+              borderRadius: "8px", // optional: makes it look cleaner
+              color: "white", // optional: makes text visible on blue background
+              cursor: "pointer", // optional: adds pointer cursor on hover
+            }}
+          >
+            <p className="managebtns-text-at-s">Confirm</p>
+          </button>
         </div>
       )}
       {/* You can add further content for the Supervision Logs tab here if needed */}

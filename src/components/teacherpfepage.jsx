@@ -3,9 +3,12 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import "../styles/teacher.css";
 import PFECard from "../components/CardComponent";
-
+import { setMyGlobalString } from "../global.js";
+import Teacherpfetopicseemore from "./teacherpfetopicseemore.jsx";
 const TeacherPfePage = () => {
+  const [seemore, setSeeMore] = useState(false);
   const [cards, setCards] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -21,7 +24,7 @@ const TeacherPfePage = () => {
     console.log("Selected Filters:", selectedFilters);
     const fetchData = async () => {
       try {
-        const response = await axios.get("/pfe", {
+        const response = await axios.get("/pfe/validallpfe", {
           withCredentials: true,
           params: {
             specializations: selectedFilters?.join(",") || "",
@@ -30,6 +33,9 @@ const TeacherPfePage = () => {
 
         if (response.data?.pfeList) {
           setCards(response.data.pfeList);
+          const currentSessions = response.data.currentSessions;
+          console.log("hahiya session", currentSessions);
+          setMyGlobalString(currentSessions);
         }
       } catch (err) {
         console.error("Error fetching card data", err);
@@ -49,29 +55,50 @@ const TeacherPfePage = () => {
 
   return (
     <div className="teacher-page-container">
-      <p
-        className="pagetitle"
-        style={{
-          paddingLeft: "10px",
-          paddingTop: "10px",
-        }}
-      >
-        Explore PFE Topics
-      </p>
+      <div className="pageheader">
+        {" "}
+        <p
+          className="pagetitle"
+          style={{
+            paddingLeft: "10px",
+            paddingTop: "10px",
+          }}
+        >
+          Explore PFE Topics
+        </p>
+        {seemore && (
+          <button
+            className="btna-on-cancel"
+            onClick={() => {
+              setSeeMore(false);
+              console.log("Back clicked — should show PFEList", seemore);
+            }}
+          >
+            <p className="txt-on-cancel">Back</p>
+          </button>
+        )}
+      </div>
+
       <div className="content-area">
         {error && <div className="error-message">{error}</div>}
 
         {loading ? (
           <div className="loading-indicator">Loading</div>
+        ) : seemore ? (
+          <Teacherpfetopicseemore topic={selectedTopic} />
         ) : (
-          <PFEList filteredCards={filteredCards} />
+          <PFEList
+            setSeeMore={setSeeMore}
+            filteredCards={cards}
+            setSelectedTopic={setSelectedTopic}
+          />
         )}
       </div>
     </div>
   );
 };
 
-const PFEList = ({ filteredCards }) => {
+const PFEList = ({ filteredCards, setSeeMore, setSelectedTopic }) => {
   return (
     <div className="cards-container">
       {filteredCards.length > 0 ? (
@@ -81,6 +108,10 @@ const PFEList = ({ filteredCards }) => {
             card={card}
             isSelected={null}
             toggleSelect={() => {}}
+            onExplore={() => {
+              setSelectedTopic(card);
+              setSeeMore(true);
+            }}
           />
         ))
       ) : (

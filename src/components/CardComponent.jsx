@@ -3,7 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Style from "../styles/CardComponent.module.css";
 
-const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessionTitle,targetDate,year }) => {
+const PFECard = ({
+  card,
+  isSelected,
+  toggleSelect,
+  onExplore,
+  buttonText,
+  sessionTitle,
+  targetDate,
+  year,
+}) => {
   //the buttonText is an optional prop when wanting to override the default buttonText (Explore)
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,11 +23,14 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessio
       .join(" ") // Join with space
       .trim() || // Remove any extra whitespace
     "Unknown";
- 
+
   // Default function to handle "Explore" action
   const defaultHandleExplore = (e, card) => {
     e.stopPropagation(); // Prevent select toggle when clicking "Explore"
-    navigate("/pfe-student/explore", { state: { card , sessionTitle,targetDate } });
+
+    navigate("/pfe-student/explore", {
+      state: { card, sessionTitle, targetDate },
+    });
   };
 
   // If onExplore prop is not passed, fallback to defaultHandleExplore
@@ -33,8 +45,9 @@ const PFECard = ({ card, isSelected, toggleSelect, onExplore, buttonText ,sessio
       <div className={Style["card-content"]}>
         <h3 className={Style["card-title"]}>{card.title}</h3>
         <div className={Style["card-categories"]}>
-{/*           added by khedim youcef for the display of the year in the card}
- */}          {[
+          {/*           added by khedim youcef for the display of the year in the card}
+           */}{" "}
+          {[
             ...(Array.isArray(card.specialization)
               ? card.specialization
               : card.specialization

@@ -52,14 +52,17 @@ const Seemorepage = ({
         try {
           const response = await axios.get(`/student/${myTeamNumber}/students`);
 
-          const fetchedStudents = response.data.students.map((student) => ({
-            fullName: `${student.firstname} ${student.lastname}`,
-            email: student.user.email,
-            group: student.year,
-            role: student.roleINproject,
-          }));
+          const fetchedStudents =
+            response.data.team?.members.map((student) => ({
+              fullName: `${student.firstname} ${student.lastname}`,
+              email: student.user.email,
+              group: student.year,
+              role: student.roleINproject,
+            })) || [];
+
           setStudents(fetchedStudents);
           console.log("students", fetchedStudents);
+
           const mlFromTeam = response.data.team?.preflists?.[0]?.ML || null;
           setMlFile(mlFromTeam);
           console.log("ML:", mlFromTeam);

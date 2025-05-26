@@ -155,11 +155,11 @@ const TeacherSeeMore = ({
         work_Status: selectedReview,
       });
       if (response.status === 200) {
+        setToastMessage("Meeting Reviewed successfully!");
+        setShowToast(true); // <-- Add this!
         setSeeMore(false);
         setRefreshKey((prev) => prev + 1);
         setReviewVerf(false);
-        setToastMessage("Meeting Reviewed successfully!");
-        setShowToast(true); // <-- Add this!
       }
     } catch (error) {
       console.error("Error updating review status:", error);
@@ -259,34 +259,31 @@ const TeacherSeeMore = ({
             )}
           </div>
         </div>
-
+        {supportfile && (
+          <div
+            style={{
+              marginTop: "1.4rem",
+              display: "flex",
+              flexDirection: "row",
+              paddingLeft: "1.4rem",
+              paddingRight: "1.4rem",
+              borderBottom: "2px solid #dde2e4",
+            }}
+          >
+            <div className="form-section">
+              {review && <Uploadfile type="pdf" pdfFil={supportfile} />}
+              {!review && (
+                <Uploadfile
+                  type="pdf"
+                  handlePresentationChange={handleSupportChange}
+                  presentationFile={supportfile}
+                  presentationRef={supportRef}
+                />
+              )}
+            </div>
+          </div>
+        )}
         {/* Support Files */}
-        <div
-          style={{
-            marginTop: "1.4rem",
-            display: "flex",
-            flexDirection: "row",
-            paddingLeft: "1.4rem",
-            paddingRight: "1.4rem",
-            borderBottom: "2px solid #dde2e4",
-          }}
-        >
-          <div className="info-section">
-            <p className="ttl-at">Support files</p>
-            <p className="infos-at">
-              Upload any additional documents that support the meeting or
-              project.
-            </p>
-          </div>
-          <div className="form-section">
-            <Uploadfile
-              type="pdf"
-              handlePresentationChange={handleSupportChange}
-              presentationFile={supportfile}
-              presentationRef={supportRef}
-            />
-          </div>
-        </div>
 
         {/* Conditional Review Sections */}
         {review && (
@@ -350,12 +347,45 @@ const TeacherSeeMore = ({
                 </p>
               </div>
               <div className="form-section">
-                <Uploadfile
-                  type="pdf"
-                  presentationFile={reviewfile}
-                  presentationRef={reviewRef}
-                  handlePresentationChange={handleReviewChange}
-                />
+                {deliverablesFile && (
+                  <Uploadfile
+                    type="pdf"
+                    presentationFile={reviewfile}
+                    presentationRef={reviewRef}
+                    handlePresentationChange={
+                      handleReviewChange // <-- pass the event here
+                    }
+                  />
+                )}
+                :{" "}
+                {
+                  <div className="nonextmeet">
+                    <p
+                      className="review-title"
+                      style={{
+                        fontWeight: "bold",
+                        color: "#313638", // red tone
+                        fontSize: "18px",
+                        marginBottom: "8px",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      important!!
+                    </p>
+                    <div
+                      className="review-status"
+                      style={{
+                        padding: "10px",
+                        borderRadius: "6px",
+                        color: "#313638",
+                        fontSize: "15px",
+                      }}
+                    >
+                      You can't upload a review until your team uploads the
+                      deliverables
+                    </div>
+                  </div>
+                }
               </div>
             </div>
 
@@ -370,7 +400,35 @@ const TeacherSeeMore = ({
               }}
             >
               <div className="form-section">
-                <Uploadfile type="pdf" pdfFil={pvFile} status={false} />
+                {reviewfile && (
+                  <Uploadfile type="pdf" pdfFil={pvFile} status={false} />
+                )}{" "}
+                :{" "}
+                <div className="nonextmeet">
+                  <p
+                    className="review-title"
+                    style={{
+                      fontWeight: "bold",
+                      color: "#313638", // red tone
+                      fontSize: "18px",
+                      marginBottom: "8px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    important!!
+                  </p>
+                  <div
+                    className="review-status"
+                    style={{
+                      padding: "10px",
+                      borderRadius: "6px",
+                      color: "#313638",
+                      fontSize: "15px",
+                    }}
+                  >
+                    no meeting pv until the required files have been uploaded .
+                  </div>
+                </div>
               </div>
               <div
                 style={{
@@ -454,8 +512,16 @@ const TeacherSeeMore = ({
           <div className="onleft">
             <button
               className="btns-giant"
-              onClick={() => setReviewVerf(true)}
-              disabled={!pvFile || !reviewfile || !deliverablesFile}
+              onClick={() => {
+                if (!pvFile || !reviewfile || !deliverablesFile) {
+                  setToastMessage(
+                    "you cant reviw the meet until all required files are uploaded"
+                  );
+                  setShowToast(true); // <-- Add this!
+                } else {
+                  setReviewVerf(true);
+                }
+              }}
               style={{
                 width: "349px",
                 background:
@@ -479,6 +545,9 @@ const TeacherSeeMore = ({
           </div>
         )
       ) : null}
+      {showToast && (
+        <Toast message={toastMessage} onClose={() => setShowToast(false)} />
+      )}
     </div>
   );
 };
