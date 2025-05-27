@@ -42,6 +42,7 @@ export default function SeeMoreMettingHistory() {
   const [supportfile, setSupportFile] = useState(null);
   const [reviewfile, setReviewFile] = useState(null);
   const [pvfile, setPvFile] = useState(null);
+  const [onbtn, setOnbtn] = useState(false);
   const [objfile, setObjectFile] = useState(null);
   const [deliverablesFile, setDeliverablesFile] = useState(null);
   const deliverref = useRef(null);
@@ -54,9 +55,12 @@ export default function SeeMoreMettingHistory() {
       setPvFile(item.Meeting_pv_files || null);
       setDeliverablesFile(item.Team_deliverables_files || null);
       setReviewFile(item.My_review_for_deliverables_files || null);
+      if (item.Meeting_pv_files) {
+        setOnbtn(true);
+      }
     }
   }, [item]);
-
+  console.log("hahiya onbtn", onbtn);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -122,6 +126,8 @@ export default function SeeMoreMettingHistory() {
       </div>
     );
   }
+  console.log("pvfile ", pvfile);
+  console.log("pvfile ", supportfile);
   return (
     <div className={Module["explore-page"]}>
       <Sidebar />
@@ -294,6 +300,7 @@ export default function SeeMoreMettingHistory() {
                     </p>
                   </div>
                   <div className="form-section">
+                    {}
                     <Uploadfile
                       handlePresentationChange={handleDelechange}
                       type="pdf"
@@ -370,7 +377,7 @@ export default function SeeMoreMettingHistory() {
                     </p>
                   </div>
                   <div className="form-section">
-                    {reviewfile && (
+                    {reviewfile && onbtn === false && (
                       <Uploadfile
                         type="pdf"
                         presentationFile={pvfile}
@@ -378,6 +385,10 @@ export default function SeeMoreMettingHistory() {
                         handlePresentationChange={handlepvchange}
                       />
                     )}
+                    {onbtn && reviewfile && pvfile && (
+                      <Uploadfile type="pdf" pdf={pvfile} status={false} />
+                    )}
+
                     {!reviewfile && (
                       <div className="nonextmeet">
                         <p
@@ -409,23 +420,33 @@ export default function SeeMoreMettingHistory() {
                   </div>
                 </div>
 
-                {item && !item.work_Status && (!pvfile || !deliverablesFile) ? (
+                {(item &&
+                  !item.work_Status &&
+                  (!pvfile || !deliverablesFile)) ||
+                (pvfile && !onbtn) ? (
                   <div className="onleft">
                     <button
                       onClick={() => {
                         if (!deliverablesFile) {
                           setToastMessage(
-                            "upload your derivebales to send them!!"
+                            "Upload your deliverables to send them!"
                           );
                           setShowToast(true);
-                        } else if (deliverablesFile && reviewfile && !pvfile) {
-                          setToastMessage(
-                            "upload your pv files to send them !!"
-                          );
-                          setShowToast(true);
-                        } else {
-                          handleEditMeeting();
+                          return;
                         }
+
+                        // If a review file is present, a PV file is required too
+                        if (reviewfile && !pvfile) {
+                          setToastMessage(
+                            "Upload your PV file along with the review!"
+                          );
+                          setShowToast(true);
+                          return;
+                        }
+
+                        // Safe to proceed
+                        handleEditMeeting();
+                        setOnbtn(true);
                       }}
                       className="btns-giant"
                       style={{
@@ -443,7 +464,9 @@ export default function SeeMoreMettingHistory() {
                     <div className={Module["Review-info"]}>
                       <div className={Module["Title"]}>Meeting review</div>
                       <div className={Module["Note"]}>
-                        {item.note ? item.note : item.work_Status}
+                        {item.note
+                          ? item.note
+                          : item.work_Status ?? "Waiting for supervisor review"}
                       </div>
                     </div>
                   </div>
@@ -455,7 +478,13 @@ export default function SeeMoreMettingHistory() {
                 message={toastMessage}
                 onClose={() => {
                   setShowToast(false);
-                  navigate(-1);
+                  if (
+                    toastMessage !==
+                      "Upload your PV file along with the review!" &&
+                    toastMessage !== "Upload your deliverables to send them!"
+                  ) {
+                    navigate(-1);
+                  }
                 }}
               />
             )}

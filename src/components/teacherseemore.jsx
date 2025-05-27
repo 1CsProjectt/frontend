@@ -581,6 +581,14 @@ const TeacherSeeMore = ({
             {deliverablesFile && !pvFile && (
               <button
                 onClick={() => {
+                  if (!reviewfile) {
+                    setToastMessage("Upload your review files to send them!");
+                    setShowToast(true);
+                    return;
+                  }
+
+                  // If a review file is present, a PV file is required too
+
                   handleEditMeetingg();
                 }}
                 className="btns-giant"
