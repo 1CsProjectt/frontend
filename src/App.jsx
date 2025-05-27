@@ -35,6 +35,7 @@ import ReadTopicPage from "./Pages/ReadTopicPage";
 import SoutenanceStudentPage from "./Pages/SoutenanceStudentPage";
 import DeclinedTopicsExplorePage from "./Pages/DeclinedTopicsExplorePage";
 import PublishedTopicsExplorePage from "./Pages/PublishedTopicsExplorePage";
+import AdminSoutenance from "./Pages/AdminSoutenance";
 function App() {
   return (
     <Router>
@@ -76,6 +77,7 @@ function App() {
             path="/SoutenanceStudentPage"
             element={<SoutenanceStudentPage />}
           />
+          
           <Route
             path="/StudentMeetingsPage"
             element={<StudentMeetingsPage />}
@@ -89,8 +91,14 @@ function App() {
 
           <Route path="/pfe/explore/:projectId" element={<ExplorePage />} />
           <Route path="/admin" element={<AdminDashboard />}>
+          <Route
+            path="soutenance"
+            element={<AdminSoutenance />}
+          />
+
             <Route index element={<UserManagementTabs />} />
             <Route path="users" element={<UserManagementTabs />} />
+           
             <Route path="sessions" element={<SessionsManagementTabs />} />
             <Route
               path="sessions/manage-preferences"

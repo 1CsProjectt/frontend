@@ -16,7 +16,9 @@ import TeamformationIcon from "../assets/Teamformation.svg";
 const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   console.log(user.role);
-  const role = user.role === "extern" || user.role === "teacher" ? true : false;
+  const role = user.role === "teacher" ? true : false;
+  const role2 = user.role === "extern" ? true : false;
+
   const navigate = useNavigate();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState("");
@@ -92,7 +94,7 @@ const Sidebar = () => {
           </button>
         </li>
 
-        {role && (
+        {(role || role2) && (
           <>
             <li className={Module["menu-item"]}>
               <button
@@ -110,49 +112,53 @@ const Sidebar = () => {
                 />
               </button>
             </li>
-            <li className={Module["menu-item"]}>
-              <button
-                className={`${Module["menu-btn"]} ${
-                  activeMenu === "requests" ? Module["active"] : ""
-                }`}
-                onClick={() => toggleMenu("/teacher/requests")}
-              >
-                <img
-                  src={TeamformationIcon}
-                  alt="Requests"
-                  className={Module["icon"]}
-                />
-                Requests
-                <img
-                  src={ChevronRightIcon}
-                  alt="Arrow"
-                  className={Module["row-icon"]}
-                />
-              </button>
-            </li>
-            <li className={Module["menu-item"]}>
-              <button
-                className={`${Module["menu-btn"]} ${
-                  activeMenu === "myteam" ? Module["active"] : ""
-                }`}
-                onClick={() => toggleMenu("/teacher/myteam")}
-              >
-                <img
-                  src={TeamformationIcon}
-                  alt="Requests"
-                  className={Module["icon"]}
-                />
-                My Teams
-                <img
-                  src={ChevronRightIcon}
-                  alt="Arrow"
-                  className={Module["row-icon"]}
-                />
-              </button>
-            </li>
+            {role && (
+              <li className={Module["menu-item"]}>
+                <button
+                  className={`${Module["menu-btn"]} ${
+                    activeMenu === "requests" ? Module["active"] : ""
+                  }`}
+                  onClick={() => toggleMenu("/teacher/requests")}
+                >
+                  <img
+                    src={TeamformationIcon}
+                    alt="Requests"
+                    className={Module["icon"]}
+                  />
+                  Requests
+                  <img
+                    src={ChevronRightIcon}
+                    alt="Arrow"
+                    className={Module["row-icon"]}
+                  />
+                </button>
+              </li>
+            )}
+            {role && (
+              <li className={Module["menu-item"]}>
+                <button
+                  className={`${Module["menu-btn"]} ${
+                    activeMenu === "myteam" ? Module["active"] : ""
+                  }`}
+                  onClick={() => toggleMenu("/teacher/myteam")}
+                >
+                  <img
+                    src={TeamformationIcon}
+                    alt="Requests"
+                    className={Module["icon"]}
+                  />
+                  My Teams
+                  <img
+                    src={ChevronRightIcon}
+                    alt="Arrow"
+                    className={Module["row-icon"]}
+                  />
+                </button>
+              </li>
+            )}
           </>
         )}
-        {!role && (
+        {!role && !role2 && (
           <li className={Module["menu-item"]}>
             <button
               className={`${Module["menu-btn"]} ${
@@ -174,7 +180,7 @@ const Sidebar = () => {
             </button>
           </li>
         )}
-        {!role && (
+        {!role && !role2 && (
           <li className={Module["menu-item"]}>
             <button
               className={`${Module["menu-btn"]} ${
@@ -198,9 +204,8 @@ const Sidebar = () => {
             </button>
           </li>
         )}
-       
 
-        {!role && (
+        {!role2 && (
           <li className={Module["menu-item"]}>
             <button
               /* className={Module[`menu-btn ${activeMenu === "Soutenance" ? "active" : ""}`]} */
@@ -223,8 +228,42 @@ const Sidebar = () => {
             </button>
           </li>
         )}
-        
-       
+        {!role && !role2 && (
+          <li className={Module["menu-item"]}>
+            <button
+              className={`${Module["menu-btn"]} ${
+                activeMenu === "lovers" ? Module["active"] : ""
+              }`}
+              onClick={() => toggleMenu("/lovers")}
+            >
+              <img src={LoversIcon} alt="Lovers" className={Module["icon"]} />
+              Lovers
+              <img
+                src={ChevronRightIcon}
+                alt="Arrow"
+                className={Module["row-icon"]}
+              />
+            </button>
+          </li>
+        )}
+        {!role && !role2 && (
+          <li className={Module["menu-item"]}>
+            <button
+              className={`${Module["menu-btn"]} ${
+                activeMenu === "export" ? Module["active"] : ""
+              }`}
+              onClick={() => toggleMenu("/export")}
+            >
+              <img src={ExportIcon} alt="Export" className={Module["icon"]} />
+              Export
+              <img
+                src={ChevronRightIcon}
+                alt="Arrow"
+                className={Module["row-icon"]}
+              />
+            </button>
+          </li>
+        )}
       </ul>
 
       {/* Bottom Menu */}
