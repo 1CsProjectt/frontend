@@ -205,7 +205,7 @@ const Sidebar = () => {
           </li>
         )}
 
-        {!role && !role2 && (
+        {!role2 && (
           <li className={Module["menu-item"]}>
             <button
               /* className={Module[`menu-btn ${activeMenu === "Soutenance" ? "active" : ""}`]} */

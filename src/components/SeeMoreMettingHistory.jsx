@@ -401,8 +401,8 @@ export default function SeeMoreMettingHistory() {
                             fontSize: "15px",
                           }}
                         >
-                          You can't upload a review until your team uploads the
-                          deliverables
+                          You can't upload a pv until your supervisor uploads
+                          the review for the deliverables
                         </div>
                       </div>
                     )}
@@ -413,7 +413,19 @@ export default function SeeMoreMettingHistory() {
                   <div className="onleft">
                     <button
                       onClick={() => {
-                        handleEditMeeting();
+                        if (!deliverablesFile) {
+                          setToastMessage(
+                            "upload your derivebales to send them!!"
+                          );
+                          setShowToast(true);
+                        } else if (deliverablesFile && reviewfile && !pvfile) {
+                          setToastMessage(
+                            "upload your pv files to send them !!"
+                          );
+                          setShowToast(true);
+                        } else {
+                          handleEditMeeting();
+                        }
                       }}
                       className="btns-giant"
                       style={{

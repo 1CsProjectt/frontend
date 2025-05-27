@@ -39,7 +39,7 @@ const Seemorepage = ({
   const [showJoinAlert, setShowJoinAlert] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [status, setStatus] = useState("");
-
+  const [showbtns, setBtns] = useState(true);
   const [confTitle, setConfTitle] = useState("");
   const [confMsg, setConfMsg] = useState("");
   const [confButtonText, setConfButtonText] = useState("");
@@ -118,7 +118,6 @@ const Seemorepage = ({
     console.log("hahaha");
     setSuccess(false);
     setUserRole("teacher.teams");
-    window.history.back();
   };
 
   const staticTeamMembers = [
@@ -143,7 +142,7 @@ const Seemorepage = ({
             </p>
           </div>
 
-          {userRole === "teacher" && (
+          {userRole === "teacher" && showbtns && (
             <div className={Module["header-right-teacher"]}>
               <button
                 className={Module["button-teacher"]}
@@ -171,8 +170,10 @@ const Seemorepage = ({
               onConfirm={() => {
                 if (status === "blue") {
                   handleactions(requestid, "ACCEPTED");
+                  setBtns(false);
                 } else {
                   handleactions(requestid, "REJECTED");
+                  setBtns(false);
                 }
               }}
               confirmText={confButtonText}
