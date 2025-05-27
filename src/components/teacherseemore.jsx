@@ -387,7 +387,7 @@ const TeacherSeeMore = ({
                 </p>
               </div>
               <div className="form-section">
-                {deliverablesFile && (
+                {deliverablesFile && !pvFile && (
                   <Uploadfile
                     type="pdf"
                     presentationFile={reviewfile}
@@ -397,6 +397,9 @@ const TeacherSeeMore = ({
                     }
                   />
                 )}{" "}
+                {pvFile && reviewfile && (
+                  <Uploadfile type="pdf" pdfFil={reviewfile} status={false} />
+                )}
                 {!deliverablesFile && (
                   <div className="nonextmeet">
                     <p
