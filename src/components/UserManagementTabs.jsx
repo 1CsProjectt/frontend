@@ -14,7 +14,11 @@ const UserManagementTabs = () => {
   // Modal state
   const [isUserFormModalOpen, setUserFormModalOpen] = useState(false);
   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
-
+  const [selectedFilters, setSelectedFilters] = useState({
+      Grade: ["1CS", "2CS", "3CS", "2CP"],
+      Speciality: ["ISI", "SIW", "IASD"],
+      Other: [],
+    });
   // Which tab is active?
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("activeTab") || "Students";
@@ -42,6 +46,11 @@ const UserManagementTabs = () => {
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+   // Called when NavBar’s filter is applied
+   const handleFilterApply = (filters) => {
+    setSelectedFilters(filters || { Grade: [], Speciality: [], Other: [] });
+    setCurrentPage(1);
+  };
   
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
@@ -80,7 +89,7 @@ const UserManagementTabs = () => {
     fetchUsers();
   }, []);
   
-
+  
   // Split fetchedUsers into role-based buckets
   const allUsers = useMemo(() => {
     return {
