@@ -14,7 +14,7 @@ axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 const StudentsListTab = ({ user, students,selectedFilters, myTeamNumber }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const [studentsPerPage, setStudentsPerPage] = useState("");
+  const [studentsPerPage, setStudentsPerPage] = useState(5);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   
@@ -109,7 +109,7 @@ const StudentsListTab = ({ user, students,selectedFilters, myTeamNumber }) => {
             <div className={Module["alertDiv"]}>
                         <img src={alertIcon} alt="Alert Icon" />
                         <h3>
-                          No Students were found either a filter is applied or no students are registered yet.
+                          No Students were found either a filter is applied or 
                           <span
                           style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
                           onClick={() => navigate("/admin/users")}

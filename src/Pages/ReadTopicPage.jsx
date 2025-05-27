@@ -12,6 +12,7 @@ export default function ReadTopicPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { card } = location.state || {};
+
   const [isPfeTopicModalOpen, setPfeTopicModalOpen] = useState(false);
   const [modalOperation, setModalOperation] = useState(""); //by default no operation is chosen
 
@@ -55,20 +56,22 @@ export default function ReadTopicPage() {
           </div>
           <div className={Module["banner-wrapper"]}>
             <img
-              src={card.photo || "https://via.placeholder.com/300x200"}
+              src={card.PFE.photo || "https://via.placeholder.com/300x200"}
               alt="Project Banner"
               className={Module["project-banner"]}
             />
           </div>
           <div className={Module["project-details"]}>
-            <h1 className={Module["project-title"]}>{card.title}</h1>
-            <p className={Module["project-description"]}>{card.description}</p>
+            <h1 className={Module["project-title"]}>{card.PFE.title}</h1>
+            <p className={Module["project-description"]}>{card.PFE.description}</p>
 
             <h2 className={Module["section-heading"]}>Supervisors</h2>
             <ul className={Module["supervisors-list"]}>
-              {card.supervisors && card.supervisors.length > 0 ? (
-                card.supervisors.map((supervisor, index) => (
-                  <li key={index}>{supervisor.name || "No name provided"}</li>
+              {card.PFE.supervisors && card.PFE.supervisors.length > 0 ? (
+                card.PFE.supervisors.map((supervisor, index) => (
+                  <li key={index}>
+                   -  {(supervisor.firstname + " " + supervisor.lastname) || "No name provided"}
+                  </li>
                 ))
               ) : (
                 <li>No supervisors available</li>
@@ -77,7 +80,7 @@ export default function ReadTopicPage() {
 
             <h2 className={Module["section-heading"]}>Technical Sheet</h2>
             <a
-              href={card.pdfFile}
+              href={card.PFE.pdfFile}
               download
               className={Module["technical-sheet"]}
             >
