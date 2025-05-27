@@ -4,7 +4,7 @@ import styles from '../../styles/MoveTeamMemberModal.module.css';
 import { Search } from 'lucide-react';
 import axios from 'axios';
 
-const MoveTeamMemberModal = ({ isOpen, onClose ,memberToMove}) => {
+const MoveTeamMemberModal = ({ isOpen, onClose ,memberToMove,setShowToast,setToastMessage}) => {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [teams, setTeams] = useState([]);// the fetch happens in the modal to improve accuracy of the data
@@ -50,25 +50,26 @@ const MoveTeamMemberModal = ({ isOpen, onClose ,memberToMove}) => {
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleMove = () => {
     if (!selectedTeam ) {
-      alert("Please select a team first");
+      setToastMessage("Please select a team first");
+      setShowToast(true);
       return;
-    }else {
-      alert("Moving member of id :" + memberToMove.id + " to team id :" + selectedTeam);
     }
-
   
     axios.patch('/teams/move-student', {
       studentIds: [memberToMove.id],
       newTeamId: selectedTeam
     })
     .then(res => {
-      alert("Member moved successfully!");
+      setToastMessage("Member moved successfully");
+      setShowToast(true);
       setTeams([]); // Clear teams after moving
       onClose(); // Close modal
     })
     .catch(err => {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to move member.");
+     
+      setToastMessage("Failed to move member :" + err.response?.data?.message || "An error occurred");
+      setShowToast(true);
     });
   };
   

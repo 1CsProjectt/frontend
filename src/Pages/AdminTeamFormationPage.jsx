@@ -20,8 +20,10 @@ axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 function TeamFormationPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("Students List");
-  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [adminTeamFormationActiveTab, setAdminTeamFormationActiveTab] = useState(() => {
+    return localStorage.getItem("adminTeamFormationActiveTab") || "Students List";
+  });
+    const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,32 +40,31 @@ function TeamFormationPage() {
   const { sessionsPageActiveTab, setSessionsPageActiveTab } = useSharedState();
   const [teamFormationSessionEnded,setTeamFormationSessionEnded] = useState(true);//temporarelly set to true (to implement later)
   const [showAutoOrganizeModal,setShowAutoOrganizeModal] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({
+      Grade: ["1CS", "2CS", "3CS", "2CP"],
+      Speciality: ["ISI", "SIW", "IASD"],
+      Other: [],
+    });
+    
+  
+  // Called when NavBar’s filter is applied
+  const handleFilterApply = (filters) => {
+    setSelectedFilters(filters || { Grade: [], Speciality: [], Other: [] });
+    
+    };
+  
+useEffect(() => {
+  localStorage.setItem("adminTeamFormationActiveTab", adminTeamFormationActiveTab);
+}, [adminTeamFormationActiveTab]);
 
-  const handleJoinClick = () => {
-    setShowLeaveTeamPopup(true);
-    console.log("leave clicked");
-  };
-  const handleCancel = () => {
-    setShowLeaveTeamPopup(false);
-  };
-
-  const handleConfirm = () => {
-    setShowLeaveTeamPopup(false);
-    // Here you would perform the join action (APIEx call, etc.)
-    console.log("leave confirmed!");
-    setToastMessage("Team leaving was successful.");
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
+  
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError("");
 
       try {
-        if (activeTab === "Students List") {
+        if (adminTeamFormationActiveTab === "Students List") {
           const { data } = await axios.get("/users/students", {
             withCredentials: true,
           });
@@ -73,7 +74,7 @@ function TeamFormationPage() {
           } else {
             console.error("Unexpected API Response Format for students:", data);
           }
-        } else if (activeTab === "Existed Teams") {
+        } else if (adminTeamFormationActiveTab === "Existed Teams") {
           const { data } = await axios.get("/teams/all", {
             withCredentials: true,
           });
@@ -100,7 +101,7 @@ function TeamFormationPage() {
     };
 
     fetchData();
-  }, [activeTab]);
+  }, [adminTeamFormationActiveTab]);
 
   // Format the students for display
   const formattedStudents = students.map((student) => ({
@@ -127,20 +128,22 @@ function TeamFormationPage() {
 
   // Render the appropriate tab content based on the active tab
   const renderTabContent = () => {
-    if (activeTab === "Students List") {
+    if (adminTeamFormationActiveTab === "Students List") {
       return (
         <AdminStudentsListTab
           user={user}
           students={filteredStudents}
+          selectedFilters={selectedFilters}   
           myTeamNumber={myTeam?.groupName || ""}
         />
       );
-    } else if (activeTab === "Existed Teams") {
+    } else if (adminTeamFormationActiveTab === "Existed Teams") {
       return (
         <AdminExistedTeamsTab
           user={user}
           existedTeams={existedTeams}
           navigate={navigate}
+          selectedFilters={selectedFilters}
           students={formattedStudents}
           
         />
@@ -151,10 +154,12 @@ function TeamFormationPage() {
   return (
     <div>
       <div>
-        <Navbar
+        <Navbar 
           title={"Group formation session:"}
           targetDate={targetDate}
           onSearchChange={handleSearchChange}
+          onFilterApply={handleFilterApply}
+          selectedFilters={selectedFilters}
           suggestions={formattedStudents.map((s) => s.fullName)}
         />
         <div className={Style["team-formation-container"]}>
@@ -165,13 +170,13 @@ function TeamFormationPage() {
               <button
                 className={Style["go-back-button"]}
                 onClick={() => {
-                  setSessionsPageActiveTab("Team Formation Session");
+                 
                   navigate(-1);
                 }}
               >
                 go Back
               </button>
-              {activeTab === "Existed Teams" && teamFormationSessionEnded && (
+              {adminTeamFormationActiveTab === "Existed Teams" && teamFormationSessionEnded && (
                 <button
                   className={Style["admin-auto-organize-button"]}
                   onClick={() => setShowAutoOrganizeModal(true)}
@@ -179,7 +184,7 @@ function TeamFormationPage() {
                   auto-organize
                 </button>
               )}
-              {activeTab === "Existed Teams" && (
+              {adminTeamFormationActiveTab === "Existed Teams" && (
          
                
 
@@ -200,9 +205,9 @@ function TeamFormationPage() {
               <div
                 key={tab}
                 className={`${Style["tab-item"]} ${
-                  activeTab === tab ? Style.active : ""
+                  adminTeamFormationActiveTab === tab ? Style.active : ""
                 }`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setAdminTeamFormationActiveTab(tab)}
               >
                 {tab}
               </div>
@@ -235,11 +240,7 @@ function TeamFormationPage() {
           operation={"organize"}
         />
         
-        <LeaveTeamPopup
-          show={showLeaveTeamPopup}
-          onCancel={handleCancel}
-          onConfirm={handleConfirm}
-        />
+        
         {showToast && (
           <Toast message={toastMessage} onClose={() => setShowToast(false)} />
         )}

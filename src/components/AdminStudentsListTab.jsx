@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect,useNa } from "react";
 import Module from "../styles/TeamFormationPage.module.css";
 import CreateTeamAlert from "./modals/CreateTeamAlert";
 import Toast from "./modals/Toast";
+import alertIcon from "../assets/alert-icon.svg";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import MoveTeamMemberModal from './modals/MoveTeamMemberModal';
 import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
@@ -9,15 +11,35 @@ import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const StudentsListTab = ({ user, students, myTeamNumber }) => {
+const StudentsListTab = ({ user, students,selectedFilters, myTeamNumber }) => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage, setStudentsPerPage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  
   const containerRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
   const [isMoveTeamMemberModalOpen, setIsMoveTeamMemberModalOpen] = useState(false);
-
+  
   const [memberToMove,setMemberToMove] = useState(null);//entire student object is set 
+  // 1) Filter by grade / speciality first
+  const filteredByGradeAndSpec = React.useMemo(() => {
+    return students.filter((s) => {
+      // Grade must match or no grade‐filter active
+      const gradeOk =
+        selectedFilters.Grade.length === 0 ||
+        selectedFilters.Grade.includes(s.year);
+
+      // Only enforce speciality filter if 2CS/3CS
+      const specOk =
+        !["2CS", "3CS"].includes(s.year) ||
+        selectedFilters.Speciality.length === 0 ||
+        selectedFilters.Speciality.includes(s.specialite);
+
+      return gradeOk && specOk;
+    });
+  }, [students, selectedFilters]);
   useEffect(() => {
     const updateStudentsPerPage = () => {
       if (containerRef.current) {
@@ -39,7 +61,8 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
 
   // Use the pagination utility functions to compute data for the current page
   const { currentItems: currentStudents, totalPages } = getPaginatedData(
-    students,
+    /* students, */
+    filteredByGradeAndSpec,
     currentPage,
     studentsPerPage
   );
@@ -81,7 +104,23 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
   };
 
   return (
-
+    <div>
+    {(currentStudents.length === 0) ? (
+            <div className={Module["alertDiv"]}>
+                        <img src={alertIcon} alt="Alert Icon" />
+                        <h3>
+                          No Students were found either a filter is applied or no students are registered yet.
+                          <span
+                          style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                          onClick={() => navigate("/admin/users")}
+                                >
+                              Click here to add new students
+                            </span>
+                                                
+                        </h3>
+                      </div>
+          )
+            : (
     <div className={Module["page-container"]}>
       <div className={Module["table-wrapper"]} ref={containerRef}>
         <table>
@@ -179,12 +218,6 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
         </button>
       </div>
 
-      {/* Toast Notification */}
-      {showToast && (
-        <Toast message="Invite sent successfully." onClose={() => setShowToast(false)} />
-      )}
-      
-      <CreateTeamAlert show={showAlert} onCancel={handleCancel} onConfirm={handleConfirm} />
 
       <MoveTeamMemberModal 
         isOpen={isMoveTeamMemberModalOpen}
@@ -192,7 +225,10 @@ const StudentsListTab = ({ user, students, myTeamNumber }) => {
         onClose={() => setIsMoveTeamMemberModalOpen(false)}
     
         memberToMove={memberToMove}   
+        setShowToast={setShowToast}
+        setToastMessage={setToastMessage}
            />
+    </div>)}
     </div>
   );
 };

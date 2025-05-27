@@ -8,7 +8,7 @@ import { getPaginatedData, getPageNumbers } from "../utils/paginationFuntion";
 import DeleteUserModal from "./modals/DeleteUserModal";
 import alertIcon from "../assets/alert-icon.svg";
 
-const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
+const ExistedTeamsTab = ({ user, existedTeams ,students,selectedFilters }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [teamsPerPage, setTeamsPerPage] = useState(10);
@@ -19,39 +19,26 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
   const [showJoinAlert, setShowJoinAlert] = useState(false);
    const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
    const [teamIDtoDelete, setTeamIDtoDelete] = useState(null);
-  const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
+   // 1) Filter by Grade & Speciality
+   const filteredByGradeAndSpec = React.useMemo(() => {
+    return existedTeams.filter((team) => {
+      const first = team.members?.[0];
+      if (!first) return false;
 
+      // grade rule:
+      const gradeOk =
+        selectedFilters.Grade.length === 0 ||
+        selectedFilters.Grade.includes(first.year);
 
-  /* const handledeleteteam = async (teamId) => {
-    if (!teamId) {
-      console.log("No team ID provided");
-      return;
-    }
+      // only enforce speciality if 2CS/3CS:
+      const specOk =
+        !["2CS", "3CS"].includes(first.year) ||
+        selectedFilters.Speciality.length === 0 ||
+        selectedFilters.Speciality.includes(first.specialite);
 
-    try {
-      await deleteTeam(teamId);
-    } catch (error) {
-      console.error("Error deleting team:", error);
-    }
-  };
-
-  const deleteTeam = async (teamId) => {
-    try {
-      if (!teamId) return;
-
-      await axios.delete(`/teams//delete/${teamId}`, {
-        withCredentials: true,
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
-
-      console.log(`Team ${teamId} deleted successfully`);
-    } catch (err) {
-      console.error("Error deleting team:", err);
-    }
-  }; */
-
+      return gradeOk && specOk;
+    });
+  }, [existedTeams, selectedFilters]);
   useEffect(() => {
     console.log("Existed Teams in ExistedTeamsTab:", existedTeams);
   }, [existedTeams]);
@@ -92,7 +79,8 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
 
   // Use the utility function to get paginated data
   const { currentItems: currentTeams, totalPages } = getPaginatedData(
-    existedTeams,
+    /* existedTeams, */
+    filteredByGradeAndSpec,
     currentPage,
     teamsPerPage
   );
@@ -178,26 +166,7 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
                     )}
                   </td>
                   <td className={Module["button-container"]}>
-                  {/*   {team.status === "open" ? (
-                      <button
-                        className={Module["invite-button"]}
-                        style={{ width: "90px", marginRight: "15px" }}
-                        onClick={handleJoinClick}
-                      >
-                        Edit
-                      </button>
-                    ) : (
-                      <span
-                        className={Module["disable-button"]}
-                        style={{
-                          display: "inline-block",
-                          width: "90px",
-                          marginRight: "15px",
-                        }}
-                      >
-                        Edit
-                      </span>
-                    )} */}
+                  
                     <button
                         className={Module["invite-button"]}
                         style={{ width: "90px", marginRight: "15px" }}
@@ -260,18 +229,7 @@ const ExistedTeamsTab = ({ user, existedTeams ,students }) => {
           Next
         </button>
       </div>
-
-      <JoinTeamAlert
-        show={showJoinAlert}
-        onCancel={handleCancel}
-        onConfirm={handleConfirm}
-      />
-      {showToast && (
-        <Toast
-          message={toastMessage || "Test Toast"}
-          onClose={() => setShowToast(false)}
-        />
-      )}
+      
        <DeleteUserModal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)} entityType="Team" teamIDtoDelete={teamIDtoDelete} /> 
     </div>
   );
