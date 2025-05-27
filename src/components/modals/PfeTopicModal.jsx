@@ -19,7 +19,8 @@ const PfeTopicModal = ({
   specializationArray,
   supervisorsToAssign,
   cardIdToAssign,
-  myTeamNumber
+  myTeamNumber,
+  card
 }) => {
   // the entity type is a string for now just to change the display of the message upon deletion
   const [showSuccessConfirmationModal, setSuccessConfirmationModal] =
@@ -43,6 +44,7 @@ const PfeTopicModal = ({
     // Frontend: send JSON body, not FormData
 
 const addSpecializationToPFE = async (pfeId, specializationArray) => {
+
   try {
     console.log("Specializations being sent (JSON):", specializationArray);
 
@@ -150,7 +152,7 @@ const addSpecializationToPFE = async (pfeId, specializationArray) => {
 
     await addSupervisorsToPFE(validatedcardid, supervisorIds);
       //the supervisorsToAssign is the id of the supervisor to assign and it must be passed as an array
-      addSpecializationToPFE(validatedcardid, specializationArray);
+     if (card.year === "2CS" || card.year === "3CS" ) {addSpecializationToPFE(validatedcardid, specializationArray);}
     }
     try {
       const response = await axios.patch(
