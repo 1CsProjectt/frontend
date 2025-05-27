@@ -164,7 +164,7 @@ const ExistedTeamsTab = ({ user, existedTeams, session }) => {
                   <td></td>
                   <td></td>
                   <td className={Module["button-container"]}>
-                    {session === "Select topics session" ? (
+                    {(session === "Select topics session" || "Normal session ") ? (
                       <div>
 
                       </div>
