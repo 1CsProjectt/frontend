@@ -36,6 +36,8 @@ export default function SubmittedTopicsExplorePage() {
 
 
   useEffect(() => {
+   
+    
     if (card?.creator?.role) {
       console.log("this PFE was submitted by a ", card.creator.role);
       //fetching all supervisors if the creator is a company(extern)
@@ -192,8 +194,10 @@ export default function SubmittedTopicsExplorePage() {
           <button
             className={Module.removeButton}
             onClick={() =>
+              
               setSelectedSupervisors(
                 selectedSupervisors.filter((s) => s.id !== sup.id)
+                
               )
             }
             style={{ marginLeft: "10px" }}
@@ -209,7 +213,7 @@ export default function SubmittedTopicsExplorePage() {
 
     {/* Speciality */}
    
-    {((card.year === "2SC") || (card.year === "3SC") )&& (
+    {((card.year.trim() === "2CS") || (card.year.trim() === "3CS") )&& (
   <div className={Module.formField}>
     <h2 className={Module["section-heading"]}>Specializations</h2>
     <label className={Module.label}>Add a Specialization</label>
@@ -222,6 +226,7 @@ export default function SubmittedTopicsExplorePage() {
           !specializationArray.includes(selected) &&
           specializationArray.length < 3
         ) {
+          
           setSpecializationArray([...specializationArray, selected]);
         }
       }}
