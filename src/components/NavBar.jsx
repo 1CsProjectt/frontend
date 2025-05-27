@@ -218,14 +218,25 @@ const FilterMenu = ({
   toggleMenu,
   selectedFilters,
 }) => {
-  const [activeTab, setActiveTab] = useState("Speciality");
-  const [localFilters, setLocalFilters] = useState({
+  const [activeTab, setActiveTab] = useState("Grade");
+  /* const [localFilters, setLocalFilters] = useState({
     Speciality: currentFilters || [],
     Other: [],
+  }); */
+  const [localFilters, setLocalFilters] = useState({
+    Grade: currentFilters?.Grade || [],
+    Speciality: Array.isArray(currentFilters) ? currentFilters : [],
+    Other: currentFilters?.Other || [],
   });
 
-  const specialityOptions = ["ISI", "SIW", "IASD"];
-  const otherOptions = ["Other Option 1", "Other Option 2"];
+  
+  const selectedGrades = localFilters.Grade;
+    
+    const isSpecialityEnabled = selectedGrades.some((g) => g === "2CS" || g === "3CS");
+    const gradeOptions = ["2CP", "1CS", "2CS", "3CS"];
+    
+    const specialityOptions = ["ISI", "SIW", "IASD"];
+    const otherOptions = ["Other Option 1", "Other Option 2"];
 
   const handleCheckboxChange = (event, tab) => {
     const { value, checked } = event.target;
@@ -244,17 +255,34 @@ const FilterMenu = ({
   const handleApply = (e) => {
     e.stopPropagation();
     if (onFilterApply) {
-      onFilterApply(localFilters[activeTab]);
+      onFilterApply(localFilters);
     }
     toggleMenu(e);
   };
 
   const handleCancel = (e) => {
     e.stopPropagation();
-    setLocalFilters((prev) => ({
-      ...prev,
-      [activeTab]: currentFilters || [],
-    }));
+  
+   /*  // 1) define the “all filters on” defaults
+    const defaultFilters = {
+      Grade:      gradeOptions,
+      Speciality: specialityOptions,
+      
+      Other:      otherOptions,
+    };
+  
+    // 2) send that back up to the parent
+    if (onFilterApply) onFilterApply(defaultFilters);
+   */
+
+
+     // !!! Reset the menu’s own checkboxes back to whatever the parent currently has:
+  setLocalFilters({
+    Grade:      currentFilters?.Grade      || [],
+    Speciality: currentFilters?.Speciality || [],
+    Other:      currentFilters?.Other      || [],
+  });
+    // 3) close the popup
     toggleMenu(e);
   };
 
@@ -279,18 +307,34 @@ const FilterMenu = ({
               <div className={Module["filter-navside"]}>
                 <p className={Module["filter-header"]}>Filter type</p>{" "}
                 <div className={Module["options-container-filter"]}>
-                  {" "}
-                  <p
-                    className={
-                      activeTab === "Speciality"
-                        ? Module["tab-active"]
-                        : Module["tab-inactive"]
-                    }
-                    onClick={() => handleTabChange("Speciality")}
-                  >
-                    Speciality
-                  </p>
-                </div>
+                    <p
+                      className={
+                        activeTab === "Grade"
+                       
+                          ? Module["tab-active"]
+                          : Module["tab-inactive"]
+                      }
+                      onClick={() => handleTabChange("Grade")}
+                      
+                    >
+                      Grade
+                      
+                    </p>
+                  </div>
+                  <div className={Module["options-container-filter"]}>
+                    <p
+                      className={
+                        activeTab === "Speciality"
+                          ? Module["tab-active"]
+                          : Module["tab-inactive"]
+                      }
+                      onClick={() => isSpecialityEnabled && handleTabChange("Speciality")}
+                     
+                      style={{ opacity: isSpecialityEnabled ? 1 : 0.5, cursor: isSpecialityEnabled ? "pointer" : "not-allowed" }}
+                    >
+                      Speciality
+                    </p>
+                  </div>
                 <div className={Module["options-container-filter"]}>
                   <p
                     className={
@@ -312,22 +356,26 @@ const FilterMenu = ({
                   : "Select Other Options"}
               </p>
               <div className={Module["labels-container"]}>
-                {(activeTab === "Speciality"
-                  ? specialityOptions
-                  : otherOptions
-                ).map((option) => (
-                  <label key={option} className={Module["option-label"]}>
-                    <input
-                      className={Module["filter-input"]}
-                      type="checkbox"
-                      value={option}
-                      checked={localFilters[activeTab].includes(option)}
-                      onChange={(e) => handleCheckboxChange(e, activeTab)}
-                    />
-                    <span className={Module["optionstext"]}>{option}</span>
-                  </label>
-                ))}
-              </div>
+                  {(activeTab === "Grade"
+                 
+                    ? gradeOptions
+                 
+                    : activeTab === "Speciality"
+                    ? specialityOptions
+                    : otherOptions
+                  ).map((option) => (
+                    <label key={option} className={Module["option-label"]}>
+                      <input
+                        className={Module["filter-input"]}
+                        type="checkbox"
+                        value={option}
+                        checked={localFilters[activeTab].includes(option)}
+                        onChange={(e) => handleCheckboxChange(e, activeTab)}
+                      />
+                      <span className={Module["optionstext"]}>{option}</span>
+                    </label>
+                  ))}
+                </div>
             </div>
           </div>
           <div className={Module["filter-buttons"]}>

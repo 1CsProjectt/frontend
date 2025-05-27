@@ -4,10 +4,11 @@ import Uploadbox from "./uploadbox";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 
-export default function AdminUploadModal({ isOpen, onClose, onSuccess, pfeId }) {
+export default function AdminUploadModal({ isOpen, onClose, onSuccess,onFailure, pfeId }) {
   const [file, setFile] = useState(null);
   const [grade, setGrade] = useState("2CP");
   const presentationRef = useRef(null);
+  
 
   useEffect(() => {
     if (isOpen) {
@@ -44,10 +45,11 @@ export default function AdminUploadModal({ isOpen, onClose, onSuccess, pfeId }) 
     }
     try {
       const data = await uploadGlobalPlanning(grade, file);
-      if (onSuccess) onSuccess(data);
+      if (onSuccess) onSuccess(data.message);
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Upload failed");
+      
+      if (onFailure) onFailure(err.response?.data?.message || "Upload failed");
     } finally {
       onClose();
     }

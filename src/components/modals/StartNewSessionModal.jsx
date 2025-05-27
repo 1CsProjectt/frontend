@@ -205,6 +205,49 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab, setShowT
     
     }
   };
+  
+  const handleCreateSoutenanceSession = async () => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    if (start > end) {
+      setToastMessage("Start date cannot be after end date.");
+      setToastError(true);
+      setShowToast(true);
+      return;
+    }
+    const payload = {
+      
+      name : "SOUTENANCE",
+      startTime: startDate,
+      endTime: endDate,
+      year: grade,
+    };
+
+    try {
+      const res = await axios.post("/session/setsessoin", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // include credentials if required
+      });
+
+      setToastError(null);
+
+      setToastMessage("Soutenance session created: " + res.data.message);
+      setShowToast(true);
+      onClose();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message;
+      console.error(msg);
+      onClose(); // close modal on error
+      setToastError(true);
+
+      setToastMessage(msg);
+      setShowToast(true);
+    
+    }
+  };
 
   return (
     <div className={classes["modal-overlay"]}>
@@ -280,6 +323,8 @@ const StartNewSessionModal = ({ isOpen, onClose ,sessionsPageActiveTab, setShowT
 
             }else if (sessionsPageActiveTab === "Project Realization Session"){
               handleCreateProjectRealizationSession();
+            }else if (sessionsPageActiveTab === "Soutenances Session"){
+              handleCreateSoutenanceSession();
             
           }else{
             alert("please select a valid operation");

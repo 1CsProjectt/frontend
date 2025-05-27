@@ -27,6 +27,7 @@ function SoutenanceStudentPage() {
   const [currentSessions, setCurrentSessions] = useState([]);
   const containerRef = useRef(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isToastError,setIsToastError] = useState(null);
   // états pour les réunions (meetings)
 
   // récupération de l’utilisateur
@@ -135,7 +136,7 @@ function SoutenanceStudentPage() {
               </div>
           </div>
           {showToast && (
-            <Toast message={toastMessage} onClose={() => setShowToast(false)} />
+            <Toast message={toastMessage} onClose={() => setShowToast(false) }  isError={isToastError}/>
           )}
         </div>
       </div>
@@ -143,9 +144,15 @@ function SoutenanceStudentPage() {
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onSuccess={(message) => {
+            setIsToastError(null);
           setToastMessage(message);
           setShowToast(true);
         }}
+        onFailure={(message) => {
+            setIsToastError(true);
+            setToastMessage(message);
+            setShowToast(true);
+          }}
       />
     </div>
   );

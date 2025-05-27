@@ -83,10 +83,10 @@ useEffect(() => {
     setLastName(userObject.lastName || ""); */
     //the user object does not have first name and last name only user name cause it is fetched from the users table which only has username
     if (userObject.username ) {
-    const [firstName, lastName] = userObject.username.split(' ');}
+    const [firstNameEdit, lastNameEdit] = userObject.username.split(' ');}
     console.log(userObject);
-    setFirstName(firstName || "");
-    setLastName(lastName || "");
+    setFirstName(userObject.student?.firstname || "");
+    setLastName(userObject.student?.lastname || "");
     setEmail(userObject.email || "");
     setRole(userObject.role || "");
     setPassword(""); // Password should be left blank for security

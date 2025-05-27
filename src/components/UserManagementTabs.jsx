@@ -14,7 +14,16 @@ const UserManagementTabs = () => {
   // Modal state
   const [isUserFormModalOpen, setUserFormModalOpen] = useState(false);
   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({
+      Grade: ["1CS", "2CS", "3CS", "2CP"],
+      Speciality: ["ISI", "SIW", "IASD"],
+      Other: [],
+    });
 
+    const handleFilterApply = (filters) => {
+      setSelectedFilters(filters || { Grade: [], Speciality: [], Other: [] });
+      setCurrentPage(1);
+    };
   // Which tab is active?
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("activeTab") || "Students";
@@ -42,6 +51,8 @@ const UserManagementTabs = () => {
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+   // Called when NavBar’s filter is applied
+   
   
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
@@ -80,7 +91,7 @@ const UserManagementTabs = () => {
     fetchUsers();
   }, []);
   
-
+  
   // Split fetchedUsers into role-based buckets
   const allUsers = useMemo(() => {
     return {
@@ -96,15 +107,43 @@ const UserManagementTabs = () => {
 
   //  Filter by searchQuery (username OR email)
   const filteredUsers = useMemo(() => {
-    if (!searchQuery.trim()) return usersInThisTab;
-
-    const q = searchQuery.toLowerCase();
-    return usersInThisTab.filter(
-      (u) =>
-        u.username?.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q)
-    );
-  }, [searchQuery, usersInThisTab]);
+    // 1) start from the appropriate role
+    let list = usersInThisTab;
+  
+    // 2) if on Students tab, filter by grade & speciality
+    if (activeTab === "Students") {
+      list = list.filter((u) => {
+        // if no student record, drop
+        if (!u.student) return false;
+  
+        const { year, specialite } = u.student;
+        const gradeOk = 
+          selectedFilters.Grade.length === 0 ||
+          selectedFilters.Grade.includes(year);
+  
+        const specOk =
+          // only enforce speciality for 2CS/3CS
+          !["2CS","3CS"].includes(year) ||
+          selectedFilters.Speciality.length === 0 ||
+          selectedFilters.Speciality.includes(specialite);
+  
+        return gradeOk && specOk;
+      });
+    }
+  
+    // 3) now apply search if needed
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (u) =>
+          u.username?.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q)
+      );
+    }
+  
+    return list;
+  }, [usersInThisTab, selectedFilters, searchQuery, activeTab]);
+  
 
   //  Calculate pagination over filteredUsers
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
@@ -141,9 +180,12 @@ const UserManagementTabs = () => {
       <NavBar
         title=""
         targetDate={null}
+        onFilterApply={handleFilterApply}
+        selectedFilters={selectedFilters}
         onSearchChange={handleSearchChange}
         suggestions={usersInThisTab.map((u) => u.username)}
       />
+      
 
       <div className={classes["header"]}>
         <h1>Users Management</h1>
