@@ -85,8 +85,8 @@ useEffect(() => {
     if (userObject.username ) {
     const [firstNameEdit, lastNameEdit] = userObject.username.split(' ');}
     console.log(userObject);
-    setFirstName(userObject.student.firstname || "");
-    setLastName(userObject.student.lastname || "");
+    setFirstName(userObject.student?.firstname || "");
+    setLastName(userObject.student?.lastname || "");
     setEmail(userObject.email || "");
     setRole(userObject.role || "");
     setPassword(""); // Password should be left blank for security
