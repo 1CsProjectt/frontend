@@ -121,17 +121,18 @@ function SoutenanceStudentPage() {
               >
                 Add a Soutenance PDF sheet
               </button>
-              <div className={Module["list-container"]}>
+              
+            </div>
+            <div className={Module["list-container"]}>
                 {nouncefiles.map((file, index) =>
                   file ? (
-                    <div key={index}>
+                    <div key={index} className={Module["planning-card"]}>
                       <p>{file.year}</p>
                       <Uploadfile type="pdf" pdfFil={file.url} status={false} />
                     </div>
                   ) : null
                 )}
               </div>
-            </div>
           </div>
           {showToast && (
             <Toast message={toastMessage} onClose={() => setShowToast(false)} />

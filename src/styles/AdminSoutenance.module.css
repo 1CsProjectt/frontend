@@ -298,7 +298,7 @@
     border: none;
     cursor: pointer;
   transition: 0.3s;
-    width: 15%;
+    width: 200px;
   }
 
   .add-btn:hover {
@@ -311,3 +311,53 @@
     
     height: 100%;
   }
+
+
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 2vh;
+    color: #313638;
+  }
+
+  .add-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+    margin-right: 17vw;
+  }
+  
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    margin-right: 17vw;
+  }
+  
+  .planning-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #dde2e4;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 20px;
+    margin-right: 250px;
+  }
+  
+  .planning-card + .planning-card {
+    margin-top: 1rem;
+  }
+  
+  .planning-card p {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #313638;
+  }
+  
