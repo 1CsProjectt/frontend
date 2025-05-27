@@ -113,6 +113,7 @@ export default function SubmittedTopicsExplorePage() {
                 
                 supervisorsToAssign={selectedSupervisors}
                 specializationArray={specializationArray}
+                card={card}
               />
 
               {/* Modal de raison de refus */}
@@ -208,7 +209,7 @@ export default function SubmittedTopicsExplorePage() {
 
     {/* Speciality */}
    
-    {/* (card.year === "2SC" || card.year === "3SC") */ true && (
+    {((card.year === "2SC") || (card.year === "3SC") )&& (
   <div className={Module.formField}>
     <h2 className={Module["section-heading"]}>Specializations</h2>
     <label className={Module.label}>Add a Specialization</label>

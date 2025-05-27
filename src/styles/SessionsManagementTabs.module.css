@@ -193,7 +193,7 @@
     color: white;
     cursor: pointer;
     margin-top: 10px;
-
+    transition: 0.3s;
   width: 100%;
 }
 .see-topics-btn,
@@ -206,6 +206,12 @@
   color: white;
   cursor: pointer;
   width: 70vh;
+  transition: 0.3s;
+}
+.edit-teams-btn:hover{
+ 
+  
+  background-color: rgb(1, 103, 176);
 }
 
 .validate-btn {
@@ -219,11 +225,12 @@
   margin-right: 17px;
   margin-top: 10px;
   width: 70%;
+  transition: 0.3s;
 }
 
 .primary-btn:hover,
 .validate-btn:hover {
-  opacity: 0.9;
+  background-color: rgb(1, 103, 176);
 }
 
 .edit-btn {
@@ -235,8 +242,11 @@
   cursor: pointer;
 
   border-radius: 4px;
+  transition: 0.3s;
 }
-
+.edit-btn:hover {
+  background-color: rgb(221, 226, 228);
+}
 .cancel-btn {
   background-color: #ff4d4d;
   color: white;
@@ -244,8 +254,8 @@
   width: 40%;
   border: none;
   cursor: pointer;
-
   border-radius: 4px;
+  transition: 0.3s;
 }
 
 .cancel-btn:hover {

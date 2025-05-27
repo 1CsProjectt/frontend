@@ -76,6 +76,10 @@ function App() {
             path="/SoutenanceStudentPage"
             element={<SoutenanceStudentPage />}
           />
+           <Route
+            path="admin/soutenance"
+            element={<SoutenanceStudentPage />}
+          />
           <Route
             path="/StudentMeetingsPage"
             element={<StudentMeetingsPage />}
@@ -91,6 +95,7 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />}>
             <Route index element={<UserManagementTabs />} />
             <Route path="users" element={<UserManagementTabs />} />
+           
             <Route path="sessions" element={<SessionsManagementTabs />} />
             <Route
               path="sessions/manage-preferences"

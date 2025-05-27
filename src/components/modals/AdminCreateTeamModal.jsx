@@ -93,10 +93,7 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
         const createdTeamId = response.data.team.id;
         setSelectedTeam(createdTeamId);
 
-        if (!createdTeamId) {
-          alert("Please create a team first.");
-          return;
-        }
+        
         const memberIds = members
         .map((member) => member.id)
          .filter((id) => id !== null);
@@ -108,12 +105,12 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
         }, { withCredentials: true
         })
         .then(res => {
-          alert("Member moved successfully!");
+          
           onClose(); // Close modal
         })
         .catch(err => {
           console.error(err);
-          alert(err.response?.data?.message || "Failed to move member.");
+          
         });
 
 
@@ -123,7 +120,7 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
       }
     } catch (error) {
       console.error("Error creating team:", error.response?.data || error.message);
-      alert("Error creating team: " + (error.response?.data?.message || error.message));
+      
       // Optionally show error toast
       onClose();
     }

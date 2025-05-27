@@ -280,3 +280,17 @@
   }
 
   
+  .alertDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   
+    height: 60.5%; /* Full viewport height */
+  }
+
+  .alertDiv h3 {
+    margin-top: 20px;
+    color: rgb(131, 134, 136);
+    size: 2rem;
+  }

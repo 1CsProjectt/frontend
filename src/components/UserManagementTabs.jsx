@@ -183,7 +183,19 @@ const UserManagementTabs = () => {
           </div>
         </div>)
 
-      : (
+      :  connectionError ? (
+        <div className={classes["alertDiv"]}>
+                    <img src={errorIcon} alt="Error Icon" />
+                    <h3>Error connecting to the server</h3>
+                  </div>
+      ) : displayedUsers.length === 0 ? (
+        <div className={classes["alertDiv"]}>
+                    <img src={alertIcon} alt="Alert Icon" />
+                    <h3>
+                      No Users were found . click Add a User to create new users
+                    </h3>
+                  </div>
+      ) : (
 
     
       <div className={classes["table-container"]}>
@@ -204,37 +216,8 @@ const UserManagementTabs = () => {
             </tr>
           </thead>
           <tbody>
-{/*             {loading was moved outside the table}
- */}           {/*  {loading ? (
-              <tr>
-                <td colSpan="4">
-                  <div className={classes.loaderContainer}>
-                    <PulseLoader color="#077fd4" loading={true} size={20} />
-                  </div>
-                </td>
-              </tr>
-            ) : */} { connectionError ? (
-              <tr>
-                <td colSpan="4">
-                  <div className={classes.alertDiv}>
-                    <img src={errorIcon} alt="Error Icon" />
-                    <h3>Error connecting to the server</h3>
-                  </div>
-                </td>
-              </tr>
-            ) : displayedUsers.length === 0 ? (
-              <tr>
-                <td colSpan="4">
-                  <div className={classes.alertDiv}>
-                    <img src={alertIcon} alt="Alert Icon" />
-                    <h3>
-                      No users found. Try a different search or check again later.
-                    </h3>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              displayedUsers.map((user, idx) => (
+              
+              {displayedUsers.map((user, idx) => (
                 <tr key={idx} style={{ height: "60px", maxHeight: "60px" }}>
                   <td>{user.username || "No Username"}</td>
                   <td>{user.email || "No Email"}</td>
@@ -269,8 +252,8 @@ const UserManagementTabs = () => {
                     </button>
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
+            
           </tbody>
         </table>
       </div> )}
