@@ -165,7 +165,7 @@ const addSpecializationToPFE = async (pfeId, specializationArray) => {
           },
         }
       );
-
+      localStorage.setItem("topicsPageActiveTab", "tab1");
       setShowModal(false);
       setSuccessConfirmationModal(true);
 

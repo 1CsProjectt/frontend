@@ -133,7 +133,7 @@ useEffect(() => {
   if (cardsArray.length > 0 && selectedTeam) {
     const newFilteredCards = cardsArray.filter(card =>
       card.year === selectedTeam.members[0]?.year && 
-      card.specialization === selectedTeam.members[0]?.specialite
+      card.specialization.includes(selectedTeam.members[0]?.specialite)
     );
     setFilteredCards(newFilteredCards);
     console.log("filtered cards array for a specific year and specialite :", filteredCards)
