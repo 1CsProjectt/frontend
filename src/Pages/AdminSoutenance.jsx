@@ -95,9 +95,8 @@ function SoutenanceStudentPage() {
             <AdminUploadModal
                 isOpen={showUploadModal}
                 onClose={() => setShowUploadModal(false)}
-                onSuccess={(message) => {
-                    setToastMessage(message);
-                    setShowToast(true);
+                onSuccess={() => {
+                    
                 }} 
                 />
         </div>
