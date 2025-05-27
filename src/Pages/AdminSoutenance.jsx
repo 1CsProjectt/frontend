@@ -121,7 +121,7 @@ function SoutenanceStudentPage() {
               >
                 Add a Soutenance PDF sheet
               </button>
-              <div>
+              <div className={Module["list-container"]}>
                 {nouncefiles.map((file, index) =>
                   file ? (
                     <div key={index}>
