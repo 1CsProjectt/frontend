@@ -135,10 +135,10 @@ export default function SeeMoreMettingHistory() {
                 <div className={Module["Meetingpv"]} Style={{ margin: "20px 0 10px 0" }}>
                   <StudentUploadfile title="Meeting pv" dic="Schedule a New Meeting: Set the date, time, objectives, and room to plan your next supervision session." />
                 </div>
-                <div className={Module["Meetingreview"]} >
+                <div className={Module["Meetingreview"]}  style={{marginBottom: "2vw"}}>
                 
-                    <div className={Module["Review-info"]}>
-                      <div className={Module["Title"]}>
+                    <div className={Module["Review-info"]} >
+                      <div className={Module["Title"]}  >
                         Meeting review
                       </div>
                       <div className={Module["Note"]}>
