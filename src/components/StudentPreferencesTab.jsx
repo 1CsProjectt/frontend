@@ -26,7 +26,16 @@ import SuccessConfirmationModal from "./modals/SuccessConfirmationModal";
 axios.defaults.withCredentials = true;
 
 // A single sortable row component
-const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, targetDate }) => {
+const SortableRow = ({
+  item,
+  submit,
+  onRemove,
+  preferencesList,
+  sessionTitle,
+  targetDate,
+  refreshkey,
+  setrefreshkey,
+}) => {
   const navigate = useNavigate();
 
   const handleRemoveClick = () => {
@@ -35,13 +44,16 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, ta
 
   const handleReadClick = (e, card) => {
     e.stopPropagation();
-    navigate("/pfe-student/explore", { state: { card, sessionTitle, targetDate } });
+    navigate("/pfe-student/explore", {
+      state: { card, sessionTitle, targetDate },
+    });
   };
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: item.id,
-    disabled: submit,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: item.id,
+      disabled: submit,
+    });
 
   const style = { transform: CSS.Transform.toString(transform), transition };
 
@@ -50,7 +62,10 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, ta
       <td
         {...attributes}
         {...listeners}
-        style={{ cursor: submit ? "default" : "grab", pointerEvents: submit ? "none" : "auto" }}
+        style={{
+          cursor: submit ? "default" : "grab",
+          pointerEvents: submit ? "none" : "auto",
+        }}
       >
         {!submit && <span className={Module["drag-handle"]}>⋮⋮</span>}
       </td>
@@ -65,8 +80,8 @@ const SortableRow = ({ item, submit, onRemove, preferencesList, sessionTitle, ta
                 item.status === "REJECTED"
                   ? "#F9857A"
                   : item.status === "ACCEPTED"
-                    ? "#68CD54"
-                    : "inherit",
+                  ? "#68CD54"
+                  : "inherit",
             }}
           >
             {item.card_info.supervisionRequests?.[0]?.status || "- - - - -"}
@@ -173,104 +188,6 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  /*   const handleConfirmSubmit = () => {
-      setShowSubmitModal(false);
-  
-      (async () => {
-        if (!motivationFile) {
-          return setToastMessage("Please upload your motivation letter first.");
-        }
-  
-        const formData = new FormData();
-        const pfeIdsArray = items.map((item) => item.card_info.id);
-  
-        //  Append each ID as an array element
-        pfeIdsArray.forEach((id) => formData.append("pfeIds[]", id));
-  
-        formData.append("ML", motivationFile);
-        console.log("Form data prepared:***********************************", motivationFile);
-  
-        try {
-          const resp = await axios.post(
-            "/preflist/approve",
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              },
-              withCredentials: true
-            }
-          );
-  
-          // (clear local storage)
-          localStorage.removeItem("preferencesList");
-  
-          setPreferencesList([]);
-          setItems([]);
-          //   (refresh the page)
-          window.location.reload();
-        } catch (err) {
-          setIsToasterror(true);
-  
-          setToastMessage(err.response?.data?.message || " failed. Please try again.");
-          setShowToast(true);
-        }
-      })();
-    };
-  
-  
-    const handleSaveSubmit = async () => {
-      // 1. Make sure a file was selected
-      if (!motivationFile) {
-        setIsToasterror(null);
-  
-        setToastMessage("Please upload your motivation letter first.");
-        setShowToast(true);
-        return;
-      }
-  
-      try {
-        // 2. Build FormData
-        const formData = new FormData();
-        items.forEach(item => {
-          formData.append("pfeIds[]", item.card_info.id);
-        });
-        formData.append("ML", motivationFile);  // motivationFile is a single File object
-  
-        console.log("Form data prepared:", motivationFile);
-  
-        // 3. Send to server
-        const resp = await axios.post(
-          "/preflist/create",
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true
-          }
-        );
-  
-        // 4. On success
-        console.log("Server Save response:", resp.data);
-        setIsToasterror(null);
-  
-        setToastMessage("Your list has been saved successfully.");
-        setShowToast(true);
-  
-        // 5. Save local copy
-        const storedPrefs = items.map((item, idx) => ({
-          ...item,
-          order: String(idx + 1).padStart(2, "0"),
-        }));
-        localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
-  
-      } catch (err) {
-        setIsToasterror(true);
-  
-        setToastMessage(err.response?.data?.message || " failed. Please try again.");
-        setShowToast(true);
-      }
-    };
-   */
   // 1. Make handleSaveSubmit return a Promise that resolves on success or rejects on error
   const handleSaveSubmit = async () => {
     if (!motivationFile) {
@@ -281,14 +198,14 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
     }
 
     const formData = new FormData();
-    items.forEach(item => formData.append("pfeIds[]", item.card_info.id));
+    items.forEach((item) => formData.append("pfeIds[]", item.card_info.id));
     formData.append("ML", motivationFile);
 
     console.log("Form data prepared:", motivationFile);
 
     const resp = await axios.post("/preflist/create", formData, {
       headers: { "Content-Type": "multipart/form-data" },
-      withCredentials: true
+      withCredentials: true,
     });
 
     console.log("Server Save response:", resp.data);
@@ -298,7 +215,7 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
 
     const storedPrefs = items.map((item, idx) => ({
       ...item,
-      order: String(idx + 1).padStart(2, "0")
+      order: String(idx + 1).padStart(2, "0"),
     }));
     localStorage.setItem("preferencesList", JSON.stringify(storedPrefs));
 
@@ -320,33 +237,44 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
 
       // now run original confirm (approve) logic
       const formData = new FormData();
-      items.forEach(item => formData.append("pfeIds[]", item.card_info.id));
+      items.forEach((item) => formData.append("pfeIds[]", item.card_info.id));
       formData.append("ML", motivationFile);
 
       console.log("Form data prepared for approve:", motivationFile);
 
       const resp = await axios.post("/preflist/approve", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true
+        withCredentials: true,
       });
 
-      console.log("Server Approve response:", resp.data);
+      console.log(
+        "Server Approve response:*******************************",
+        resp.data
+      );
 
       localStorage.removeItem("preferencesList");
-      setPreferencesList([]);
-      setItems([]);
+      setTimeout(() => {
+        setPreferencesList([]);
+        setItems([]);
 
-      window.location.reload();
+        window.location.reload();
+      }, 1000);
     } catch (err) {
       setIsToasterror(true);
-      setToastMessage(err.response?.data?.message || err.message || " failed. Please try again.");
+      setToastMessage(
+        err.response?.data?.message ||
+          err.message ||
+          " failed. Please try again."
+      );
       setShowToast(true);
     }
   };
 
   const handleCloseSuccess = () => setShowSuccessModal(false);
   // DnD setup
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const handleDragEnd = ({ active, over }) => {
     if (active.id !== over.id) {
@@ -380,26 +308,29 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
   return (
     <div className={Style["pagecontainer"]}>
       <div className={Module["header-left"]}>
-        <h2>Team number</h2>
-        <p>You are currently in team number <span>{team_id}</span></p>
+        <p>
+          You are currently in team number <span>{team_id}</span>
+        </p>
       </div>
       {submit ? (
         <div
           className={Style["header"]}
           style={{ color: "#313638", fontFamily: "Manrope", marginLeft: "5px" }}
         >
-
           <p>Welcome again.</p>
           <p style={{ marginTop: "3px", fontSize: "1rem" }}>
             Here is your result for your selection.
           </p>
         </div>
       ) : (
-        <div style={{ color: "#313638", fontFamily: "Manrope", marginLeft: "5px" }}>
+        <div
+          style={{ color: "#313638", fontFamily: "Manrope", marginLeft: "5px" }}
+        >
           <p>Welcome to Your PFE Topic Selection Panel!</p>
           <p>
             Here, you can manage up to 5 preferred PFE topics. Feel free to add,
-            remove, reorder, or revisit topics at any time to explore their details.
+            remove, reorder, or revisit topics at any time to explore their
+            details.
           </p>
           <p>
             You can submit your list earlier or wait for the session to end for
@@ -410,8 +341,15 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
 
       <div style={{ marginTop: "20px" }}>
         <div className={Module["table-wrapper"]}>
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items}
+              strategy={verticalListSortingStrategy}
+            >
               <table id="StudentPreferencesTable">
                 <thead>
                   <tr>
@@ -443,7 +381,13 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
         {!submit && (
           <>
             <MotivationCard onFileSelect={setMotivationFile} />
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-40px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: "-40px",
+              }}
+            >
               <button
                 className={Style["save-button"]}
                 onClick={handleSaveSubmit}
@@ -457,19 +401,24 @@ const StudentPreferences = ({ submit, sessionTitle, targetDate }) => {
                   else {
                     setIsToasterror(null);
 
-                    setToastMessage("You must select exactly 5 topics before submitting.");
+                    setToastMessage(
+                      "You must select exactly 5 topics before submitting."
+                    );
                     setShowToast(true);
                   }
                 }}
               >
                 Submit the list
               </button>
-
             </div>
           </>
         )}
 
-        <SubmitModal show={showSubmitModal} onCancel={() => setShowSubmitModal(false)} onConfirm={handleConfirmSubmit} />
+        <SubmitModal
+          show={showSubmitModal}
+          onCancel={() => setShowSubmitModal(false)}
+          onConfirm={handleConfirmSubmit}
+        />
         {showSuccessModal && (
           <SuccessConfirmationModal
             message="Your list has been successfully submitted!."
