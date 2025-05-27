@@ -127,7 +127,7 @@ export default function SeeMoreMettingHistory() {
     );
   }
   console.log("pvfile ", pvfile);
-  console.log("pvfile ", supportfile);
+  console.log("support file  ", supportfile);
   return (
     <div className={Module["explore-page"]}>
       <Sidebar />
@@ -300,13 +300,21 @@ export default function SeeMoreMettingHistory() {
                     </p>
                   </div>
                   <div className="form-section">
-                    {}
-                    <Uploadfile
-                      handlePresentationChange={handleDelechange}
-                      type="pdf"
-                      presentationFile={deliverablesFile}
-                      presentationRef={deliverref}
-                    />
+                    {!reviewfile && (
+                      <Uploadfile
+                        handlePresentationChange={handleDelechange}
+                        type="pdf"
+                        presentationFile={deliverablesFile}
+                        presentationRef={deliverref}
+                      />
+                    )}
+                    {reviewfile && (
+                      <Uploadfile
+                        type="pdf"
+                        pdfFil={deliverablesFile}
+                        status={false}
+                      />
+                    )}
                   </div>
                 </div>
                 <div
@@ -386,7 +394,7 @@ export default function SeeMoreMettingHistory() {
                       />
                     )}
                     {onbtn && reviewfile && pvfile && (
-                      <Uploadfile type="pdf" pdf={pvfile} status={false} />
+                      <Uploadfile type="pdf" pdfFil={pvfile} status={false} />
                     )}
 
                     {!reviewfile && (
