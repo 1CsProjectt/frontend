@@ -54,6 +54,7 @@ const Seemorepage = ({ myTeamNumber, myTeamMembers = [] ,students, onBack ,selec
 
   const autoAssignPfe = async (teamId) => {
     try {
+      console.log("Auto-assigning PFE for team:", teamId);
       const response = await axios.post('/pfe/autoAssignPfesToTeamWithoutPfe', {
         teamId
       },{ withCredentials: true });

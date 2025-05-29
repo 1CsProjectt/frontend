@@ -1,17 +1,16 @@
 import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
 import Style from '../../styles/AdminManagePreferencesPage.module.css';
-import Toast from './Toast';
+
 
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-const AdminCreateTeamModal = ({ show, onClose,students}) => {
+const AdminCreateTeamModal = ({ show, onClose,students},setShowToast,setToastMessage) => {
 
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+
   const [groupName, setGroupName] = useState("");
   const [supervisorId, setSupervisorId] = useState(null);
   const [maxNumber, setMaxNumber] = useState("5"); 
@@ -26,8 +25,8 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
       setMaxNumber('5');
       setSelectedTeam(null);
       setShowAlert(false);
-      setShowToast(false);
-      setToastMessage('');
+      
+     
     }
   }, [show]);
 
@@ -92,7 +91,7 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
 
         const createdTeamId = response.data.team.id;
         setSelectedTeam(createdTeamId);
-
+        
         
         const memberIds = members
         .map((member) => member.id)
@@ -244,12 +243,7 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
             You must join a team before inviting others.
           </div>
         )}
-        {showToast && (
-          <div className={Style["toast"]}>
-            Invitation sent successfully!
-          </div>
-        )}
-
+        
         {/* Action buttons */}
         <div className={Style["modal-actions"]}>
           <button className={Style["cancel-button"]} onClick={onClose}>
@@ -260,9 +254,7 @@ const AdminCreateTeamModal = ({ show, onClose,students}) => {
           </button>
         </div>
       </div>
-      {showToast && (
-        <Toast message={toastMessage || "Test Toast"} onClose={() => setShowToast(false)} />
-      )}
+      
     </div>
   );
 };

@@ -230,8 +230,8 @@ useEffect(() => {
         <AdminCreateTeamModal
           show={showCreateTeamModal}
           onClose={() => setShowCreateTeamModal(false)}
-          onTeamCreated={() => setToastMessage("Team created successfully.")}
-          onInviteSent={() => setToastMessage("Invite sent successfully.")}
+          setToastMessage={setToastMessage}
+          setShowToast={setShowToast}
           students={formattedStudents}
         />
         <AutoOrganizeTeamsModal 
